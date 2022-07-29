@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react";
+
 export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
@@ -29,6 +31,10 @@ export default function Index() {
       </ul>
 
       <div>あいうえお</div>
+
+      <div>
+        <Link to="/mui">MUIテスト</Link>
+      </div>
     </div>
   );
 }
