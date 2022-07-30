@@ -13,12 +13,41 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Button, IconButton } from "@mui/material";
+import {
+  Button,
+  Collapse,
+  IconButton,
+  Slide,
+  useScrollTrigger,
+} from "@mui/material";
+import type { ReactElement } from "react";
 import { useState } from "react";
 
 const drawerWidth = 240;
 
-export default function ClippedDrawer() {
+interface Props {
+  children: ReactElement;
+}
+
+const HideAppbarOnScroll = (props: Props) => {
+  const { children } = props;
+  const trigger = useScrollTrigger();
+
+  return (
+    <Slide direction="down" in={!trigger}>
+      {children}
+    </Slide>
+  );
+};
+
+const HideToolbarOnScroll = (props: Props) => {
+  const { children } = props;
+  const trigger = useScrollTrigger();
+
+  return <Collapse in={!trigger}>{children}</Collapse>;
+};
+
+export default function Mui(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -27,7 +56,10 @@ export default function ClippedDrawer() {
 
   const drawer = (
     <>
-      <Toolbar />
+      <HideToolbarOnScroll {...props}>
+        <Toolbar />
+      </HideToolbarOnScroll>
+
       <Box sx={{ overflow: "auto" }}>
         <List>
           {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
@@ -61,25 +93,27 @@ export default function ClippedDrawer() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Clipped drawer
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <HideAppbarOnScroll {...props}>
+        <AppBar
+          position="fixed"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Clipped drawer
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </HideAppbarOnScroll>
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -158,6 +192,16 @@ export default function ClippedDrawer() {
           sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
           eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
           posuere sollicitudin aliquam ultrices sagittis orci a.
+        </Typography>
+
+        <Typography paragraph>
+          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+          consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel
+          scelerisque nisl consectetur et. Cras mattis consectetur purus sit
+          amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget
+          quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
         </Typography>
       </Box>
     </Box>
