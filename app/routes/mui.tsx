@@ -11,16 +11,19 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   Button,
   Collapse,
+  Fab,
+  Fade,
   IconButton,
   Slide,
   useScrollTrigger,
 } from "@mui/material";
-import type { ReactElement } from "react";
+import type { ReactElement, MouseEvent } from "react";
 import { useState } from "react";
 
 const drawerWidth = 240;
@@ -45,6 +48,37 @@ const HideToolbarOnScroll = (props: Props) => {
   const trigger = useScrollTrigger();
 
   return <Collapse in={!trigger}>{children}</Collapse>;
+};
+
+const ScrollTop = (props: Props) => {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+  });
+
+  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+    const anchor = (
+      (event.target as HTMLDivElement).ownerDocument || document
+    ).querySelector("#back-to-top-anchor");
+
+    if (anchor) {
+      anchor.scrollIntoView({
+        block: "center",
+      });
+    }
+  };
+
+  return (
+    <Fade in={trigger}>
+      <Box
+        onClick={handleClick}
+        role="presentation"
+        sx={{ position: "fixed", bottom: 16, right: 16 }}
+      >
+        {children}
+      </Box>
+    </Fade>
+  );
 };
 
 export default function Mui(props: Props) {
@@ -155,7 +189,7 @@ export default function Mui(props: Props) {
       </Box>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
+        <Toolbar id="back-to-top-anchor" />
 
         <Box>
           <Button variant="text">Text</Button>
@@ -163,46 +197,46 @@ export default function Mui(props: Props) {
           <Button variant="outlined">Outlined</Button>
         </Box>
 
-        <Typography paragraph sx={{ paddingTop: "1em" }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-          dolor purus non enim praesent elementum facilisis leo vel. Risus at
-          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-          quisque non tellus. Convallis convallis tellus id interdum velit
-          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-          faucibus et molestie ac.
+        <Typography sx={{ paddingTop: "1em" }}>
+          {[...new Array(10)]
+            .map(
+              () => `
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
+                dolor purus non enim praesent elementum facilisis leo vel. Risus at
+                ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
+                quisque non tellus. Convallis convallis tellus id interdum velit
+                laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
+                adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
+                integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
+                eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
+                quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
+                vivamus at augue. At augue eget arcu dictum varius duis at consectetur
+                lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
+                faucibus et molestie ac.
+
+                Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
+                ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
+                elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
+                sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
+                mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
+                risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
+                purus viverra accumsan in. In hendrerit gravida rutrum quisque non
+                tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
+                morbi tristique senectus et. Adipiscing elit duis tristique
+                sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
+                eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
+                posuere sollicitudin aliquam ultrices sagittis orci a.
+              `
+            )
+            .join("\n")}
         </Typography>
 
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-          ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-          elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
-          sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
-          mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
-          risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
-          purus viverra accumsan in. In hendrerit gravida rutrum quisque non
-          tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
-          morbi tristique senectus et. Adipiscing elit duis tristique
-          sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
-
-        <Typography paragraph>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel
-          scelerisque nisl consectetur et. Cras mattis consectetur purus sit
-          amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget
-          quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-        </Typography>
+        <ScrollTop>
+          <Fab size="small" aria-label="scroll back to top">
+            <KeyboardArrowUpIcon />
+          </Fab>
+        </ScrollTop>
       </Box>
     </Box>
   );
