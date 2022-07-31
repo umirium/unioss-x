@@ -10,6 +10,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MailIcon from "@mui/icons-material/Mail";
@@ -24,10 +26,12 @@ import {
   Slide,
   ThemeProvider,
   useScrollTrigger,
+  useTheme,
 } from "@mui/material";
 import type { ReactElement, MouseEvent } from "react";
-import { useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
+const ColorModeContext = createContext({ toggleColorMode: () => {} });
 const drawerWidth = 240;
 
 interface Props {
@@ -83,14 +87,38 @@ const ScrollTop = (props: Props) => {
   );
 };
 
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
+const ToggleThemeButton = () => {
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext);
+
+  return (
+    <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode}>
+      {theme.palette.mode == "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+    </IconButton>
+  );
+};
 
 export default function Mui(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mode, setMode] = useState<"light" | "dark">("light");
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+    }),
+    []
+  );
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -133,83 +161,90 @@ export default function Mui(props: Props) {
   );
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <HideAppbarOnScroll {...props}>
-          <AppBar
-            position="fixed"
-            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <Box sx={{ display: "flex" }}>
+          <CssBaseline />
+          <HideAppbarOnScroll {...props}>
+            <AppBar
+              position="fixed"
+              sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            >
+              <Toolbar>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2, display: { sm: "none" } }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ flexGrow: 1 }}
+                >
+                  Clipped drawer
+                </Typography>
+                <ToggleThemeButton />
+              </Toolbar>
+            </AppBar>
+          </HideAppbarOnScroll>
+          <Box
+            component="nav"
+            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            aria-label="mailbox folders"
           >
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" noWrap component="div">
-                Clipped drawer
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </HideAppbarOnScroll>
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
-        >
-          {/* for mobile */}
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
+            {/* for mobile */}
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true,
+              }}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                },
+              }}
+            >
+              {drawer}
+            </Drawer>
 
-          {/* for PC */}
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar id="back-to-top-anchor" />
-
-          <Box>
-            <Button variant="text">Text</Button>
-            <Button variant="contained">Contained</Button>
-            <Button variant="outlined">Outlined</Button>
+            {/* for PC */}
+            <Drawer
+              variant="permanent"
+              sx={{
+                display: { xs: "none", sm: "block" },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: drawerWidth,
+                },
+              }}
+              open
+            >
+              {drawer}
+            </Drawer>
           </Box>
 
-          <Typography sx={{ paddingTop: "1em" }}>
-            {[...new Array(10)]
-              .map(
-                () => `
+          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Toolbar id="back-to-top-anchor" />
+
+            <Box>
+              <Button variant="text">Text</Button>
+              <Button variant="contained">Contained</Button>
+              <Button variant="outlined">Outlined</Button>
+            </Box>
+
+            <Typography sx={{ paddingTop: "1em" }}>
+              {[...new Array(10)]
+                .map(
+                  () => `
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
                 dolor purus non enim praesent elementum facilisis leo vel. Risus at
@@ -237,17 +272,18 @@ export default function Mui(props: Props) {
                 eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
                 posuere sollicitudin aliquam ultrices sagittis orci a.
               `
-              )
-              .join("\n")}
-          </Typography>
+                )
+                .join("\n")}
+            </Typography>
 
-          <ScrollTop>
-            <Fab size="small" aria-label="scroll back to top">
-              <KeyboardArrowUpIcon />
-            </Fab>
-          </ScrollTop>
+            <ScrollTop>
+              <Fab size="small" aria-label="scroll back to top">
+                <KeyboardArrowUpIcon />
+              </Fab>
+            </ScrollTop>
+          </Box>
         </Box>
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
