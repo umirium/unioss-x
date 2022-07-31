@@ -70,6 +70,7 @@ const ScrollTop = (props: Props) => {
     if (anchor) {
       anchor.scrollIntoView({
         block: "center",
+        behavior: "smooth",
       });
     }
   };
