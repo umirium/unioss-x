@@ -102,33 +102,33 @@ const ToggleThemeButton = () => {
 
 export default function Mui(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+        setThemeMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
     []
   );
 
   useEffect(() => {
-    setMode(prefersDarkMode ? "dark" : "light");
+    setThemeMode(prefersDarkMode ? "dark" : "light");
   }, [prefersDarkMode]);
 
   const theme = useMemo(
     () =>
       createTheme({
         palette: {
-          mode,
+          mode: themeMode,
         },
       }),
-    [mode]
+    [themeMode]
   );
 
-  const handleDrawerToggle = () => {
+  const handleToggleDrawer = () => {
     setMobileOpen(!mobileOpen);
   };
 
@@ -183,7 +183,7 @@ export default function Mui(props: Props) {
                   color="inherit"
                   aria-label="open drawer"
                   edge="start"
-                  onClick={handleDrawerToggle}
+                  onClick={handleToggleDrawer}
                   sx={{ mr: 2, display: { sm: "none" } }}
                 >
                   <MenuIcon />
@@ -209,7 +209,7 @@ export default function Mui(props: Props) {
             <Drawer
               variant="temporary"
               open={mobileOpen}
-              onClose={handleDrawerToggle}
+              onClose={handleToggleDrawer}
               ModalProps={{
                 keepMounted: true,
               }}
