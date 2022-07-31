@@ -25,11 +25,12 @@ import {
   IconButton,
   Slide,
   ThemeProvider,
+  useMediaQuery,
   useScrollTrigger,
   useTheme,
 } from "@mui/material";
 import type { ReactElement, MouseEvent } from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 const drawerWidth = 240;
@@ -102,6 +103,8 @@ const ToggleThemeButton = () => {
 export default function Mui(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mode, setMode] = useState<"light" | "dark">("light");
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
@@ -110,6 +113,10 @@ export default function Mui(props: Props) {
     }),
     []
   );
+
+  useEffect(() => {
+    setMode(prefersDarkMode ? "dark" : "light");
+  }, [prefersDarkMode]);
 
   const theme = useMemo(
     () =>
