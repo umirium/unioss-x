@@ -17,10 +17,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {
   Button,
   Collapse,
+  createTheme,
   Fab,
   Fade,
   IconButton,
   Slide,
+  ThemeProvider,
   useScrollTrigger,
 } from "@mui/material";
 import type { ReactElement, MouseEvent } from "react";
@@ -81,6 +83,12 @@ const ScrollTop = (props: Props) => {
   );
 };
 
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
 export default function Mui(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -125,82 +133,83 @@ export default function Mui(props: Props) {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <HideAppbarOnScroll {...props}>
-        <AppBar
-          position="fixed"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    <ThemeProvider theme={darkTheme}>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <HideAppbarOnScroll {...props}>
+          <AppBar
+            position="fixed"
+            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          >
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { sm: "none" } }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div">
+                Clipped drawer
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </HideAppbarOnScroll>
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label="mailbox folders"
         >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              Clipped drawer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </HideAppbarOnScroll>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        {/* for mobile */}
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
+          {/* for mobile */}
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true,
+            }}
+            sx={{
+              display: { xs: "block", sm: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
 
-        {/* for PC */}
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar id="back-to-top-anchor" />
-
-        <Box>
-          <Button variant="text">Text</Button>
-          <Button variant="contained">Contained</Button>
-          <Button variant="outlined">Outlined</Button>
+          {/* for PC */}
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: "none", sm: "block" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
         </Box>
 
-        <Typography sx={{ paddingTop: "1em" }}>
-          {[...new Array(10)]
-            .map(
-              () => `
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar id="back-to-top-anchor" />
+
+          <Box>
+            <Button variant="text">Text</Button>
+            <Button variant="contained">Contained</Button>
+            <Button variant="outlined">Outlined</Button>
+          </Box>
+
+          <Typography sx={{ paddingTop: "1em" }}>
+            {[...new Array(10)]
+              .map(
+                () => `
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
                 dolor purus non enim praesent elementum facilisis leo vel. Risus at
@@ -228,16 +237,17 @@ export default function Mui(props: Props) {
                 eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
                 posuere sollicitudin aliquam ultrices sagittis orci a.
               `
-            )
-            .join("\n")}
-        </Typography>
+              )
+              .join("\n")}
+          </Typography>
 
-        <ScrollTop>
-          <Fab size="small" aria-label="scroll back to top">
-            <KeyboardArrowUpIcon />
-          </Fab>
-        </ScrollTop>
+          <ScrollTop>
+            <Fab size="small" aria-label="scroll back to top">
+              <KeyboardArrowUpIcon />
+            </Fab>
+          </ScrollTop>
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
