@@ -7,7 +7,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import type { ReactElement } from "react";
-import { createContext, useMemo, useLayoutEffect, useState } from "react";
+import { createContext, useMemo, useEffect, useState } from "react";
 import Outline from "~/components/outline";
 
 interface Props {
@@ -29,7 +29,7 @@ export default function Mui(props: Props) {
     []
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setThemeMode(prefersDarkMode ? "dark" : "light");
   }, [prefersDarkMode]);
 
