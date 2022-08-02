@@ -190,7 +190,7 @@ export default function Mui(props: Props) {
                   aria-label="open drawer"
                   edge="start"
                   onClick={handleToggleDrawer}
-                  sx={{ mr: 2, display: { sm: "none" } }}
+                  sx={{ mr: 2, display: { md: "none" } }}
                 >
                   <MenuIcon />
                 </IconButton>
@@ -206,9 +206,10 @@ export default function Mui(props: Props) {
               </Toolbar>
             </AppBar>
           </HideAppbarOnScroll>
+
           <Box
             component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
             aria-label="mailbox folders"
           >
             {/* for mobile */}
@@ -220,7 +221,7 @@ export default function Mui(props: Props) {
                 keepMounted: true,
               }}
               sx={{
-                display: { xs: "block", sm: "none" },
+                display: { sm: "block", md: "none" },
                 "& .MuiDrawer-paper": {
                   boxSizing: "border-box",
                   width: drawerWidth,
@@ -234,7 +235,7 @@ export default function Mui(props: Props) {
             <Drawer
               variant="permanent"
               sx={{
-                display: { xs: "none", sm: "block" },
+                display: { xs: "none", md: "block" },
                 "& .MuiDrawer-paper": {
                   boxSizing: "border-box",
                   width: drawerWidth,
@@ -246,7 +247,7 @@ export default function Mui(props: Props) {
             </Drawer>
           </Box>
 
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: 1000 }}>
             <Toolbar id="back-to-top-anchor" />
 
             <Box>
@@ -289,13 +290,12 @@ export default function Mui(props: Props) {
                 )
                 .join("\n")}
             </Typography>
-
-            <ScrollTop>
-              <Fab size="small" aria-label="scroll back to top">
-                <KeyboardArrowUpIcon />
-              </Fab>
-            </ScrollTop>
           </Box>
+          <ScrollTop>
+            <Fab size="small" aria-label="scroll back to top">
+              <KeyboardArrowUpIcon />
+            </Fab>
+          </ScrollTop>
         </Box>
       </ThemeProvider>
     </ColorModeContext.Provider>
