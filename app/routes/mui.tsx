@@ -30,7 +30,13 @@ import {
   useTheme,
 } from "@mui/material";
 import type { ReactElement, MouseEvent } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 const drawerWidth = 240;
@@ -114,7 +120,7 @@ export default function Mui(props: Props) {
     []
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setThemeMode(prefersDarkMode ? "dark" : "light");
   }, [prefersDarkMode]);
 
