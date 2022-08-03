@@ -12,14 +12,11 @@ import {
   Slide,
   useScrollTrigger,
   Fade,
-  useTheme,
 } from "@mui/material";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useDarkThemeContext } from "../providers/darkThemeProvider";
 import DrawerMenu from "./outline/drawerMenu";
+import ToggleThemeButton from "./outline/toggleThemeButton";
 
 interface Props {
   children: ReactElement;
@@ -66,17 +63,6 @@ const ScrollTop = (props: Props) => {
         {children}
       </Box>
     </Fade>
-  );
-};
-
-const ToggleThemeButton = () => {
-  const theme = useTheme();
-  const { darkMode } = useDarkThemeContext();
-
-  return (
-    <IconButton sx={{ ml: 1 }} onClick={darkMode.toggle}>
-      {theme.palette.mode == "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-    </IconButton>
   );
 };
 
