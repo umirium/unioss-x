@@ -9,25 +9,17 @@ import {
   Typography,
   Drawer,
   Fab,
-  Collapse,
   Slide,
   useScrollTrigger,
   Fade,
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   useTheme,
 } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useDarkThemeContext } from "../providers/darkThemeProvider";
+import DrawerMenu from "./outline/drawerMenu";
 
 interface Props {
   children: ReactElement;
@@ -43,13 +35,6 @@ const HideAppbarOnScroll = (props: Props) => {
       {children}
     </Slide>
   );
-};
-
-const HideToolbarOnScroll = (props: Props) => {
-  const { children } = props;
-  const trigger = useScrollTrigger();
-
-  return <Collapse in={!trigger}>{children}</Collapse>;
 };
 
 const ScrollTop = (props: Props) => {
@@ -103,42 +88,6 @@ export default function Outline(props: Props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
-    <>
-      <HideToolbarOnScroll {...props}>
-        <Toolbar />
-      </HideToolbarOnScroll>
-
-      <Box sx={{ overflow: "auto" }}>
-        <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </>
-  );
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -191,7 +140,7 @@ export default function Outline(props: Props) {
             },
           }}
         >
-          {drawer}
+          <DrawerMenu />
         </Drawer>
 
         {/* for PC */}
@@ -206,13 +155,12 @@ export default function Outline(props: Props) {
           }}
           open
         >
-          {drawer}
+          <DrawerMenu />
         </Drawer>
       </Box>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: 1000 }}>
         <Toolbar id="back-to-top-anchor" />
-
         {children}
       </Box>
 
