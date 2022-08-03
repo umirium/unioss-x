@@ -1,4 +1,4 @@
-import type { ReactElement, MouseEvent } from "react";
+import type { ReactElement } from "react";
 import { useState } from "react";
 import {
   Box,
@@ -8,15 +8,13 @@ import {
   IconButton,
   Typography,
   Drawer,
-  Fab,
   Slide,
   useScrollTrigger,
-  Fade,
 } from "@mui/material";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MenuIcon from "@mui/icons-material/Menu";
 import DrawerMenu from "./outline/drawerMenu";
 import ToggleThemeButton from "./outline/toggleThemeButton";
+import TopButton from "./outline/topButton";
 
 interface Props {
   children: ReactElement;
@@ -31,32 +29,6 @@ const HideAppbarOnScroll = (props: Props) => {
     <Slide direction="down" in={!trigger}>
       {children}
     </Slide>
-  );
-};
-
-const ScrollTop = (props: Props) => {
-  const { children } = props;
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-  });
-
-  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  return (
-    <Fade in={trigger}>
-      <Box
-        onClick={handleClick}
-        role="presentation"
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
-      >
-        {children}
-      </Box>
-    </Fade>
   );
 };
 
@@ -144,11 +116,7 @@ export default function Outline(props: Props) {
         {children}
       </Box>
 
-      <ScrollTop>
-        <Fab size="small" aria-label="scroll back to top">
-          <KeyboardArrowUpIcon />
-        </Fab>
-      </ScrollTop>
+      <TopButton />
     </Box>
   );
 }
