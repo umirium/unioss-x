@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { DarkThemeProvider } from "~/providers/darkThemeProvider";
 import styles from "~/styles/root.css";
 
 export const meta: MetaFunction = () => ({
@@ -27,7 +28,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <DarkThemeProvider>
+          <Outlet />
+        </DarkThemeProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

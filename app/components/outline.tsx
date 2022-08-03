@@ -1,5 +1,5 @@
 import type { ReactElement, MouseEvent } from "react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   CssBaseline,
@@ -27,7 +27,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
-import { ColorModeContext } from "~/routes/mui";
+import { useDarkThemeContext } from "../providers/darkThemeProvider";
 
 interface Props {
   children: ReactElement;
@@ -86,10 +86,10 @@ const ScrollTop = (props: Props) => {
 
 const ToggleThemeButton = () => {
   const theme = useTheme();
-  const colorMode = useContext(ColorModeContext);
+  const { darkMode } = useDarkThemeContext();
 
   return (
-    <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode}>
+    <IconButton sx={{ ml: 1 }} onClick={darkMode.toggle}>
       {theme.palette.mode == "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
     </IconButton>
   );
@@ -173,7 +173,7 @@ export default function Outline(props: Props) {
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth || 240 }, flexShrink: { md: 0 } }}
-        aria-label="mailbox folders"
+        aria-label="menu"
       >
         {/* for mobile */}
         <Drawer
