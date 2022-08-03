@@ -41,16 +41,10 @@ const ScrollTop = (props: Props) => {
   });
 
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-    const anchor = (
-      (event.target as HTMLDivElement).ownerDocument || document
-    ).querySelector("#back-to-top-anchor");
-
-    if (anchor) {
-      anchor.scrollIntoView({
-        block: "center",
-        behavior: "smooth",
-      });
-    }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -146,7 +140,7 @@ export default function Outline(props: Props) {
       </Box>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: 1000 }}>
-        <Toolbar id="back-to-top-anchor" />
+        <Toolbar />
         {children}
       </Box>
 
