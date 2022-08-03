@@ -4,6 +4,7 @@ import { Button, ThemeProvider, useMediaQuery } from "@mui/material";
 import { useEffect } from "react";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
+import { Outlet } from "@remix-run/react";
 
 export default function Mui() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -17,6 +18,8 @@ export default function Mui() {
     <ThemeProvider theme={theme}>
       <Outline>
         <Box>
+          <Outlet />
+
           <Box>
             <Button variant="text">Text</Button>
             <Button variant="contained">Contained</Button>

@@ -5,14 +5,10 @@ import {
   Box,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
 } from "@mui/material";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import type { ReactElement } from "react";
+import RouterLink from "./routerLink";
 
 interface Props {
   children: ReactElement;
@@ -34,27 +30,14 @@ export default function DrawerMenu() {
 
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
+          {[
+            { to: "", text: "Top" },
+            { to: "products", text: "Products" },
+            { to: "about", text: "About" },
+            { to: "contact", text: "Contact" },
+          ].map((item, index) => (
+            <ListItem key={index} disablePadding>
+              <RouterLink to={item.to} text={item.text} icon={<InboxIcon />} />
             </ListItem>
           ))}
         </List>
