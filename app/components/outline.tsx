@@ -7,14 +7,13 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  Drawer,
   Slide,
   useScrollTrigger,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import DrawerMenu from "./outline/drawerMenu";
 import ToggleThemeButton from "./outline/toggleThemeButton";
 import TopButton from "./outline/topButton";
+import FlexDrawer from "./outline/flexDrawer";
 
 interface Props {
   children: ReactElement;
@@ -77,38 +76,14 @@ export default function Outline(props: Props) {
         aria-label="menu"
       >
         {/* for mobile */}
-        <Drawer
+        <FlexDrawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleToggleDrawer}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { sm: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth || 240,
-            },
-          }}
-        >
-          <DrawerMenu />
-        </Drawer>
+        />
 
         {/* for PC */}
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", md: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth || 240,
-            },
-          }}
-          open
-        >
-          <DrawerMenu />
-        </Drawer>
+        <FlexDrawer variant="permanent" open />
       </Box>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: 1000 }}>

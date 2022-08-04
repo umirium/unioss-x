@@ -1,5 +1,5 @@
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import type { PropsWithChildren, ReactElement } from "react";
+import type { MouseEventHandler, PropsWithChildren, ReactElement } from "react";
 import { forwardRef, useMemo } from "react";
 import type { NavLinkProps } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -8,6 +8,7 @@ type RouterLinkProps = PropsWithChildren<{
   to: string;
   text: string;
   icon: ReactElement;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 }>;
 
 // cf.
@@ -35,10 +36,11 @@ export default function RouterLink(props: RouterLinkProps) {
             className={({ isActive }) =>
               isActive ? elementClasses + " Mui-selected" : elementClasses
             }
+            onClick={props.onClick}
           />
         );
       }),
-    [props.to]
+    [props.onClick, props.to]
   );
 
   return (
