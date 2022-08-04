@@ -63,7 +63,7 @@ export default function Outline(props: Props) {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Clipped drawer
+              Front
             </Typography>
             <ToggleThemeButton />
           </Toolbar>

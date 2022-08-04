@@ -6,7 +6,7 @@ import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet } from "@remix-run/react";
 
-export default function Mui() {
+export default function Front() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { setMode, theme } = useDarkThemeContext();
 
