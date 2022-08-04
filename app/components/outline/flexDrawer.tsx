@@ -54,9 +54,13 @@ export default function FrexDrawer(drawerProps: FlexDrawerProps) {
         },
       }}
     >
-      <HideToolbarOnScroll>
+      {drawerProps.variant === "temporary" ? (
         <Toolbar />
-      </HideToolbarOnScroll>
+      ) : (
+        <HideToolbarOnScroll>
+          <Toolbar />
+        </HideToolbarOnScroll>
+      )}
 
       <Box sx={{ overflow: "auto" }}>
         <List>
