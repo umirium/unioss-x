@@ -1,4 +1,5 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,9 +7,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import { DarkThemeProvider } from "~/providers/darkThemeProvider";
 import styles from "~/styles/root.css";
+import { useChangeLanguage } from "remix-i18next";
+import { useTranslation } from "react-i18next";
+import i18next from "~/i18next.server";
+
+type LoaderData = { locale: string };
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const locale = await i18next.getLocale(request);
+  return json<LoaderData>({ locale });
+};
+
+export const handle = {
+  i18n: "common",
+};
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -21,8 +37,13 @@ export const links = () => {
 };
 
 export default function App() {
+  const { locale } = useLoaderData<LoaderData>();
+  const { i18n } = useTranslation();
+
+  useChangeLanguage(locale);
+
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />

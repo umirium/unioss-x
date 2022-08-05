@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ToggleThemeButton from "./outline/toggleThemeButton";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   children: ReactElement;
@@ -34,6 +35,8 @@ const HideAppbarOnScroll = (props: Props) => {
 export default function Outline(props: Props) {
   const { children, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   const handleToggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -63,7 +66,7 @@ export default function Outline(props: Props) {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Front
+              {t("front")}
             </Typography>
             <ToggleThemeButton />
           </Toolbar>
