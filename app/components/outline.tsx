@@ -36,7 +36,7 @@ export default function Outline(props: Props) {
   const { children, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation("front");
 
   const handleToggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -66,7 +66,7 @@ export default function Outline(props: Props) {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              {t("front")}
+              {t("title")}
             </Typography>
             <ToggleThemeButton />
           </Toolbar>

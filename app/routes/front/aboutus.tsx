@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
-export default function Index() {
+export default function About() {
   const { t } = useTranslation("front");
 
-  return <h1>{t("top")}</h1>;
+  return <h1>{t("aboutus")}</h1>;
 }

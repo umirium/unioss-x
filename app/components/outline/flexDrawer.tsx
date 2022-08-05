@@ -11,6 +11,7 @@ import {
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import type { ReactElement } from "react";
 import RouterLink from "./routerLink";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   children: ReactElement;
@@ -24,6 +25,8 @@ interface FlexDrawerProps extends DrawerProps {
 }
 
 export default function FrexDrawer(drawerProps: FlexDrawerProps) {
+  const { t } = useTranslation("front");
+
   const HideToolbarOnScroll = (props: Props) => {
     const { children } = props;
     const trigger = useScrollTrigger();
@@ -65,10 +68,10 @@ export default function FrexDrawer(drawerProps: FlexDrawerProps) {
       <Box sx={{ overflow: "auto" }}>
         <List>
           {[
-            { to: "", text: "Top" },
-            { to: "products", text: "Products" },
-            { to: "about", text: "About" },
-            { to: "contact", text: "Contact" },
+            { to: "", text: t("top") },
+            { to: "products", text: t("products") },
+            { to: "aboutus", text: t("aboutus") },
+            { to: "contact", text: t("contact") },
           ].map((item, index) => (
             <ListItem key={index} disablePadding>
               <RouterLink

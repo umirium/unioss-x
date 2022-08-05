@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const handle = {
-  i18n: "common",
+  i18n: ["common", "front"],
 };
 
 export const meta: MetaFunction = () => ({
