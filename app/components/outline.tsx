@@ -15,6 +15,7 @@ import ToggleThemeButton from "./outline/toggleThemeButton";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
+import ToggleLanguageButton from "./outline/toggleLanguageButton";
 
 interface Props {
   children: ReactElement;
@@ -68,6 +69,7 @@ export default function Outline(props: Props) {
             >
               {t("title")}
             </Typography>
+            <ToggleLanguageButton />
             <ToggleThemeButton />
           </Toolbar>
         </AppBar>
