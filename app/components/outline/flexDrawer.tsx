@@ -24,15 +24,18 @@ interface FlexDrawerProps extends DrawerProps {
   onClose?: () => void;
 }
 
+// NOTE:
+// If it is declared in a functional component,
+// Drawer scrolls up and hide the top part.
+const HideToolbarOnScroll = (props: Props) => {
+  const { children } = props;
+  const trigger = useScrollTrigger();
+
+  return <Collapse in={!trigger}>{children}</Collapse>;
+};
+
 export default function FrexDrawer(drawerProps: FlexDrawerProps) {
   const { t } = useTranslation("front");
-
-  const HideToolbarOnScroll = (props: Props) => {
-    const { children } = props;
-    const trigger = useScrollTrigger();
-
-    return <Collapse in={!trigger}>{children}</Collapse>;
-  };
 
   const handleClick = () => {
     if (drawerProps.onClose) {
