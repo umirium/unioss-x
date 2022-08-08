@@ -20,7 +20,7 @@ export default function Front() {
         <Box>
           <Outlet />
 
-          <Box>
+          <Box sx={{ mt: 10 }}>
             <Button variant="text">Text</Button>
             <Button variant="contained">Contained</Button>
             <Button variant="outlined">Outlined</Button>
