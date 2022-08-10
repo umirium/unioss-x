@@ -7,6 +7,7 @@ import { useStep } from "../contact";
 export default function Confirm() {
   const { handleChangeStep } = useStep();
   const { t } = useTranslation("front");
+  const { t: ct } = useTranslation("common");
 
   // set Stepper
   useEffect(() => {
@@ -74,31 +75,17 @@ export default function Confirm() {
 
   return (
     <Box sx={{ maxWidth: 800, m: "auto" }}>
-      <Paper elevation={1}>
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          {posts.map((post) => (
-            <>
-              <Grid
-                item
-                xs={6}
-                sm={6}
-                md={6}
-                sx={{ textAlign: "center", mb: 1 }}
-              >
-                {post.title}
-              </Grid>
-              <Grid
-                item
-                xs={6}
-                sm={6}
-                md={6}
-                sx={{ textAlign: "center", mb: 1 }}
-              >
-                {post.value}
-              </Grid>
-            </>
-          ))}
-        </Grid>
+      <Paper elevation={1} sx={{ pb: 2 }}>
+        {posts.map((post, k) => (
+          <Grid container key={k} spacing={3} sx={{ mt: 1, mb: 1 }}>
+            <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
+              {post.title}
+            </Grid>
+            <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
+              {post.value}
+            </Grid>
+          </Grid>
+        ))}
       </Paper>
 
       <Box sx={{ mt: 5, textAlign: "center" }}>
@@ -108,7 +95,7 @@ export default function Confirm() {
           to="../inquiry"
           sx={{ mr: 3 }}
         >
-          戻る
+          {ct("back")}
         </Button>
         <Button
           variant="contained"
@@ -116,7 +103,7 @@ export default function Confirm() {
           component={Link}
           to="../complete"
         >
-          送信
+          {ct("send")}
         </Button>
       </Box>
     </Box>

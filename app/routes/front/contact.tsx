@@ -18,7 +18,7 @@ export default function Contact() {
 
   return (
     <Box>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", mb: 5 }}>
         <Stepper activeStep={step} alternativeLabel>
           {steps.map((label) => (
             <Step key={label}>

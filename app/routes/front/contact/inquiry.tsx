@@ -1,44 +1,41 @@
 import {
   Grid,
   FormControl,
+  InputLabel,
   TextField,
   MenuItem,
   Box,
   Button,
+  Select,
 } from "@mui/material";
 import { Link } from "@remix-run/react";
-import type { ChangeEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useStep } from "../contact";
 
 export default function Inquiry() {
-  const [category, setCategory] = useState("EUR");
   const { handleChangeStep } = useStep();
   const { t } = useTranslation("front");
+  const { t: ct } = useTranslation("common");
 
   const categories = [
     {
-      value: "1",
+      value: 1,
       label: t("about this web site"),
     },
     {
-      value: "2",
+      value: 2,
       label: t("about products"),
     },
     {
-      value: "3",
+      value: 3,
       label: t("about access"),
     },
     {
-      value: "4",
+      value: 4,
       label: t("other"),
     },
   ];
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setCategory(event.target.value);
-  };
 
   // set Stepper
   useEffect(() => {
@@ -47,21 +44,21 @@ export default function Inquiry() {
 
   return (
     <Box sx={{ maxWidth: 800, m: "auto" }}>
-      <Grid container spacing={3} sx={{ mt: 5 }}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={12}>
           <FormControl fullWidth>
-            <TextField
-              select
-              label={t("category")}
-              value={category}
-              onChange={handleChange}
-            >
-              {categories.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+            <InputLabel>{t("category")}</InputLabel>
+            <Select label={t("category")} defaultValue="">
+              <MenuItem value="">
+                <em>{ct("- please select -")}</em>
+              </MenuItem>
+
+              {categories.map((option, k) => (
+                <MenuItem key={k} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
+            </Select>
           </FormControl>
         </Grid>
 
@@ -79,19 +76,14 @@ export default function Inquiry() {
 
         <Grid item xs={12} sm={12} md={12}>
           <FormControl fullWidth>
-            <TextField
-              id="outlined-multiline-static"
-              label={t("inquiry")}
-              multiline
-              rows={10}
-            />
+            <TextField label={t("inquiry")} multiline rows={10} />
           </FormControl>
         </Grid>
       </Grid>
 
       <Box sx={{ mt: 5, textAlign: "center" }}>
         <Button variant="outlined" component={Link} to="../" sx={{ mr: 3 }}>
-          戻る
+          {ct("back")}
         </Button>
         <Button
           variant="contained"
@@ -99,7 +91,7 @@ export default function Inquiry() {
           component={Link}
           to="../confirm"
         >
-          次へ
+          {ct("next")}
         </Button>
       </Box>
     </Box>
