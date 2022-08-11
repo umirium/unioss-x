@@ -1,8 +1,17 @@
-import { Grid, FormControl, TextField, Button, Box } from "@mui/material";
+import {
+  Grid,
+  FormControl,
+  TextField,
+  Button,
+  Box,
+  Select,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
 import { Link } from "@remix-run/react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import PrefectureSelector from "~/components/atoms/prefectureSelector";
+import prefectures from "~/stores/prefectures";
 import { useStep } from "../contact";
 
 export default function Index() {
@@ -67,7 +76,18 @@ export default function Index() {
       <Grid container spacing={3} sx={{ mt: 1 }}>
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <PrefectureSelector label={t("prefecture")} defaultValue="" />
+            <InputLabel>{t("prefecture")}</InputLabel>
+            <Select label={t("prefecture")} defaultValue="">
+              <MenuItem value="">
+                <em>{ct("_pleaseSelect_")}</em>
+              </MenuItem>
+
+              {prefectures(ct).map((option, k) => (
+                <MenuItem key={k} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
         </Grid>
 
