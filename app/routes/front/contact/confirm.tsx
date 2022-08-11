@@ -16,7 +16,7 @@ export default function Confirm() {
 
   const posts = [
     {
-      title: t("your name"),
+      title: t("yourName"),
       value: "",
     },
     {
@@ -28,15 +28,15 @@ export default function Confirm() {
       value: "",
     },
     {
-      title: t("email retype"),
+      title: t("emailRetype"),
       value: "",
     },
     {
-      title: t("phone number"),
+      title: t("phoneNumber"),
       value: "",
     },
     {
-      title: t("postal code"),
+      title: t("postalCode"),
       value: "",
     },
     {
@@ -60,11 +60,11 @@ export default function Confirm() {
       value: "",
     },
     {
-      title: t("product name"),
+      title: t("productName"),
       value: "",
     },
     {
-      title: t("order code"),
+      title: t("orderCode"),
       value: "",
     },
     {

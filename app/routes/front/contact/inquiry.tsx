@@ -21,15 +21,15 @@ export default function Inquiry() {
   const categories = [
     {
       value: 1,
-      label: t("about this web site"),
+      label: t("aboutThisWebSite"),
     },
     {
       value: 2,
-      label: t("about products"),
+      label: t("aboutProducts"),
     },
     {
       value: 3,
-      label: t("about access"),
+      label: t("aboutAccess"),
     },
     {
       value: 4,
@@ -50,7 +50,7 @@ export default function Inquiry() {
             <InputLabel>{t("category")}</InputLabel>
             <Select label={t("category")} defaultValue="">
               <MenuItem value="">
-                <em>{ct("- please select -")}</em>
+                <em>{ct("_pleaseSelect_")}</em>
               </MenuItem>
 
               {categories.map((option, k) => (
@@ -64,13 +64,13 @@ export default function Inquiry() {
 
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <TextField label={t("product name")} variant="outlined" />
+            <TextField label={t("productName")} variant="outlined" />
           </FormControl>
         </Grid>
 
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <TextField label={t("order code")} variant="outlined" />
+            <TextField label={t("orderCode")} variant="outlined" />
           </FormControl>
         </Grid>
 

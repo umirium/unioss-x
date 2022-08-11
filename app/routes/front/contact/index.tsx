@@ -20,7 +20,7 @@ export default function Index() {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <TextField label={t("your name")} variant="outlined" />
+            <TextField label={t("yourName")} variant="outlined" />
           </FormControl>
         </Grid>
 
@@ -38,14 +38,14 @@ export default function Index() {
 
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <TextField label={t("email retype")} variant="outlined" />
+            <TextField label={t("emailRetype")} variant="outlined" />
           </FormControl>
         </Grid>
 
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
             <TextField
-              label={t("phone number")}
+              label={t("phoneNumber")}
               variant="outlined"
               inputProps={{
                 pattern: "\\d{1,5}-\\d{1,4}-\\d{4,5}",
@@ -59,7 +59,7 @@ export default function Index() {
       <Grid container spacing={3} sx={{ mt: 1 }}>
         <Grid item xs={12} sm={6} md={6}>
           <FormControl fullWidth>
-            <TextField label={t("postal code")} variant="outlined" />
+            <TextField label={t("postalCode")} variant="outlined" />
           </FormControl>
         </Grid>
       </Grid>

@@ -201,7 +201,7 @@ export default function PrefectureSelector(props: SelectProps) {
       <InputLabel>{props.label}</InputLabel>
       <Select {...props}>
         <MenuItem value="">
-          <em>{t("- please select -")}</em>
+          <em>{t("_pleaseSelect_")}</em>
         </MenuItem>
         {prefectures.map((option) => (
           <MenuItem key={option.value} value={option.value}>

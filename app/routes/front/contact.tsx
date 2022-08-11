@@ -10,7 +10,7 @@ export default function Contact() {
   const [step, setStep] = useState<number>(0);
   const { t } = useTranslation("front");
 
-  const steps = [t("customer info"), t("inquiry"), t("confirm"), t("complete")];
+  const steps = [t("customerInfo"), t("inquiry"), t("confirm"), t("complete")];
 
   const handleChangeStep = (index: number) => {
     setStep(index);
