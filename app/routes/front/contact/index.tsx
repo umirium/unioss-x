@@ -1,23 +1,33 @@
-import {
-  Grid,
-  FormControl,
-  TextField,
-  Button,
-  Box,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@mui/material";
+import { Grid, FormControl, Box, Alert } from "@mui/material";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useStep } from "../contact";
 import prefectures from "~/stores/prefectures";
-import { Link } from "@remix-run/react";
+import { useActionData } from "@remix-run/react";
+import { ValidatedForm, validationError } from "remix-validated-form";
+import { withYup } from "@remix-validated-form/with-yup";
+import { contactPersonalInfoSchema } from "~/stores/validator";
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { MyTextField } from "~/components/atoms/MyTextField";
+import { MySubmitButton } from "~/components/atoms/MySubmitButton";
+import { MySelect } from "~/components/atoms/MySelect";
+
+const validator = withYup(contactPersonalInfoSchema);
+
+export const action: ActionFunction = async ({ request }) => {
+  const data = await validator.validate(await request.formData());
+  if (data.error) return validationError(data.error);
+  const { email } = data.data;
+
+  return json({
+    title: `Hi!`,
+    description: `Your email is ${email}`,
+  });
+};
 
 export default function Index() {
-  const { t } = useTranslation("front");
-  const { t: ct } = useTranslation("common");
   const { handleChangeStep } = useStep();
+  const data = useActionData();
 
   // set Stepper
   useEffect(() => {
@@ -25,101 +35,84 @@ export default function Index() {
   });
 
   return (
-    <Box sx={{ maxWidth: 800, m: "auto" }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={`${t("yourName")} *`} variant="outlined" />
-          </FormControl>
+    <ValidatedForm replace validator={validator} method="post">
+      <Box sx={{ maxWidth: 800, m: "auto" }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="yourName" required />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="kana" required />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="email" required />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="emailRetype" required />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="phoneNumber" />
+            </FormControl>
+          </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={`${t("kana")} *`} variant="outlined" />
-          </FormControl>
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="postalCode" />
+            </FormControl>
+          </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={`${t("email")} *`} variant="outlined" />
-          </FormControl>
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MySelect name="prefecture" menuItems={prefectures} />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField name="city" />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={12}>
+            <FormControl fullWidth>
+              <MyTextField name="address1" />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={12}>
+            <FormControl fullWidth>
+              <MyTextField name="address2" />
+            </FormControl>
+          </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={`${t("emailRetype")} *`} variant="outlined" />
-          </FormControl>
-        </Grid>
+        <Box sx={{ mt: 5, textAlign: "center" }}>
+          {data && (
+            <Alert variant="standard" title={data.title}>
+              {data.description}
+            </Alert>
+          )}
 
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField
-              label={t("phoneNumber")}
-              variant="outlined"
-              inputProps={{
-                pattern: "\\d{1,5}-\\d{1,4}-\\d{4,5}",
-              }}
-              title="電話番号は、市外局番からハイフン（-）を入れて記入してください。"
-            />
-          </FormControl>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3} sx={{ mt: 1 }}>
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={t("postalCode")} variant="outlined" />
-          </FormControl>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3} sx={{ mt: 1 }}>
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <InputLabel>{t("prefecture")}</InputLabel>
-            <Select label={t("prefecture")} defaultValue="">
-              <MenuItem value="">
-                <em>{ct("_pleaseSelect_")}</em>
-              </MenuItem>
-
-              {prefectures(ct).map((option, k) => (
-                <MenuItem key={k} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={6}>
-          <FormControl fullWidth>
-            <TextField label={t("city")} variant="outlined" />
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={12}>
-          <FormControl fullWidth>
-            <TextField label={t("address1")} variant="outlined" />
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={12}>
-          <FormControl fullWidth>
-            <TextField label={t("address2")} variant="outlined" />
-          </FormControl>
-        </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 5, textAlign: "center" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="inquiry"
-        >
-          {ct("next")}
-        </Button>
+          <MySubmitButton />
+        </Box>
       </Box>
-    </Box>
+    </ValidatedForm>
   );
 }
