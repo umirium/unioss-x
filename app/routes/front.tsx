@@ -4,9 +4,16 @@ import { Button, ThemeProvider, useMediaQuery } from "@mui/material";
 import { useEffect } from "react";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
-import { Outlet } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+
+export const loader: LoaderFunction = async () => {
+  return json({ env: process.env.TEST });
+};
 
 export default function Front() {
+  const data = useLoaderData();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { setMode, theme } = useDarkThemeContext();
 
@@ -25,6 +32,8 @@ export default function Front() {
             <Button variant="contained">Contained</Button>
             <Button variant="outlined">Outlined</Button>
           </Box>
+
+          <Box sx={{ mt: 5 }}>{data.env}</Box>
 
           <Typography sx={{ paddingTop: "1em" }}>
             {[...new Array(10)]
