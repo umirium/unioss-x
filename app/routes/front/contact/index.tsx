@@ -13,6 +13,7 @@ import { MyTextField } from "~/components/atoms/MyTextField";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { contactCookie } from "~/utils/cookies";
+import { useTranslation } from "react-i18next";
 
 const validator = withYup(contactPersonalInfoSchema);
 
@@ -45,6 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Index() {
   const { handleChangeStep } = useStep();
   const formData = useLoaderData();
+  const { t } = useTranslation("common");
 
   // set Stepper
   useEffect(() => {
@@ -143,7 +145,7 @@ export default function Index() {
         </Grid>
 
         <Box sx={{ mt: 5, textAlign: "center" }}>
-          <MySubmitButton />
+          <MySubmitButton label={t("next")} />
         </Box>
       </Box>
     </ValidatedForm>

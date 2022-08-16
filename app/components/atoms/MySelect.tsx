@@ -26,9 +26,9 @@ export const MySelect = (props: MySelectProps) => {
     <>
       <InputLabel>{`${t(props.name)}${props.required ? " *" : ""}`}</InputLabel>
       <Select
+        {...props}
         {...getInputProps<SelectProps>({ id: props.name })}
         label={`${t(props.name)}${props.required ? " *" : ""}`}
-        defaultValue={props.defaultValue}
       >
         <MenuItem value="">
           <em>{ct("_pleaseSelect_")}</em>

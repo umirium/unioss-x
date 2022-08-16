@@ -16,8 +16,8 @@ export const MyTextField = (props: MyTextFieldProps) => {
   return (
     <>
       <TextField
+        {...props}
         {...getInputProps({ id: props.name })}
-        defaultValue={props.defaultValue}
         label={`${t(props.name)}${props.required ? " *" : ""}`}
         variant={props.variant && "outlined"}
         error={!!error}
