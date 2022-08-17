@@ -4,24 +4,25 @@ import { useTranslation } from "react-i18next";
 import { useField } from "remix-validated-form";
 
 interface MyTextFieldProps extends StandardTextFieldProps {
-  name: string;
+  label: string;
   required?: boolean;
 }
 
 export const MyTextField = (props: MyTextFieldProps) => {
-  const { error, getInputProps } = useField(props.name);
-  const { t } = useTranslation("front");
-  const { t: vt } = useTranslation("validator");
+  const { error, getInputProps } = useField(props.label);
+  const { t } = useTranslation(["front", "validator"]);
 
   return (
     <>
       <TextField
-        {...props}
-        {...getInputProps({ id: props.name })}
-        label={`${t(props.name)}${props.required ? " *" : ""}`}
+        {...getInputProps({ id: props.label })}
+        label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
         variant={props.variant && "outlined"}
+        defaultValue={props.defaultValue}
+        multiline={props.multiline}
+        rows={props.rows}
         error={!!error}
-        helperText={vt(error ?? "")}
+        helperText={t(`validator:${error ?? ""}`)}
       />
     </>
   );

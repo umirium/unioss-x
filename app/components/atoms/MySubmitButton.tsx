@@ -1,5 +1,6 @@
 import type { ButtonProps } from "@mui/material";
 import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useIsSubmitting } from "remix-validated-form";
 
 interface Props extends ButtonProps {
@@ -8,6 +9,7 @@ interface Props extends ButtonProps {
 
 export const MySubmitButton = (props: Props) => {
   const isSubmitting = useIsSubmitting();
+  const { t } = useTranslation("common");
 
   return (
     <Button
@@ -17,7 +19,7 @@ export const MySubmitButton = (props: Props) => {
       variant="contained"
       color="primary"
     >
-      {props.label}
+      {t(`common:${props.label}`)}
     </Button>
   );
 };

@@ -5,43 +5,42 @@ import type { TFunction } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useField } from "remix-validated-form";
 
-interface Item {
-  value: number | string;
-  label: string;
-}
-
 interface MySelectProps extends SelectProps {
-  name: string;
+  label: string;
   required?: boolean;
-  menuItems: (t: TFunction) => Item[];
+  menuItems: (t: TFunction) => {
+    value: number | string;
+    label: string;
+  }[];
 }
 
 export const MySelect = (props: MySelectProps) => {
-  const { error, getInputProps } = useField(props.name);
-  const { t } = useTranslation("front");
-  const { t: ct } = useTranslation("common");
-  const { t: vt } = useTranslation("validator");
+  const { error, getInputProps } = useField(props.label);
+  const { t } = useTranslation(["common", "front", "validator"]);
 
   return (
     <>
-      <InputLabel>{`${t(props.name)}${props.required ? " *" : ""}`}</InputLabel>
+      <InputLabel error={!!error}>{`${t(`front:${props.label}`)}${
+        props.required ? " *" : ""
+      }`}</InputLabel>
       <Select
-        {...props}
-        {...getInputProps<SelectProps>({ id: props.name })}
-        label={`${t(props.name)}${props.required ? " *" : ""}`}
+        {...getInputProps<SelectProps>({ id: props.label })}
+        label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
+        defaultValue={props.defaultValue}
+        error={!!error}
       >
         <MenuItem value="">
-          <em>{ct("_pleaseSelect_")}</em>
+          <em>{t("common:_pleaseSelect_")}</em>
         </MenuItem>
 
-        {props.menuItems(ct).map((option, k) => (
+        {props.menuItems(t).map((option, k) => (
           <MenuItem key={k} value={option.value}>
             {option.label}
           </MenuItem>
         ))}
       </Select>
       <FormHelperText sx={{ color: red[500] }}>
-        {vt(error ?? "")}
+        {t(`validator:${error ?? ""}`)}
       </FormHelperText>
     </>
   );

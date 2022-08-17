@@ -1,193 +1,193 @@
 import type { TFunction } from "react-i18next";
 
-const prefectures = (t: TFunction) => [
+const prefectures = (t: TFunction<"common">) => [
   {
     value: 1,
-    label: t("hokkaido"),
+    label: t("common:hokkaido"),
   },
   {
     value: 2,
-    label: t("aomori"),
+    label: t("common:aomori"),
   },
   {
     value: 3,
-    label: t("iwate"),
+    label: t("common:iwate"),
   },
   {
     value: 4,
-    label: t("miyagi"),
+    label: t("common:miyagi"),
   },
   {
     value: 5,
-    label: t("akita"),
+    label: t("common:akita"),
   },
   {
     value: 6,
-    label: t("yamagata"),
+    label: t("common:yamagata"),
   },
   {
     value: 7,
-    label: t("fukushima"),
+    label: t("common:fukushima"),
   },
   {
     value: 8,
-    label: t("ibaraki"),
+    label: t("common:ibaraki"),
   },
   {
     value: 9,
-    label: t("tochigi"),
+    label: t("common:tochigi"),
   },
   {
     value: 10,
-    label: t("gunma"),
+    label: t("common:gunma"),
   },
   {
     value: 11,
-    label: t("saitama"),
+    label: t("common:saitama"),
   },
   {
     value: 12,
-    label: t("chiba"),
+    label: t("common:chiba"),
   },
   {
     value: 13,
-    label: t("tokyo"),
+    label: t("common:tokyo"),
   },
   {
     value: 14,
-    label: t("kanagawa"),
+    label: t("common:kanagawa"),
   },
   {
     value: 15,
-    label: t("niigata"),
+    label: t("common:niigata"),
   },
   {
     value: 16,
-    label: t("toyama"),
+    label: t("common:toyama"),
   },
   {
     value: 17,
-    label: t("ishikawa"),
+    label: t("common:ishikawa"),
   },
   {
     value: 18,
-    label: t("fukui"),
+    label: t("common:fukui"),
   },
   {
     value: 19,
-    label: t("yamanashi"),
+    label: t("common:yamanashi"),
   },
   {
     value: 20,
-    label: t("nagano"),
+    label: t("common:nagano"),
   },
   {
     value: 21,
-    label: t("gifu"),
+    label: t("common:gifu"),
   },
   {
     value: 22,
-    label: t("shizuoka"),
+    label: t("common:shizuoka"),
   },
   {
     value: 23,
-    label: t("aichi"),
+    label: t("common:aichi"),
   },
   {
     value: 24,
-    label: t("mie"),
+    label: t("common:mie"),
   },
   {
     value: 25,
-    label: t("shiga"),
+    label: t("common:shiga"),
   },
   {
     value: 26,
-    label: t("kyoto"),
+    label: t("common:kyoto"),
   },
   {
     value: 27,
-    label: t("osaka"),
+    label: t("common:osaka"),
   },
   {
     value: 28,
-    label: t("hyogo"),
+    label: t("common:hyogo"),
   },
   {
     value: 29,
-    label: t("nara"),
+    label: t("common:nara"),
   },
   {
     value: 30,
-    label: t("wakayama"),
+    label: t("common:wakayama"),
   },
   {
     value: 31,
-    label: t("tottori"),
+    label: t("common:tottori"),
   },
   {
     value: 32,
-    label: t("shimane"),
+    label: t("common:shimane"),
   },
   {
     value: 33,
-    label: t("okayama"),
+    label: t("common:okayama"),
   },
   {
     value: 34,
-    label: t("hiroshima"),
+    label: t("common:hiroshima"),
   },
   {
     value: 35,
-    label: t("yamaguchi"),
+    label: t("common:yamaguchi"),
   },
   {
     value: 36,
-    label: t("tokushima"),
+    label: t("common:tokushima"),
   },
   {
     value: 37,
-    label: t("kagawa"),
+    label: t("common:kagawa"),
   },
   {
     value: 38,
-    label: t("ehime"),
+    label: t("common:ehime"),
   },
   {
     value: 39,
-    label: t("kochi"),
+    label: t("common:kochi"),
   },
   {
     value: 40,
-    label: t("fukuoka"),
+    label: t("common:fukuoka"),
   },
   {
     value: 41,
-    label: t("saga"),
+    label: t("common:saga"),
   },
   {
     value: 42,
-    label: t("nagasaki"),
+    label: t("common:nagasaki"),
   },
   {
     value: 43,
-    label: t("kumamoto"),
+    label: t("common:kumamoto"),
   },
   {
     value: 44,
-    label: t("oita"),
+    label: t("common:oita"),
   },
   {
     value: 45,
-    label: t("miyazaki"),
+    label: t("common:miyazaki"),
   },
   {
     value: 46,
-    label: t("kagoshima"),
+    label: t("common:kagoshima"),
   },
   {
     value: 47,
-    label: t("okinawa"),
+    label: t("common:okinawa"),
   },
 ];
 

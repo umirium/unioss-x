@@ -13,7 +13,6 @@ import { MyTextField } from "~/components/atoms/MyTextField";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { contactCookie } from "~/utils/cookies";
-import { useTranslation } from "react-i18next";
 
 const validator = withYup(contactPersonalInfoSchema);
 
@@ -46,7 +45,6 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Index() {
   const { handleChangeStep } = useStep();
   const formData = useLoaderData();
-  const { t } = useTranslation("common");
 
   // set Stepper
   useEffect(() => {
@@ -60,7 +58,7 @@ export default function Index() {
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                name="yourName"
+                label="yourName"
                 defaultValue={formData?.yourName}
                 required
               />
@@ -69,14 +67,18 @@ export default function Index() {
 
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
-              <MyTextField name="kana" defaultValue={formData?.kana} required />
+              <MyTextField
+                label="kana"
+                defaultValue={formData?.kana}
+                required
+              />
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                name="email"
+                label="email"
                 defaultValue={formData?.email}
                 required
               />
@@ -86,7 +88,7 @@ export default function Index() {
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                name="emailRetype"
+                label="emailRetype"
                 defaultValue={formData?.emailRetype}
                 required
               />
@@ -96,7 +98,7 @@ export default function Index() {
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                name="phoneNumber"
+                label="phoneNumber"
                 defaultValue={formData?.phoneNumber}
               />
             </FormControl>
@@ -107,7 +109,7 @@ export default function Index() {
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                name="postalCode"
+                label="postalCode"
                 defaultValue={formData?.postalCode}
               />
             </FormControl>
@@ -118,7 +120,7 @@ export default function Index() {
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MySelect
-                name="prefecture"
+                label="prefecture"
                 defaultValue={formData?.prefecture}
                 menuItems={prefectures}
               />
@@ -127,25 +129,25 @@ export default function Index() {
 
           <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
-              <MyTextField name="city" defaultValue={formData?.city} />
+              <MyTextField label="city" defaultValue={formData?.city} />
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={12} md={12}>
             <FormControl fullWidth>
-              <MyTextField name="address1" defaultValue={formData?.address1} />
+              <MyTextField label="address1" defaultValue={formData?.address1} />
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={12} md={12}>
             <FormControl fullWidth>
-              <MyTextField name="address2" defaultValue={formData?.address2} />
+              <MyTextField label="address2" defaultValue={formData?.address2} />
             </FormControl>
           </Grid>
         </Grid>
 
         <Box sx={{ mt: 5, textAlign: "center" }}>
-          <MySubmitButton label={t("next")} />
+          <MySubmitButton label="next" />
         </Box>
       </Box>
     </ValidatedForm>
