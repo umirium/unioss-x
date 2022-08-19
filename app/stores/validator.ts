@@ -20,6 +20,7 @@ export const contactPersonalInfoSchema = yup.object({
   city: yup.string().max(50, "max50"),
   address1: yup.string().max(50, "max50"),
   address2: yup.string().max(50, "max50"),
+  action: yup.string(),
 });
 
 export const contactInquirySchema = yup.object({
@@ -27,4 +28,5 @@ export const contactInquirySchema = yup.object({
   productName: yup.string().max(128, "max128"),
   orderCode: yup.string().max(128, "max128"),
   inquiry: yup.string().max(1000, "max1000").required("required"),
+  action: yup.string(),
 });
