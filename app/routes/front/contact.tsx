@@ -1,6 +1,6 @@
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import { Outlet } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useOutletContext } from "react-router-dom";
 
@@ -16,6 +16,13 @@ export default function Contact() {
     t("front:confirm"),
     t("front:complete"),
   ];
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
 
   const handleChangeStep = (index: number) => {
     setStep(index);
