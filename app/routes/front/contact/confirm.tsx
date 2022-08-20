@@ -6,8 +6,7 @@ import { useStep } from "../contact";
 
 export default function Confirm() {
   const { handleChangeStep } = useStep();
-  const { t } = useTranslation("front");
-  const { t: ct } = useTranslation("common");
+  const { t } = useTranslation();
 
   // set Stepper
   useEffect(() => {
@@ -16,59 +15,59 @@ export default function Confirm() {
 
   const posts = [
     {
-      title: t("yourName"),
+      title: t("front:yourName"),
       value: "",
     },
     {
-      title: t("kana"),
+      title: t("front:kana"),
       value: "",
     },
     {
-      title: t("email"),
+      title: t("front:email"),
       value: "",
     },
     {
-      title: t("emailRetype"),
+      title: t("front:emailRetype"),
       value: "",
     },
     {
-      title: t("phoneNumber"),
+      title: t("front:phoneNumber"),
       value: "",
     },
     {
-      title: t("postalCode"),
+      title: t("front:postalCode"),
       value: "",
     },
     {
-      title: t("prefecture"),
+      title: t("front:prefecture"),
       value: "",
     },
     {
-      title: t("city"),
+      title: t("front:city"),
       value: "",
     },
     {
-      title: t("address1"),
+      title: t("front:address1"),
       value: "",
     },
     {
-      title: t("address2"),
+      title: t("front:address2"),
       value: "",
     },
     {
-      title: t("category"),
+      title: t("front:category"),
       value: "",
     },
     {
-      title: t("productName"),
+      title: t("front:productName"),
       value: "",
     },
     {
-      title: t("orderCode"),
+      title: t("front:orderCode"),
       value: "",
     },
     {
-      title: t("inquiry"),
+      title: t("front:inquiry"),
       value: "",
     },
   ];
@@ -95,7 +94,7 @@ export default function Confirm() {
           to="../inquiry"
           sx={{ mr: 3 }}
         >
-          {ct("back")}
+          {t("common:back")}
         </Button>
         <Button
           variant="contained"
@@ -103,7 +102,7 @@ export default function Confirm() {
           component={Link}
           to="../complete"
         >
-          {ct("send")}
+          {t("common:send")}
         </Button>
       </Box>
     </Box>

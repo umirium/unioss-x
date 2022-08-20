@@ -8,9 +8,14 @@ type ContextType = { handleChangeStep: (index: number) => void };
 
 export default function Contact() {
   const [step, setStep] = useState<number>(0);
-  const { t } = useTranslation("front");
+  const { t } = useTranslation();
 
-  const steps = [t("customerInfo"), t("inquiry"), t("confirm"), t("complete")];
+  const steps = [
+    t("front:customerInfo"),
+    t("front:inquiry"),
+    t("front:confirm"),
+    t("front:complete"),
+  ];
 
   const handleChangeStep = (index: number) => {
     setStep(index);
