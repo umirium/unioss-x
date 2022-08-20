@@ -7,6 +7,7 @@ import { useField } from "remix-validated-form";
 
 interface MySelectProps extends SelectProps {
   label: string;
+  defaultValue: string;
   required?: boolean;
   menuItems: (t: TFunction) => {
     value: number | string;

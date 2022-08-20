@@ -5,6 +5,7 @@ import { useIsSubmitting } from "remix-validated-form";
 
 interface Props extends ButtonProps {
   label: string;
+  defaultValue: string;
 }
 
 export const MySubmitButton = (props: Props) => {

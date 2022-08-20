@@ -11,6 +11,7 @@ import { MySelect } from "~/components/atoms/MySelect";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { contactInquirySchema } from "~/stores/validator";
+import type { ContactInquiryType } from "~/types/contactFormType";
 import { contactCookie } from "~/utils/cookies";
 import { useStep } from "../contact";
 
@@ -34,7 +35,6 @@ export const action: ActionFunction = async ({ request }) => {
   // session (cookie)
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await contactCookie.parse(cookieHeader)) || {};
-  console.log(form.data);
 
   return redirect("/front/contact/confirm", {
     headers: {
@@ -45,7 +45,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Inquiry() {
   const { handleChangeStep } = useStep();
-  const formData = useLoaderData();
+  const formData = useLoaderData<ContactInquiryType>();
   const { t } = useTranslation();
 
   // set Stepper
@@ -123,7 +123,7 @@ export default function Inquiry() {
             {t("back")}
           </Button>
 
-          <MySubmitButton label="next" name="action" value="next" />
+          <MySubmitButton label="next" />
         </Box>
       </Box>
     </ValidatedForm>

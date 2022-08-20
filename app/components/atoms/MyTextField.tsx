@@ -5,6 +5,7 @@ import { useField } from "remix-validated-form";
 
 interface MyTextFieldProps extends StandardTextFieldProps {
   label: string;
+  defaultValue: string;
   required?: boolean;
 }
 

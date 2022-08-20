@@ -13,6 +13,7 @@ import { MyTextField } from "~/components/atoms/MyTextField";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { contactCookie } from "~/utils/cookies";
+import type { ContactPersonalInfoType } from "~/types/contactFormType";
 
 const validator = withYup(contactPersonalInfoSchema);
 
@@ -44,7 +45,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const { handleChangeStep } = useStep();
-  const formData = useLoaderData();
+  const formData = useLoaderData<ContactPersonalInfoType>();
 
   // set Stepper
   useEffect(() => {
