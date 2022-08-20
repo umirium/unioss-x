@@ -12,6 +12,7 @@ import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { contactInquirySchema } from "~/stores/validator";
 import { contactCookie } from "~/utils/cookies";
+import { usePrompt } from "~/utils/usePrompt";
 import { useStep } from "../contact";
 
 const validator = withYup(contactInquirySchema);
@@ -48,6 +49,10 @@ export default function Inquiry() {
   const formData = useLoaderData();
   const { t } = useTranslation();
 
+  const [block, setBlock] = usePrompt(
+    "If you leave this page you will lose your unsaved changes."
+  );
+
   // set Stepper
   useEffect(() => {
     handleChangeStep(1);
@@ -72,6 +77,10 @@ export default function Inquiry() {
     },
   ];
 
+  const handleChange = () => {
+    setBlock(!block);
+  };
+
   return (
     <ValidatedForm validator={validator} method="post">
       <Box sx={{ maxWidth: 800, m: "auto" }}>
@@ -83,6 +92,7 @@ export default function Inquiry() {
                 defaultValue={formData?.category}
                 menuItems={categories}
                 required
+                onChange={handleChange}
               />
             </FormControl>
           </Grid>

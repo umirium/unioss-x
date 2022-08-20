@@ -27,6 +27,7 @@ export const MySelect = (props: MySelectProps) => {
         {...getInputProps<SelectProps>({ id: props.label })}
         label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
         defaultValue={props.defaultValue}
+        onChange={props.onChange}
         error={!!error}
       >
         <MenuItem value="">
