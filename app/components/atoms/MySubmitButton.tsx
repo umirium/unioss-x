@@ -9,7 +9,7 @@ interface Props extends ButtonProps {
 
 export const MySubmitButton = (props: Props) => {
   const isSubmitting = useIsSubmitting();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   return (
     <Button

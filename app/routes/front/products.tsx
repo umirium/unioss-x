@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 export default function Products() {
-  const { t } = useTranslation("front");
+  const { t } = useTranslation();
 
-  return <h1>{t("products")}</h1>;
+  return <h1>{t("front:products")}</h1>;
 }

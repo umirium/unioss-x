@@ -46,7 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Inquiry() {
   const { handleChangeStep } = useStep();
   const formData = useLoaderData();
-  const { t } = useTranslation(["common", "front"]);
+  const { t } = useTranslation();
 
   // set Stepper
   useEffect(() => {

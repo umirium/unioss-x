@@ -35,7 +35,7 @@ const HideToolbarOnScroll = (props: Props) => {
 };
 
 export default function FrexDrawer(drawerProps: FlexDrawerProps) {
-  const { t } = useTranslation("front");
+  const { t } = useTranslation();
 
   const handleClick = () => {
     if (drawerProps.onClose) {
@@ -71,10 +71,10 @@ export default function FrexDrawer(drawerProps: FlexDrawerProps) {
       <Box sx={{ overflow: "auto" }}>
         <List>
           {[
-            { to: "", text: t("top") },
-            { to: "products", text: t("products") },
-            { to: "aboutus", text: t("aboutus") },
-            { to: "contact", text: t("contact") },
+            { to: "", text: t("front:top") },
+            { to: "products", text: t("front:products") },
+            { to: "aboutus", text: t("front:aboutus") },
+            { to: "contact", text: t("front:contact") },
           ].map((item, index) => (
             <ListItem key={index} disablePadding>
               <RouterLink

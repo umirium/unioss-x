@@ -6,8 +6,7 @@ import { useStep } from "../contact";
 
 export default function Complete() {
   const { handleChangeStep } = useStep();
-  const { t } = useTranslation("front");
-  const { t: ct } = useTranslation("common");
+  const { t } = useTranslation();
 
   // set Stepper
   useEffect(() => {
@@ -16,7 +15,7 @@ export default function Complete() {
 
   return (
     <Box sx={{ maxWidth: 800, m: "auto" }}>
-      <h1>{t("complete")}</h1>
+      <h1>{t("front:complete")}</h1>
 
       <Box sx={{ textAlign: "center" }}>
         <Button
@@ -25,7 +24,7 @@ export default function Complete() {
           component={Link}
           to="../../"
         >
-          {ct("home")}
+          {t("common:home")}
         </Button>
       </Box>
     </Box>
