@@ -41,7 +41,7 @@ export const MySelect = (props: MySelectProps) => {
         ))}
       </Select>
       <FormHelperText sx={{ color: red[500] }}>
-        {t(`validator:${error ?? ""}`)}
+        {error && t(`validator:${error}`)}
       </FormHelperText>
     </>
   );

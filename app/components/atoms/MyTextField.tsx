@@ -23,7 +23,7 @@ export const MyTextField = (props: MyTextFieldProps) => {
         multiline={props.multiline}
         rows={props.rows}
         error={!!error}
-        helperText={t(`validator:${error ?? ""}`)}
+        helperText={error && t(`validator:${error}`)}
       />
     </>
   );

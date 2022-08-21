@@ -10,13 +10,6 @@ export default function Contact() {
   const [step, setStep] = useState<number>(0);
   const { t } = useTranslation();
 
-  const steps = [
-    t("front:customerInfo"),
-    t("front:inquiry"),
-    t("front:confirm"),
-    t("front:complete"),
-  ];
-
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -32,7 +25,12 @@ export default function Contact() {
     <Box>
       <Box sx={{ width: "100%", mb: 5 }}>
         <Stepper activeStep={step} alternativeLabel>
-          {steps.map((label) => (
+          {[
+            t("front:customerInfo"),
+            t("front:inquiry"),
+            t("front:confirm"),
+            t("front:complete"),
+          ].map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
             </Step>
