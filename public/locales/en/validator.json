@@ -1,6 +1,7 @@
 {
   "required": "required",
   "email": "Please enter a valid email address",
+  "emailRetype": "Must be one of the following value 'email'",
   "tel": "Please enter a valid phone number (e.g. 080-xxxx-xxxx、080xxxxxxxx）",
   "postalCode": "Please enter a valid postal code",
   "max2": "Please input 2 characters or less",

@@ -6,7 +6,7 @@ export const contactPersonalInfoSchema = yup.object({
   email: yup.string().max(255, "max255").email("email").required("required"),
   emailRetype: yup
     .string()
-    .oneOf([yup.ref("email")])
+    .oneOf([yup.ref("email")], "emailRetype")
     .required("required"),
   phoneNumber: yup
     .string()
