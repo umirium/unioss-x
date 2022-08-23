@@ -19,7 +19,7 @@ interface MySelectProps extends SelectProps {
 export const MySelect = (props: MySelectProps) => {
   const { error, getInputProps } = useField(props.label);
   const { t } = useTranslation(["common", "front", "validator"]);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(props.defaultValue || "");
 
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);
