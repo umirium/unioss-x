@@ -1,9 +1,23 @@
-import { Alert, Box, Button, Grid, Paper } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -39,13 +53,12 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await validator.validate(await request.formData());
   if (form.error) return validationError(form.error);
 
-  // session (cookie)
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await contactCookie.parse(cookieHeader)) || {};
+  // transmission process...
+  await new Promise((resolve) => setTimeout(resolve, Math.random() * 10000));
 
   return redirect("/front/contact/complete", {
     headers: {
-      "Set-Cookie": await contactCookie.serialize({ ...cookie, ...form.data }),
+      "Set-Cookie": await contactCookie.serialize({}),
     },
   });
 };
@@ -57,11 +70,24 @@ export default function Confirm() {
   >();
   const validated = useActionData<ValidationErrorResponseData>();
   const { t } = useTranslation();
+  const [progress, setProgress] = useState(false);
+  const navigate = useNavigate();
+
+  // If cookie has been deleted, redirect to contact form.
+  useEffect(() => {
+    if (Object.keys(formData).length === 0) {
+      navigate("/front/contact");
+    }
+  }, [formData, navigate]);
 
   // set Stepper
   useEffect(() => {
     handleChangeStep(2);
   });
+
+  const handleSend = () => {
+    setProgress(true);
+  };
 
   return (
     <ValidatedForm validator={validator} method="post">
@@ -71,6 +97,22 @@ export default function Confirm() {
             {t(`front:${key}`)}: {t(`validator:${value}`)}
           </Alert>
         ))}
+
+      {progress && (
+        <Box
+          sx={{
+            pb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />{" "}
+          <Typography sx={{ pl: 2, color: "primary.main" }}>
+            {t("sending")}
+          </Typography>
+        </Box>
+      )}
 
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Paper elevation={1} sx={{ pb: 2 }}>
@@ -102,7 +144,11 @@ export default function Confirm() {
           >
             {t("common:back")}
           </Button>
-          <MySubmitButton label="send" />
+          <MySubmitButton
+            label="send"
+            endIcon={<SendIcon />}
+            onClick={handleSend}
+          />
         </Box>
       </Box>
     </ValidatedForm>
