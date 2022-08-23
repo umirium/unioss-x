@@ -1,6 +1,7 @@
-import type { SelectProps } from "@mui/material";
+import type { SelectChangeEvent, SelectProps } from "@mui/material";
 import { InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 import { red } from "@mui/material/colors";
+import { useState } from "react";
 import type { TFunction } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { useField } from "remix-validated-form";
@@ -18,6 +19,11 @@ interface MySelectProps extends SelectProps {
 export const MySelect = (props: MySelectProps) => {
   const { error, getInputProps } = useField(props.label);
   const { t } = useTranslation(["common", "front", "validator"]);
+  const [value, setValue] = useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setValue(event.target.value);
+  };
 
   return (
     <>
@@ -28,7 +34,9 @@ export const MySelect = (props: MySelectProps) => {
         {...getInputProps<SelectProps>({ id: props.label })}
         label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
         defaultValue={props.defaultValue}
+        value={value}
         error={!!error}
+        onChange={handleChange}
       >
         <MenuItem value="">
           <em>{t("common:_pleaseSelect_")}</em>
