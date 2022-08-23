@@ -12,7 +12,7 @@ import { json } from "@remix-run/node";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MySelect } from "~/components/atoms/MySelect";
-import { contactCookie } from "~/utils/cookies";
+import { contactCookie } from "~/utils/cookies.server";
 import type { ContactPersonalInfoType } from "~/types/contactFormType";
 
 const validator = withYup(contactPersonalInfoSchema);

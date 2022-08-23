@@ -31,7 +31,7 @@ import type {
   ContactInquiryType,
   ContactPersonalInfoType,
 } from "~/types/contactFormType";
-import { contactCookie } from "~/utils/cookies";
+import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
 
 const validator = withYup(
