@@ -18,7 +18,7 @@ export interface paths {
         query: {
           product_id?: parameters["rowFilter.products.product_id"];
           product_name?: parameters["rowFilter.products.product_name"];
-          producer_description?: parameters["rowFilter.products.producer_description"];
+          description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
           image_url?: parameters["rowFilter.products.image_url"];
@@ -77,7 +77,7 @@ export interface paths {
         query: {
           product_id?: parameters["rowFilter.products.product_id"];
           product_name?: parameters["rowFilter.products.product_name"];
-          producer_description?: parameters["rowFilter.products.producer_description"];
+          description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
           image_url?: parameters["rowFilter.products.image_url"];
@@ -100,7 +100,7 @@ export interface paths {
         query: {
           product_id?: parameters["rowFilter.products.product_id"];
           product_name?: parameters["rowFilter.products.product_name"];
-          producer_description?: parameters["rowFilter.products.producer_description"];
+          description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
           image_url?: parameters["rowFilter.products.image_url"];
@@ -136,7 +136,7 @@ export interface definitions {
     /** Format: character varying */
     product_name: string;
     /** Format: text */
-    producer_description?: string;
+    description?: string;
     /** Format: integer */
     price: number;
     /** Format: integer */
@@ -201,7 +201,7 @@ export interface parameters {
   /** Format: character varying */
   "rowFilter.products.product_name": string;
   /** Format: text */
-  "rowFilter.products.producer_description": string;
+  "rowFilter.products.description": string;
   /** Format: integer */
   "rowFilter.products.price": string;
   /** Format: integer */
