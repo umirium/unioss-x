@@ -7,7 +7,13 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export default function Product() {
+  // const { handleChangeBreadcrumbs } = useBreadcrumbs();
   const { product_id } = useLoaderData();
+
+  // set Breadcrumbs
+  // useEffect(() => {
+  //   handleChangeBreadcrumbs(product_id);
+  // });
 
   return <>product_id: {product_id}</>;
 }

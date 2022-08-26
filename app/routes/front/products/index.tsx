@@ -22,7 +22,13 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function Index() {
+  // const { handleChangeBreadcrumbs } = useBreadcrumbs();
   const products = useLoaderData<Array<definitions["products"]>>();
+
+  // set Breadcrumbs
+  // useEffect(() => {
+  //   handleChangeBreadcrumbs(null);
+  // });
 
   return (
     <Box sx={{ maxWidth: 800, m: "auto" }}>
