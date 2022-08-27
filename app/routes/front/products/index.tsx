@@ -8,11 +8,19 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import type { LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
+import { useEffect } from "react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page");
+
+  if (!page) {
+    return [];
+  }
+
   const products = await db
     .from<definitions["products"]>("products")
     .select("*")
@@ -22,13 +30,19 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function Index() {
-  const products = useLoaderData<Array<definitions["products"]>>();
+  const fetcher = useFetcher<Array<definitions["products"]>>();
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && !fetcher.data) {
+      fetcher.load("/front/products?index&page=1");
+    }
+  }, [fetcher.state, fetcher.data, fetcher]);
 
   return (
     <Box sx={{ mt: 8 }}>
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Grid container spacing={3} alignItems="center">
-          {products.map((item, index) => (
+          {fetcher?.data?.map((item, index) => (
             <Grid key={index} xs={12} sm={6} md={4}>
               <Card sx={{ width: "100%", height: 300 }}>
                 <CardActionArea
