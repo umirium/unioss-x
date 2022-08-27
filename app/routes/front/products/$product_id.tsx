@@ -1,8 +1,14 @@
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Link as MUILink,
+  Typography,
+} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import type { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link as RemixLink, useLoaderData } from "@remix-run/react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
@@ -17,16 +23,22 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export default function Product() {
-  // const { handleChangeBreadcrumbs } = useBreadcrumbs();
   const product = useLoaderData();
-
-  // set Breadcrumbs
-  // useEffect(() => {
-  //   handleChangeBreadcrumbs(product_id);
-  // });
 
   return (
     <>
+      <Breadcrumbs sx={{ mb: 5 }}>
+        <MUILink
+          underline="hover"
+          color="inherit"
+          component={RemixLink}
+          to="/front/products"
+        >
+          products
+        </MUILink>
+        <Typography color="text.primary">{product.product_name}</Typography>
+      </Breadcrumbs>
+
       <Grid container spacing={3}>
         <Grid xs={12} sm={12} md={6}>
           <img
