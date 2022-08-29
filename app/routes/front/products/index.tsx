@@ -7,13 +7,15 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
+type LoaderType = Awaited<ReturnType<typeof loader>>;
+
+export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const page = url.searchParams.get("page");
 
@@ -26,11 +28,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     .select("*")
     .order("product_id");
 
-  return products ? products.data : [];
+  return products?.data;
 };
 
 export default function Index() {
-  const fetcher = useFetcher<Array<definitions["products"]>>();
+  const fetcher = useFetcher<LoaderType>();
 
   useEffect(() => {
     if (fetcher.state === "idle" && !fetcher.data) {

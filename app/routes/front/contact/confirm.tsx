@@ -8,8 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import type { LoaderArgs, ActionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import {
   Link,
   useActionData,
@@ -19,7 +19,6 @@ import {
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { MyInput } from "~/components/atoms/MyInput";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
@@ -38,14 +37,15 @@ const validator = withYup(
   contactPersonalInfoSchema.concat(contactInquirySchema)
 );
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await contactCookie.parse(cookieHeader)) || {};
+  const cookie: ContactPersonalInfoType & ContactInquiryType =
+    (await contactCookie.parse(cookieHeader)) || {};
 
-  return json(cookie);
+  return cookie;
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   // for test
   // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
 
@@ -65,10 +65,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Confirm() {
   const { handleChangeStep } = useStep();
-  const formData = useLoaderData<
-    ContactPersonalInfoType & ContactInquiryType
-  >();
-  const validated = useActionData<ValidationErrorResponseData>();
+  const formData = useLoaderData<typeof loader>();
+  const validated = useActionData<typeof action>();
   const { t } = useTranslation();
   const [progress, setProgress] = useState(false);
   const navigate = useNavigate();

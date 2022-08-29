@@ -5,15 +5,13 @@ import { useEffect } from "react";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 
-export const loader: LoaderFunction = async () => {
-  return json({ env: process.env.TEST });
+export const loader = async () => {
+  return { env: process.env.TEST };
 };
 
 export default function Front() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { setMode, theme } = useDarkThemeContext();
 

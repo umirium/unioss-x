@@ -1,5 +1,4 @@
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -15,11 +14,9 @@ import { useChangeLanguage } from "remix-i18next";
 import { useTranslation } from "react-i18next";
 import i18next from "~/i18next.server";
 
-type LoaderData = { locale: string };
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const locale = await i18next.getLocale(request);
-  return json<LoaderData>({ locale });
+  return { locale };
 };
 
 export const handle = {
@@ -37,7 +34,7 @@ export const links = () => {
 };
 
 export default function App() {
-  const { locale } = useLoaderData<LoaderData>();
+  const { locale } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
 
   useChangeLanguage(locale);

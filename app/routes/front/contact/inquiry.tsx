@@ -1,6 +1,6 @@
 import { Grid, FormControl, Box, Button } from "@mui/material";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect } from "react";
@@ -11,17 +11,16 @@ import { MySelect } from "~/components/atoms/MySelect";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { contactInquirySchema } from "~/stores/validator";
-import type { ContactInquiryType } from "~/types/contactFormType";
 import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
 
 const validator = withYup(contactInquirySchema);
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await contactCookie.parse(cookieHeader)) || {};
 
-  return json(cookie);
+  return cookie;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -45,7 +44,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Inquiry() {
   const { handleChangeStep } = useStep();
-  const formData = useLoaderData<ContactInquiryType>();
+  const formData = useLoaderData<typeof loader>();
   const { t } = useTranslation();
 
   // set Stepper

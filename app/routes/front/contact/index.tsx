@@ -6,22 +6,20 @@ import { useLoaderData } from "@remix-run/react";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { withYup } from "@remix-validated-form/with-yup";
 import { contactPersonalInfoSchema } from "~/stores/validator";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { contactCookie } from "~/utils/cookies.server";
-import type { ContactPersonalInfoType } from "~/types/contactFormType";
 
 const validator = withYup(contactPersonalInfoSchema);
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await contactCookie.parse(cookieHeader)) || {};
 
-  return json(cookie);
+  return cookie;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -45,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const { handleChangeStep } = useStep();
-  const formData = useLoaderData<ContactPersonalInfoType>();
+  const formData = useLoaderData<typeof loader>();
 
   // set Stepper
   useEffect(() => {
