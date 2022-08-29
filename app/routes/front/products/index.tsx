@@ -4,6 +4,7 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -44,32 +45,59 @@ export default function Index() {
     <Box sx={{ mt: 8 }}>
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Grid container spacing={3} alignItems="center">
-          {fetcher?.data?.map((item, index) => (
-            <Grid key={index} xs={12} sm={6} md={4}>
-              <Card sx={{ width: "100%", height: 300 }}>
-                <CardActionArea
-                  component={Link}
-                  to={`/front/products/${item.product_id}`}
-                  sx={{ height: "100%" }}
-                >
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={item.image_url}
-                    alt={item.product_name}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {item.product_name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
+          {!fetcher?.data
+            ? [...new Array(12)].map((item, index) => (
+                <Grid key={index} xs={12} sm={6} md={4}>
+                  <Card sx={{ width: "100%", height: 300 }}>
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      width="100%"
+                      height={140}
+                    />
+                    <CardContent>
+                      <Typography component="div" variant="h4" width="60%">
+                        <Skeleton animation="wave" />
+                      </Typography>
+
+                      <Typography component="div" variant="body2">
+                        <Skeleton animation="wave" />
+                        <Skeleton animation="wave" />
+                      </Typography>
+
+                      <Typography component="div" variant="body2">
+                        <Skeleton animation="wave" width="40%" />
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            : fetcher.data.map((item, index) => (
+                <Grid key={index} xs={12} sm={6} md={4}>
+                  <Card sx={{ width: "100%", height: 300 }}>
+                    <CardActionArea
+                      component={Link}
+                      to={`/front/products/${item.product_id}`}
+                      sx={{ height: "100%" }}
+                    >
+                      <CardMedia
+                        component="img"
+                        height={140}
+                        image={item.image_url}
+                        alt={item.product_name}
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {item.product_name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {item.description}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
         </Grid>
       </Box>
     </Box>
