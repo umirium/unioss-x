@@ -12,7 +12,7 @@ import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { contactInquirySchema } from "~/stores/validator";
 import type { ContactInquiryType } from "~/types/contactFormType";
-import { contactCookie } from "~/utils/cookies";
+import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
 
 const validator = withYup(contactInquirySchema);
