@@ -4,6 +4,8 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Pagination,
+  PaginationItem,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -13,24 +15,32 @@ import { Link, useLoaderData } from "@remix-run/react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
+const PER_PAGE = 4;
+
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
-  const page = url.searchParams.get("page");
+  const page = Number(url.searchParams.get("page")) || 1;
 
-  // // if (!page) {
-  // //   return [];
-  // // }
+  const end = Number(page) * PER_PAGE - 1;
+  const start = end - (PER_PAGE - 1);
 
-  const products = await db
+  const { data: products, count: dataLength } = await db
     .from<definitions["products"]>("products")
-    .select("*")
-    .order("product_id");
+    .select("*", { count: "exact" })
+    .order("product_id")
+    .range(start, end);
 
-  return products?.data;
+  const count = dataLength ? Math.ceil(dataLength / PER_PAGE) : 0;
+
+  return {
+    products,
+    count,
+    page,
+  };
 };
 
 export default function Index() {
-  const products = useLoaderData<typeof loader>();
+  const { products, count, page } = useLoaderData<typeof loader>();
 
   return (
     <Box sx={{ mt: 8 }}>
@@ -91,6 +101,24 @@ export default function Index() {
                 </Grid>
               ))}
         </Grid>
+      </Box>
+
+      <Box sx={{ mt: 5, textAlign: "center" }}>
+        <Pagination
+          count={count}
+          page={page}
+          color="primary"
+          sx={{ display: "inline-block" }}
+          renderItem={(item) => (
+            <PaginationItem
+              component={Link}
+              to={`/front/products/?index${
+                item.page === 1 ? "" : `&page=${item.page}`
+              }`}
+              {...item}
+            />
+          )}
+        />
       </Box>
     </Box>
   );
