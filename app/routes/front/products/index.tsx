@@ -9,20 +9,17 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import type { LoaderArgs } from "@remix-run/node";
-import { Link, useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
+import { Link, useLoaderData } from "@remix-run/react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
-
-type LoaderType = Awaited<ReturnType<typeof loader>>;
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const page = url.searchParams.get("page");
 
-  if (!page) {
-    return [];
-  }
+  // // if (!page) {
+  // //   return [];
+  // // }
 
   const products = await db
     .from<definitions["products"]>("products")
@@ -33,19 +30,14 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export default function Index() {
-  const fetcher = useFetcher<LoaderType>();
-
-  useEffect(() => {
-    if (fetcher.state === "idle" && !fetcher.data) {
-      fetcher.load("/front/products?index&page=1");
-    }
-  }, [fetcher.state, fetcher.data, fetcher]);
+  const products = useLoaderData<typeof loader>();
 
   return (
     <Box sx={{ mt: 8 }}>
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Grid container spacing={3} alignItems="center">
-          {!fetcher?.data
+          {/* TODO: If 'defer' is implemented in Remix, use this code. */}
+          {!products
             ? [...new Array(12)].map((item, index) => (
                 <Grid key={index} xs={12} sm={6} md={4}>
                   <Card sx={{ width: "100%", height: 300 }}>
@@ -72,7 +64,7 @@ export default function Index() {
                   </Card>
                 </Grid>
               ))
-            : fetcher.data.map((item, index) => (
+            : products.map((item, index) => (
                 <Grid key={index} xs={12} sm={6} md={4}>
                   <Card sx={{ width: "100%", height: 300 }}>
                     <CardActionArea
