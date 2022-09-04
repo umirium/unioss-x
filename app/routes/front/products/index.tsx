@@ -79,7 +79,9 @@ export default function Index() {
                   <Card sx={{ width: "100%", height: 300 }}>
                     <CardActionArea
                       component={Link}
-                      to={`/front/products/${item.product_id}`}
+                      to={`/front/products/${item.product_id}${
+                        page === 1 ? "" : `?page=${page}`
+                      }`}
                       sx={{ height: "100%" }}
                     >
                       <CardMedia
@@ -112,8 +114,8 @@ export default function Index() {
           renderItem={(item) => (
             <PaginationItem
               component={Link}
-              to={`/front/products/?index${
-                item.page === 1 ? "" : `&page=${item.page}`
+              to={`/front/products${
+                item.page === 1 ? "" : `?page=${item.page}`
               }`}
               {...item}
             />

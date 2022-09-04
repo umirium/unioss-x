@@ -12,18 +12,21 @@ import { Link as RemixLink, useLoaderData } from "@remix-run/react";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
-export const loader = async ({ params }: LoaderArgs) => {
-  const products = await db
+export const loader = async ({ params, request }: LoaderArgs) => {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page");
+
+  const { data: product } = await db
     .from<definitions["products"]>("products")
     .select("*")
     .eq("product_id", params.product_id)
     .single();
 
-  return products?.data;
+  return { product, page };
 };
 
 export default function Product() {
-  const product = useLoaderData<typeof loader>();
+  const { product, page } = useLoaderData<typeof loader>();
 
   return (
     <>
@@ -32,7 +35,7 @@ export default function Product() {
           underline="hover"
           color="inherit"
           component={RemixLink}
-          to="/front/products"
+          to={`/front/products${page ? `?page=${page}` : ""}`}
         >
           products
         </MUILink>
