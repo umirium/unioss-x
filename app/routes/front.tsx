@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Button, ThemeProvider, useMediaQuery } from "@mui/material";
-import { useEffect } from "react";
+import { Button, ThemeProvider } from "@mui/material";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
@@ -12,12 +11,7 @@ export const loader = async () => {
 
 export default function Front() {
   const data = useLoaderData<typeof loader>();
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const { setMode, theme } = useDarkThemeContext();
-
-  useEffect(() => {
-    setMode(prefersDarkMode ? "dark" : "light");
-  }, [prefersDarkMode, setMode]);
+  const { theme } = useDarkThemeContext();
 
   return (
     <ThemeProvider theme={theme}>

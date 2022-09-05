@@ -1,15 +1,16 @@
 import type { Theme } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material";
 import type { Dispatch, ReactElement } from "react";
 import { createContext, useContext, useMemo, useState } from "react";
-
-type DarkModeType = "light" | "dark";
+import type { DarkModeType } from "~/types/theme";
 
 interface Props {
   children: ReactElement;
 }
 
 interface ContextInterface {
+  mode: DarkModeType;
   setMode: Dispatch<React.SetStateAction<DarkModeType>>;
   darkMode: {
     toggle: () => void;
@@ -32,7 +33,8 @@ export function useDarkThemeContext() {
 }
 
 export function DarkThemeProvider(props: Props) {
-  const [mode, setMode] = useState<DarkModeType>("light");
+  const [mode, setMode] = useState<DarkModeType>(undefined);
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const darkMode = useMemo(
     () => ({
@@ -47,13 +49,14 @@ export function DarkThemeProvider(props: Props) {
     () =>
       createTheme({
         palette: {
-          mode,
+          mode:
+            mode === undefined ? (prefersDarkMode ? "dark" : "light") : mode,
         },
       }),
-    [mode]
+    [mode, prefersDarkMode]
   );
 
-  const value: ContextInterface = { setMode, darkMode, theme };
+  const value: ContextInterface = { mode: mode, setMode, darkMode, theme };
 
   return (
     <ThemeContext.Provider value={value}>

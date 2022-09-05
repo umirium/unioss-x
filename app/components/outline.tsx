@@ -9,13 +9,14 @@ import {
   Typography,
   Slide,
   useScrollTrigger,
+  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import ToggleThemeButton from "./outline/toggleThemeButton";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
-import ToggleLanguageButton from "./outline/toggleLanguageButton";
+import { Link } from "@remix-run/react";
+import SettingButton from "./outline/settingButton";
 
 interface Props {
   children: ReactElement;
@@ -69,8 +70,12 @@ export default function Outline(props: Props) {
             >
               {t("front:title")}
             </Typography>
-            <ToggleLanguageButton />
-            <ToggleThemeButton />
+            {/* <ToggleLanguageButton />
+            <ToggleThemeButton /> */}
+            <SettingButton sx={{ mr: 2 }} />
+            <Button variant="contained" component={Link} to="/front/login">
+              {t("common:login")}
+            </Button>
           </Toolbar>
         </AppBar>
       </HideAppbarOnScroll>
