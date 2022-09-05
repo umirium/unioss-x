@@ -9,10 +9,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import type { MouseEvent } from "react";
 import { useState } from "react";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
+import { useTranslation } from "react-i18next";
 
 export default function SettingButton(props: IconButtonProps) {
   const [state, setState] = useState(false);
   const { mode, setMode } = useDarkThemeContext();
+  const { t, i18n } = useTranslation();
 
   const toggleDrawer = () => {
     setState(!state);
@@ -26,17 +28,26 @@ export default function SettingButton(props: IconButtonProps) {
     }
   };
 
+  const handleChangeLanguage = (
+    _event: MouseEvent<HTMLElement>,
+    language: string
+  ) => {
+    if (language === "en" || language === "ja") {
+      i18n.changeLanguage(language);
+    }
+  };
+
   const list = () => (
     <Box sx={{ width: "auto" }} role="presentation">
       <List>
         <ListItem>
-          <Box>Settings</Box>
+          <Box>{t("settings")}</Box>
         </ListItem>
       </List>
       <Divider />
       <List>
         <ListItem>
-          <Typography variant="subtitle2">mode</Typography>
+          <Typography variant="subtitle2">{t("mode")}</Typography>
         </ListItem>
         <ListItem>
           <ToggleButtonGroup
@@ -48,35 +59,35 @@ export default function SettingButton(props: IconButtonProps) {
           >
             <ToggleButton value="light">
               <LightModeIcon sx={{ mr: 1 }} />
-              Light
+              {t("light")}
             </ToggleButton>
             <ToggleButton value="system">
               <SettingsBrightnessIcon sx={{ mr: 1 }} />
-              System
+              {t("system")}
             </ToggleButton>
             <ToggleButton value="dark">
               <DarkModeIcon sx={{ mr: 1 }} />
-              Dark
+              {t("dark")}
             </ToggleButton>
           </ToggleButtonGroup>
         </ListItem>
       </List>
       <List>
         <ListItem>
-          <Typography variant="subtitle2">language</Typography>
+          <Typography variant="subtitle2">{t("language")}</Typography>
         </ListItem>
         <ListItem>
           <ToggleButtonGroup
             orientation="vertical"
             color="primary"
-            value={mode}
+            value={i18n.language}
             exclusive
-            onChange={handleChangeMode}
+            onChange={handleChangeLanguage}
             aria-label="Platform"
             sx={{ width: "100%" }}
           >
-            <ToggleButton value="web">English</ToggleButton>
-            <ToggleButton value="android">Japanese</ToggleButton>
+            <ToggleButton value="en">{t("english")}</ToggleButton>
+            <ToggleButton value="ja">{t("japanese")}</ToggleButton>
           </ToggleButtonGroup>
         </ListItem>
       </List>

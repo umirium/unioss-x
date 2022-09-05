@@ -70,8 +70,6 @@ export default function Outline(props: Props) {
             >
               {t("front:title")}
             </Typography>
-            {/* <ToggleLanguageButton />
-            <ToggleThemeButton /> */}
             <SettingButton sx={{ mr: 2 }} />
             <Button variant="contained" component={Link} to="/front/login">
               {t("common:login")}
