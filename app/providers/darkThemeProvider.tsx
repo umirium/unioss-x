@@ -3,7 +3,7 @@ import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material";
 import type { Dispatch, ReactElement } from "react";
 import { createContext, useContext, useMemo, useState } from "react";
-import type { DarkModeType } from "~/types/theme";
+import type { DarkModeType } from "~/types/outline";
 
 interface Props {
   children: ReactElement;

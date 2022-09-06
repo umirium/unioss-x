@@ -16,8 +16,8 @@ import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
 import { Link } from "@remix-run/react";
-import SettingButton from "./outline/settingButton";
-import type { SettingsHandler } from "~/types/theme";
+import SettingsButton from "./outline/settingsButton";
+import type { SettingsHandler } from "~/types/outline";
 
 interface Props {
   children: ReactElement;
@@ -43,7 +43,7 @@ export default function Outline(props: Props) {
   const { t } = useTranslation();
 
   const handleToggleMenu = () => {
-    // close setting drawer
+    // close settings drawer
     childCompRef?.current.closeSettings();
 
     setMobileOpen(!mobileOpen);
@@ -54,7 +54,7 @@ export default function Outline(props: Props) {
   };
 
   const handleClickLogin = () => {
-    // close menu and setting drawers
+    // close menu and settings drawers
     setMobileOpen(false);
     childCompRef?.current.closeSettings();
   };
@@ -85,7 +85,7 @@ export default function Outline(props: Props) {
             >
               {t("front:title")}
             </Typography>
-            <SettingButton
+            <SettingsButton
               ref={childCompRef}
               onClose={handleCloseMenu}
               sx={{ mr: 2 }}

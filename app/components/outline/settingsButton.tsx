@@ -11,7 +11,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { useState } from "react";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { useTranslation } from "react-i18next";
-import type { SettingsHandler } from "~/types/theme";
+import type { SettingsHandler } from "~/types/outline";
 
 interface Props extends IconButtonProps {
   onClose: () => void;
