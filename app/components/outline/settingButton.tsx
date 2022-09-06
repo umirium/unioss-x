@@ -7,18 +7,29 @@ import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 import { Divider, IconButton } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import type { MouseEvent } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { useState } from "react";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { useTranslation } from "react-i18next";
+import type { SettingsHandler } from "~/types/theme";
 
-export default function SettingButton(props: IconButtonProps) {
+interface Props extends IconButtonProps {
+  onClose: () => void;
+}
+
+const SettingButton = forwardRef<SettingsHandler, Props>(function SettingButton(
+  props: Props,
+  ref
+) {
   const [state, setState] = useState(false);
   const { mode, setMode } = useDarkThemeContext();
   const { t, i18n } = useTranslation();
 
-  const toggleDrawer = () => {
-    setState(!state);
-  };
+  useImperativeHandle(ref, () => ({
+    closeSettings: () => {
+      setState(false);
+    },
+  }));
 
   const handleChangeMode = (_event: MouseEvent<HTMLElement>, mode: string) => {
     if (mode === "light" || mode === "dark") {
@@ -26,6 +37,13 @@ export default function SettingButton(props: IconButtonProps) {
     } else {
       setMode(undefined);
     }
+  };
+
+  const handleToggleDrawer = () => {
+    // close setting drawer
+    props.onClose();
+
+    setState(!state);
   };
 
   const handleChangeLanguage = (
@@ -96,13 +114,15 @@ export default function SettingButton(props: IconButtonProps) {
 
   return (
     <>
-      <IconButton onClick={toggleDrawer} {...props}>
+      <IconButton onClick={handleToggleDrawer} {...props}>
         <SettingsIcon />
       </IconButton>
-      <Drawer anchor="right" open={state} onClose={toggleDrawer}>
+      <Drawer anchor="right" open={state} onClose={handleToggleDrawer}>
         <Toolbar />
         {list()}
       </Drawer>
     </>
   );
-}
+});
+
+export default SettingButton;

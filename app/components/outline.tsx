@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Box,
   CssBaseline,
@@ -17,6 +17,7 @@ import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
 import { Link } from "@remix-run/react";
 import SettingButton from "./outline/settingButton";
+import type { SettingsHandler } from "~/types/theme";
 
 interface Props {
   children: ReactElement;
@@ -37,11 +38,25 @@ const HideAppbarOnScroll = (props: Props) => {
 export default function Outline(props: Props) {
   const { children, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const childCompRef = useRef({} as SettingsHandler);
 
   const { t } = useTranslation();
 
-  const handleToggleDrawer = () => {
+  const handleToggleMenu = () => {
+    // close setting drawer
+    childCompRef?.current.closeSettings();
+
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleCloseMenu = () => {
+    setMobileOpen(false);
+  };
+
+  const handleClickLogin = () => {
+    // close menu and setting drawers
+    setMobileOpen(false);
+    childCompRef?.current.closeSettings();
   };
 
   return (
@@ -57,7 +72,7 @@ export default function Outline(props: Props) {
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={handleToggleDrawer}
+              onClick={handleToggleMenu}
               sx={{ mr: 2, display: { md: "none" } }}
             >
               <MenuIcon />
@@ -70,8 +85,17 @@ export default function Outline(props: Props) {
             >
               {t("front:title")}
             </Typography>
-            <SettingButton sx={{ mr: 2 }} />
-            <Button variant="contained" component={Link} to="/front/login">
+            <SettingButton
+              ref={childCompRef}
+              onClose={handleCloseMenu}
+              sx={{ mr: 2 }}
+            />
+            <Button
+              variant="contained"
+              component={Link}
+              onClick={handleClickLogin}
+              to="/front/login"
+            >
               {t("common:login")}
             </Button>
           </Toolbar>
@@ -87,7 +111,7 @@ export default function Outline(props: Props) {
         <FlexDrawer
           variant="temporary"
           open={mobileOpen}
-          onClose={handleToggleDrawer}
+          onClose={handleToggleMenu}
         />
 
         {/* for PC */}
