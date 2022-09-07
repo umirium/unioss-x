@@ -24,6 +24,7 @@ export const MyTextField = (props: MyTextFieldProps) => {
         rows={props.rows}
         error={!!error}
         helperText={error && t(`validator:${error}`)}
+        autoFocus={props.autoFocus}
       />
     </>
   );

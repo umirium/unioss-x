@@ -19,6 +19,7 @@ export const MyInput = (props: MyInputProps) => {
         type={props.type}
         defaultValue={props.defaultValue}
         error={!!error}
+        autoFocus={props.autoFocus}
       />
     </>
   );

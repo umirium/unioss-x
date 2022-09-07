@@ -37,6 +37,7 @@ export const MySelect = (props: MySelectProps) => {
         value={value}
         error={!!error}
         onChange={handleChange}
+        autoFocus={props.autoFocus}
       >
         <MenuItem value="">
           <em>{t("common:_pleaseSelect_")}</em>

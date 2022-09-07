@@ -60,6 +60,7 @@ export default function Index() {
                 label="yourName"
                 defaultValue={formData?.yourName}
                 required
+                autoFocus
               />
             </FormControl>
           </Grid>
