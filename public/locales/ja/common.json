@@ -1,5 +1,7 @@
 {
-  "login": "ログイン",
+  "signin": "ログイン",
+  "create_new_account": "新規アカウント作成",
+  "forget_password": "パスワードを忘れた場合",
   "back": "戻る",
   "next": "次へ",
   "send": "送信",

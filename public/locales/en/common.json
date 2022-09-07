@@ -1,5 +1,7 @@
 {
-  "login": "Login",
+  "signin": "Sign In",
+  "create_new_account": "Create new account",
+  "forget_password": "Forget password?",
   "back": "Back",
   "next": "Next",
   "send": "Send",

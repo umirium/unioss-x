@@ -96,7 +96,7 @@ export default function Outline(props: Props) {
               onClick={handleClickLogin}
               to="/front/login"
             >
-              {t("common:login")}
+              {t("common:signin")}
             </Button>
           </Toolbar>
         </AppBar>
