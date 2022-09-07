@@ -53,7 +53,7 @@ export default function Outline(props: Props) {
     setMobileOpen(false);
   };
 
-  const handleClickLogin = () => {
+  const handleClickSignin = () => {
     // close menu and settings drawers
     setMobileOpen(false);
     childCompRef?.current.closeSettings();
@@ -93,8 +93,8 @@ export default function Outline(props: Props) {
             <Button
               variant="contained"
               component={Link}
-              onClick={handleClickLogin}
-              to="/front/login"
+              onClick={handleClickSignin}
+              to="/front/signin"
             >
               {t("common:signin")}
             </Button>

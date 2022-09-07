@@ -21,14 +21,14 @@ import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
 import { useState } from "react";
 
-interface LoginForm {
+interface Form {
   email: string;
   password: string;
   showPassword: boolean;
 }
 
-export default function Login() {
-  const [values, setValues] = useState<LoginForm>({
+export default function Signin() {
+  const [values, setValues] = useState<Form>({
     email: "",
     password: "",
     showPassword: false,
@@ -36,7 +36,7 @@ export default function Login() {
   const { t } = useTranslation();
 
   const handleChange =
-    (prop: keyof LoginForm) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof Form) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
