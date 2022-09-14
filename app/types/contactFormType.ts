@@ -1,14 +1,16 @@
 export interface ContactPersonalInfoType {
-  yourName: string;
-  kana: string;
   email: string;
   emailRetype: string;
-  phoneNumber: string | undefined;
-  postalCode: string | undefined;
-  prefecture: string | undefined;
-  city: string | undefined;
-  address1: string | undefined;
-  address2: string | undefined;
+  password?: string;
+  passwordRetype?: string;
+  yourName: string;
+  kana: string;
+  postalCode?: string;
+  prefecture?: string;
+  city?: string;
+  address1?: string;
+  address2?: string;
+  phoneNumber?: string;
   // action?: string;
 }
 

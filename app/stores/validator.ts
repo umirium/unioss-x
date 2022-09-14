@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import type { ContactPersonalInfoType } from "~/types/contactFormType";
 
 export const contactPersonalInfoSchema = yup.object({
   yourName: yup.string().max(20, "max20").required("required"),
@@ -28,3 +29,35 @@ export const contactInquirySchema = yup.object({
   orderCode: yup.string().max(128, "max128"),
   inquiry: yup.string().max(1000, "max1000").required("required"),
 });
+
+export const personalFormSchema: yup.SchemaOf<ContactPersonalInfoType> =
+  yup.object({
+    email: yup.string().max(255, "max255").email("email").required("required"),
+    emailRetype: yup
+      .string()
+      .oneOf([yup.ref("email")], "emailRetype")
+      .required("required"),
+    password: yup
+      .string()
+      .min(8, "min8")
+      .max(255, "max255")
+      .required("required"),
+    passwordRetype: yup
+      .string()
+      .oneOf([yup.ref("password")], "passwordRetype")
+      .required("required"),
+    yourName: yup.string().max(20, "max20").required("required"),
+    kana: yup.string().max(20, "max20").required("required"),
+    postalCode: yup
+      .string()
+      .matches(/^[0-9]*$/, "postalCode")
+      .max(7, "max7"),
+    prefecture: yup.string().max(2, "max2"),
+    city: yup.string().max(50, "max50"),
+    address1: yup.string().max(50, "max50"),
+    address2: yup.string().max(50, "max50"),
+    phoneNumber: yup
+      .string()
+      .max(13, "max13")
+      .matches(/^[0-9\\-]*$/, "tel"),
+  });

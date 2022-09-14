@@ -125,6 +125,8 @@ export default function Signin() {
             </Divider>
 
             <Button
+              component={RemixLink}
+              to={"/front/signup"}
               type="submit"
               variant="contained"
               color="success"
