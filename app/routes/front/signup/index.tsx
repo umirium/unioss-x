@@ -9,6 +9,7 @@ import PersonalForm from "~/components/personalForm";
 import { personalFormSchema } from "~/stores/validator";
 import type { ContactPersonalInfoType } from "~/types/contactFormType";
 import { commitSession, getSession } from "~/utils/sessions/signup";
+import { useStep } from "../signup";
 
 const validator = withYup(personalFormSchema);
 
@@ -61,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
   session.set("address2", form.data.address2);
   session.set("phoneNumber", form.data.phoneNumber);
 
-  return redirect("/front/signin", {
+  return redirect("/front/signup/confirm", {
     headers: {
       "Set-Cookie": await commitSession(session),
     },
@@ -70,6 +71,12 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const formData = useLoaderData<typeof loader>();
+  const { handleChangeStep } = useStep();
+
+  // set Stepper
+  useEffect(() => {
+    handleChangeStep(0);
+  });
 
   useEffect(() => {
     console.log(formData);
