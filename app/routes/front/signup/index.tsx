@@ -68,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export default function Signup() {
+export default function Index() {
   const formData = useLoaderData<typeof loader>();
 
   useEffect(() => {
