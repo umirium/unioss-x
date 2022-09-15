@@ -3,18 +3,18 @@ import Grid from "@mui/material/Unstable_Grid2";
 import type { Validator } from "remix-validated-form";
 import { ValidatedForm } from "remix-validated-form";
 import prefectures from "~/stores/prefectures";
-import type { ContactPersonalInfoType } from "~/types/contactFormType";
+import type { PersonalData } from "~/types/contactFormType";
 import { MySelect } from "./atoms/MySelect";
 import { MySubmitButton } from "./atoms/MySubmitButton";
 import { MyTextField } from "./atoms/MyTextField";
 
 interface Props {
   isRegist: boolean;
-  formData: ContactPersonalInfoType;
-  validator: Validator<ContactPersonalInfoType>;
+  formData: PersonalData;
+  validator: Validator<PersonalData>;
 }
 
-export default function PersonalForm(props: Props) {
+export default function personalDataForm(props: Props) {
   return (
     <ValidatedForm validator={props.validator} method="post">
       <Box sx={{ maxWidth: 800, m: "auto" }}>
@@ -45,6 +45,7 @@ export default function PersonalForm(props: Props) {
                 <FormControl fullWidth>
                   <MyTextField
                     label="password"
+                    type="password"
                     defaultValue={props.formData?.password}
                     required
                   />
@@ -54,6 +55,7 @@ export default function PersonalForm(props: Props) {
                 <FormControl fullWidth>
                   <MyTextField
                     label="passwordRetype"
+                    type="password"
                     defaultValue={props.formData?.passwordRetype}
                     required
                   />
@@ -67,8 +69,8 @@ export default function PersonalForm(props: Props) {
           <Grid xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                label="yourName"
-                defaultValue={props.formData?.yourName}
+                label="lastName"
+                defaultValue={props.formData?.lastName}
                 required
               />
             </FormControl>
@@ -77,8 +79,28 @@ export default function PersonalForm(props: Props) {
           <Grid xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <MyTextField
-                label="kana"
-                defaultValue={props.formData?.kana}
+                label="firstName"
+                defaultValue={props.formData?.firstName}
+                required
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField
+                label="lastNameKana"
+                defaultValue={props.formData?.lastNameKana}
+                required
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid xs={12} sm={6} md={6}>
+            <FormControl fullWidth>
+              <MyTextField
+                label="firstNameKana"
+                defaultValue={props.formData?.firstNameKana}
                 required
               />
             </FormControl>

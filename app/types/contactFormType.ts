@@ -21,3 +21,21 @@ export interface ContactInquiryType {
   inquiry: string;
   // action?: string;
 }
+
+export interface PersonalData {
+  email: string;
+  emailRetype?: string;
+  password: string;
+  passwordRetype?: string;
+  lastName: string;
+  firstName: string;
+  lastNameKana: string;
+  firstNameKana: string;
+  postalCode?: string;
+  prefecture?: string;
+  city?: string;
+  address1?: string;
+  address2?: string;
+  phoneNumber?: string;
+  // action?: string;
+}

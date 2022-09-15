@@ -5,24 +5,26 @@ import { useLoaderData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect } from "react";
 import { validationError } from "remix-validated-form";
-import PersonalForm from "~/components/personalForm";
-import { personalFormSchema } from "~/stores/validator";
-import type { ContactPersonalInfoType } from "~/types/contactFormType";
+import PersonalDataForm from "~/components/personalDataForm";
+import { personalDataFormSchema } from "~/stores/validator";
+import type { PersonalData } from "~/types/contactFormType";
 import { commitSession, getSession } from "~/utils/sessions/signup";
 import { useStep } from "../signup";
 
-const validator = withYup(personalFormSchema);
+const validator = withYup(personalDataFormSchema);
 
 export const loader = async ({ request }: LoaderArgs) => {
   const session = await getSession(request.headers.get("Cookie"));
 
-  const data: ContactPersonalInfoType = {
+  const data: PersonalData = {
     email: session.get("email"),
     emailRetype: session.get("emailRetype"),
     password: session.get("password"),
     passwordRetype: session.get("passwordRetype"),
-    yourName: session.get("yourName"),
-    kana: session.get("kana"),
+    lastName: session.get("lastName"),
+    firstName: session.get("firstName"),
+    lastNameKana: session.get("lastNameKana"),
+    firstNameKana: session.get("firstNameKana"),
     postalCode: session.get("postalCode"),
     prefecture: session.get("prefecture"),
     city: session.get("city"),
@@ -53,8 +55,10 @@ export const action: ActionFunction = async ({ request }) => {
   session.set("emailRetype", form.data.emailRetype);
   session.set("password", form.data.password);
   session.set("passwordRetype", form.data.passwordRetype);
-  session.set("yourName", form.data.yourName);
-  session.set("kana", form.data.kana);
+  session.set("lastName", form.data.lastName);
+  session.set("firstName", form.data.firstName);
+  session.set("lastNameKana", form.data.lastNameKana);
+  session.set("firstNameKana", form.data.firstNameKana);
   session.set("postalCode", form.data.postalCode);
   session.set("prefecture", form.data.prefecture);
   session.set("city", form.data.city);
@@ -78,10 +82,11 @@ export default function Index() {
     handleChangeStep(0);
   });
 
-  useEffect(() => {
-    console.log(formData);
-  });
   return (
-    <PersonalForm isRegist={true} formData={formData} validator={validator} />
+    <PersonalDataForm
+      isRegist={true}
+      formData={formData}
+      validator={validator}
+    />
   );
 }
