@@ -16,4 +16,6 @@
   "max255": "Please input 255 characters or less",
   "max1000": "Please input 1000 characters or less",
   "dbInsert": "Failed to write to database"
+  "dbRead": "Failed to read to database",
+  "alreadyUsed": "Already used"
 }
