@@ -16,6 +16,7 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
+  useTransition,
 } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect, useState } from "react";
@@ -29,6 +30,7 @@ import {
   destroySession,
   getSession,
 } from "~/utils/sessions/signup";
+import { db } from "~/utils/db.server";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -58,11 +60,9 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  // for test
-  // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
-
   const session = await getSession(request.headers.get("Cookie"));
 
+  // validate input data in form
   const data: PersonalData = {
     email: session.get("email"),
     emailRetype: session.get("emailRetype"),
@@ -84,8 +84,45 @@ export const action = async ({ request }: ActionArgs) => {
   const form = await validator.validate(data);
   if (form.error) return validationError(form.error);
 
-  // transmission process...
-  await new Promise((resolve) => setTimeout(resolve, Math.random() * 5000));
+  // encrypt password
+  var crypto = require("crypto");
+  const encryptedPassword = crypto
+    .createHash("sha256")
+    .update(session.get("password"))
+    .digest("base64");
+
+  // insert user data to database
+  try {
+    const { error } = await db.from("users").insert([
+      {
+        email: session.get("email"),
+        password: encryptedPassword,
+        last_name: session.get("lastName"),
+        first_name: session.get("firstName"),
+        last_name_kana: session.get("lastNameKana"),
+        first_name_kana: session.get("firstNameKana"),
+        postal_code: session.get("postalCode"),
+        prefecture: session.get("prefecture"),
+        city: session.get("city"),
+        address1: session.get("address1"),
+        address2: session.get("address2"),
+        phone_number: session.get("phoneNumber"),
+        delete_flg: false,
+      },
+    ]);
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.log(error);
+
+    return validationError({
+      fieldErrors: {
+        systemError: "dbInsert",
+      },
+    });
+  }
 
   return redirect("/front/signup/complete", {
     headers: {
@@ -95,12 +132,13 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Confirm() {
+  const [progress, setProgress] = useState(false);
   const { handleChangeStep } = useStep();
   const formData = useLoaderData<typeof loader>();
   const validated = useActionData<typeof action>();
   const { t } = useTranslation();
-  const [progress, setProgress] = useState(false);
   const navigate = useNavigate();
+  const transition = useTransition();
 
   // If cookie has been deleted, redirect to signup form.
   useEffect(() => {
@@ -114,6 +152,12 @@ export default function Confirm() {
     handleChangeStep(1);
   });
 
+  useEffect(() => {
+    if (validated) {
+      setProgress(false);
+    }
+  }, [validated]);
+
   const handleSend = () => {
     setProgress(true);
   };
@@ -121,13 +165,6 @@ export default function Confirm() {
   return (
     <>
       <Form replace method="post">
-        {validated &&
-          Object.entries(validated.fieldErrors).map(([key, value], index) => (
-            <Alert key={index} severity="error">
-              {t(`front:${key}`)}: {t(`validator:${value}`)}
-            </Alert>
-          ))}
-
         {progress && (
           <Box
             sx={{
@@ -143,6 +180,14 @@ export default function Confirm() {
             </Typography>
           </Box>
         )}
+
+        {transition.state !== "submitting" &&
+          validated &&
+          Object.entries(validated.fieldErrors).map(([key, value], index) => (
+            <Alert key={index} severity="error">
+              {t(`front:${key}`)}: {t(`validator:${value}`)}
+            </Alert>
+          ))}
 
         <Box sx={{ maxWidth: 800, m: "auto" }}>
           <Paper elevation={1} sx={{ pb: 2 }}>
@@ -165,13 +210,20 @@ export default function Confirm() {
           </Paper>
 
           <Box sx={{ mt: 5, textAlign: "center" }}>
-            <Button variant="outlined" component={Link} to="../" sx={{ mr: 3 }}>
+            <Button
+              variant="outlined"
+              component={Link}
+              to="../"
+              disabled={transition.state === "submitting"}
+              sx={{ mr: 3 }}
+            >
               {t("common:back")}
             </Button>
             <Button
               variant="contained"
               type="submit"
               onClick={handleSend}
+              disabled={transition.state === "submitting"}
               sx={{ mr: 3 }}
               endIcon={<SendIcon />}
             >

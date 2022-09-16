@@ -123,6 +123,138 @@ export interface paths {
       };
     };
   };
+  "/users": {
+    get: {
+      parameters: {
+        query: {
+          user_id?: parameters["rowFilter.users.user_id"];
+          email?: parameters["rowFilter.users.email"];
+          password?: parameters["rowFilter.users.password"];
+          last_name?: parameters["rowFilter.users.last_name"];
+          first_name?: parameters["rowFilter.users.first_name"];
+          last_name_kana?: parameters["rowFilter.users.last_name_kana"];
+          first_name_kana?: parameters["rowFilter.users.first_name_kana"];
+          postal_code?: parameters["rowFilter.users.postal_code"];
+          prefecture?: parameters["rowFilter.users.prefecture"];
+          city?: parameters["rowFilter.users.city"];
+          address1?: parameters["rowFilter.users.address1"];
+          address2?: parameters["rowFilter.users.address2"];
+          phone_number?: parameters["rowFilter.users.phone_number"];
+          created_at?: parameters["rowFilter.users.created_at"];
+          updated_at?: parameters["rowFilter.users.updated_at"];
+          delete_flg?: parameters["rowFilter.users.delete_flg"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["users"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** users */
+          users?: definitions["users"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          user_id?: parameters["rowFilter.users.user_id"];
+          email?: parameters["rowFilter.users.email"];
+          password?: parameters["rowFilter.users.password"];
+          last_name?: parameters["rowFilter.users.last_name"];
+          first_name?: parameters["rowFilter.users.first_name"];
+          last_name_kana?: parameters["rowFilter.users.last_name_kana"];
+          first_name_kana?: parameters["rowFilter.users.first_name_kana"];
+          postal_code?: parameters["rowFilter.users.postal_code"];
+          prefecture?: parameters["rowFilter.users.prefecture"];
+          city?: parameters["rowFilter.users.city"];
+          address1?: parameters["rowFilter.users.address1"];
+          address2?: parameters["rowFilter.users.address2"];
+          phone_number?: parameters["rowFilter.users.phone_number"];
+          created_at?: parameters["rowFilter.users.created_at"];
+          updated_at?: parameters["rowFilter.users.updated_at"];
+          delete_flg?: parameters["rowFilter.users.delete_flg"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          user_id?: parameters["rowFilter.users.user_id"];
+          email?: parameters["rowFilter.users.email"];
+          password?: parameters["rowFilter.users.password"];
+          last_name?: parameters["rowFilter.users.last_name"];
+          first_name?: parameters["rowFilter.users.first_name"];
+          last_name_kana?: parameters["rowFilter.users.last_name_kana"];
+          first_name_kana?: parameters["rowFilter.users.first_name_kana"];
+          postal_code?: parameters["rowFilter.users.postal_code"];
+          prefecture?: parameters["rowFilter.users.prefecture"];
+          city?: parameters["rowFilter.users.city"];
+          address1?: parameters["rowFilter.users.address1"];
+          address2?: parameters["rowFilter.users.address2"];
+          phone_number?: parameters["rowFilter.users.phone_number"];
+          created_at?: parameters["rowFilter.users.created_at"];
+          updated_at?: parameters["rowFilter.users.updated_at"];
+          delete_flg?: parameters["rowFilter.users.delete_flg"];
+        };
+        body: {
+          /** users */
+          users?: definitions["users"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
 }
 
 export interface definitions {
@@ -146,6 +278,80 @@ export interface definitions {
      * @default NULL
      */
     image_url?: string;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    created_at: string;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    updated_at: string;
+    /** Format: boolean */
+    delete_flg: boolean;
+  };
+  users: {
+    /**
+     * Format: integer
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    user_id: number;
+    /** Format: character varying */
+    email: string;
+    /** Format: character varying */
+    password: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    last_name?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    first_name?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    last_name_kana?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    first_name_kana?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    postal_code?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    prefecture?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    city?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    address1?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    address2?: string;
+    /**
+     * Format: character varying
+     * @default NULL
+     */
+    phone_number?: string;
     /**
      * Format: timestamp without time zone
      * @default now()
@@ -214,6 +420,40 @@ export interface parameters {
   "rowFilter.products.updated_at": string;
   /** Format: boolean */
   "rowFilter.products.delete_flg": string;
+  /** @description users */
+  "body.users": definitions["users"];
+  /** Format: integer */
+  "rowFilter.users.user_id": string;
+  /** Format: character varying */
+  "rowFilter.users.email": string;
+  /** Format: character varying */
+  "rowFilter.users.password": string;
+  /** Format: character varying */
+  "rowFilter.users.last_name": string;
+  /** Format: character varying */
+  "rowFilter.users.first_name": string;
+  /** Format: character varying */
+  "rowFilter.users.last_name_kana": string;
+  /** Format: character varying */
+  "rowFilter.users.first_name_kana": string;
+  /** Format: character varying */
+  "rowFilter.users.postal_code": string;
+  /** Format: character varying */
+  "rowFilter.users.prefecture": string;
+  /** Format: character varying */
+  "rowFilter.users.city": string;
+  /** Format: character varying */
+  "rowFilter.users.address1": string;
+  /** Format: character varying */
+  "rowFilter.users.address2": string;
+  /** Format: character varying */
+  "rowFilter.users.phone_number": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.users.created_at": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.users.updated_at": string;
+  /** Format: boolean */
+  "rowFilter.users.delete_flg": string;
 }
 
 export interface operations {}

@@ -35,5 +35,6 @@
   "aboutThisWebSite": "About this web site",
   "aboutProducts": "About products",
   "aboutAccess": "About access",
-  "other": "Other"
+  "other": "Other",
+  "systemError": "System error"
 }

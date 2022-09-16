@@ -14,5 +14,6 @@
   "max50": "Please input 50 characters or less",
   "max128": "Please input 128 characters or less",
   "max255": "Please input 255 characters or less",
-  "max1000": "Please input 1000 characters or less"
+  "max1000": "Please input 1000 characters or less",
+  "dbInsert": "Failed to write to database"
 }
