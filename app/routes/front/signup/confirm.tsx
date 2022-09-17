@@ -119,7 +119,7 @@ export const action = async ({ request }: ActionArgs) => {
 
     return validationError({
       fieldErrors: {
-        systemError: "dbInsert",
+        systemError: "dbWrite",
       },
     });
   }
