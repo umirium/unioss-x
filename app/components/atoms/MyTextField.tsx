@@ -18,6 +18,7 @@ export const MyTextField = (props: MyTextFieldProps) => {
       <TextField
         {...getInputProps({ id: props.label })}
         label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
+        type={props.type}
         variant={props.variant && "outlined"}
         defaultValue={props.defaultValue}
         multiline={props.multiline}
