@@ -12,7 +12,7 @@ import { personalDataFormSchema } from "~/stores/validator";
 import type { PersonalData } from "~/types/contactFormType";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
-import { commitSession, getSession } from "~/utils/sessions/signup";
+import { commitSession, getSession } from "~/utils/sessions/signup.server";
 import { useStep } from "../signup";
 
 const validator = withYup(personalDataFormSchema);

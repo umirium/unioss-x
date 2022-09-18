@@ -29,11 +29,11 @@ import {
   commitSession,
   destroySession,
   getSession,
-} from "~/utils/sessions/signup";
+} from "~/utils/sessions/signup.server";
 import {
   commitSession as commitAuthSession,
   getSession as getAuthSession,
-} from "~/utils/sessions/auth";
+} from "~/utils/sessions/auth.server";
 import { db } from "~/utils/db.server";
 import type { definitions } from "~/types/tables";
 
@@ -136,7 +136,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   // save user data to auth session
   const authSession = await getAuthSession(request.headers.get("Cookie"));
-  authSession.set("id", inserted?.user_id);
+  authSession.set("user_id", inserted?.user_id);
   authSession.set("email", inserted?.email);
   authSession.set("password", inserted?.password);
   authSession.set("lastName", inserted?.last_name);
