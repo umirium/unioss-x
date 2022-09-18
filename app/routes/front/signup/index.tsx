@@ -121,11 +121,17 @@ export default function Index() {
   return (
     <>
       {validated &&
-        Object.entries(validated.fieldErrors).map(([key, value], index) => (
-          <Alert key={index} severity="error">
-            {t(`front:${key}`)}: {t(`validator:${value}`)}
-          </Alert>
-        ))}
+        Object.entries(validated.fieldErrors).map(([key, value], index) => {
+          // show only system errors
+          if (key === "systemError") {
+            return (
+              <Alert key={index} severity="error">
+                {t(`front:${key}`)}: {t(`validator:${value}`)}
+              </Alert>
+            );
+          }
+          return "";
+        })}
 
       <PersonalDataForm
         isRegist={true}

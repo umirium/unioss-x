@@ -30,7 +30,12 @@ import {
   destroySession,
   getSession,
 } from "~/utils/sessions/signup";
+import {
+  commitSession as commitAuthSession,
+  getSession as getAuthSession,
+} from "~/utils/sessions/auth";
 import { db } from "~/utils/db.server";
+import type { definitions } from "~/types/tables";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -60,6 +65,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
+  let inserted: definitions["users"] | undefined;
   const session = await getSession(request.headers.get("Cookie"));
 
   // validate input data in form
@@ -93,23 +99,27 @@ export const action = async ({ request }: ActionArgs) => {
 
   // insert user data to database
   try {
-    const { error } = await db.from("users").insert([
-      {
-        email: session.get("email"),
-        password: encryptedPassword,
-        last_name: session.get("lastName"),
-        first_name: session.get("firstName"),
-        last_name_kana: session.get("lastNameKana"),
-        first_name_kana: session.get("firstNameKana"),
-        postal_code: session.get("postalCode"),
-        prefecture: session.get("prefecture"),
-        city: session.get("city"),
-        address1: session.get("address1"),
-        address2: session.get("address2"),
-        phone_number: session.get("phoneNumber"),
-        delete_flg: false,
-      },
-    ]);
+    const { data, error } = await db
+      .from<definitions["users"]>("users")
+      .insert([
+        {
+          email: session.get("email"),
+          password: encryptedPassword,
+          last_name: session.get("lastName"),
+          first_name: session.get("firstName"),
+          last_name_kana: session.get("lastNameKana"),
+          first_name_kana: session.get("firstNameKana"),
+          postal_code: session.get("postalCode"),
+          prefecture: session.get("prefecture"),
+          city: session.get("city"),
+          address1: session.get("address1"),
+          address2: session.get("address2"),
+          phone_number: session.get("phoneNumber"),
+          delete_flg: false,
+        },
+      ]);
+
+    inserted = data?.[0];
 
     if (error) {
       throw error;
@@ -124,11 +134,20 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  return redirect("/front/signup/complete", {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
-  });
+  // save user data to auth session
+  const authSession = await getAuthSession(request.headers.get("Cookie"));
+  authSession.set("id", inserted?.user_id);
+  authSession.set("email", inserted?.email);
+  authSession.set("password", inserted?.password);
+  authSession.set("lastName", inserted?.last_name);
+  authSession.set("firstName", inserted?.first_name);
+
+  // destroy signup session and commit auth session
+  const headers = new Headers();
+  headers.append("Set-Cookie", await destroySession(session));
+  headers.append("Set-Cookie", await commitAuthSession(authSession));
+
+  return redirect("/front/signup/complete", { headers });
 };
 
 export default function Confirm() {
