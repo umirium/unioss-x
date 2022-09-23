@@ -23,6 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^11.18.5",
+    "remix-auth": "^3.3.0",
+    "remix-auth-form": "^1.2.0",
     "remix-i18next": "^4.1.1",
     "remix-validated-form": "^4.5.5",
     "yup": "^0.32.11"
