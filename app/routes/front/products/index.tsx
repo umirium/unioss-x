@@ -12,6 +12,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import type { LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
@@ -33,7 +34,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const count = dataLength ? Math.ceil(dataLength / PER_PAGE) : 0;
 
   return {
-    products,
+    products: products ? camelcaseKeys(products) : products,
     count,
     page,
   };
@@ -79,7 +80,7 @@ export default function Index() {
                   <Card sx={{ width: "100%", height: 300 }}>
                     <CardActionArea
                       component={Link}
-                      to={`/front/products/${item.product_id}${
+                      to={`/front/products/${item.productId}${
                         page === 1 ? "" : `?page=${page}`
                       }`}
                       sx={{ height: "100%" }}
@@ -87,12 +88,12 @@ export default function Index() {
                       <CardMedia
                         component="img"
                         height={140}
-                        image={item.image_url}
-                        alt={item.product_name}
+                        image={item.imageUrl}
+                        alt={item.productName}
                       />
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                          {item.product_name}
+                          {item.productName}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {item.description}
