@@ -22,6 +22,9 @@ import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { validationError } from "remix-validated-form";
+import camelcaseKeys from "camelcase-keys";
+import snakecaseKeys from "snakecase-keys";
+import type { SnakeToCamel } from "snake-camel-types";
 import { personalDataFormSchema } from "~/stores/validator";
 import type { PersonalData } from "~/types/contactFormType";
 import { useStep } from "../signup";
@@ -65,7 +68,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  let inserted: definitions["users"] | undefined;
+  let inserted: SnakeToCamel<definitions["users"]> | undefined;
   const session = await getSession(request.headers.get("Cookie"));
 
   // validate input data in form
@@ -91,7 +94,7 @@ export const action = async ({ request }: ActionArgs) => {
   if (form.error) return validationError(form.error);
 
   // encrypt password
-  var crypto = require("crypto");
+  const crypto = require("crypto");
   const encryptedPassword = crypto
     .createHash("sha256")
     .update(session.get("password"))
@@ -102,24 +105,26 @@ export const action = async ({ request }: ActionArgs) => {
     const { data, error } = await db
       .from<definitions["users"]>("users")
       .insert([
-        {
+        snakecaseKeys({
           email: session.get("email"),
           password: encryptedPassword,
-          last_name: session.get("lastName"),
-          first_name: session.get("firstName"),
-          last_name_kana: session.get("lastNameKana"),
-          first_name_kana: session.get("firstNameKana"),
-          postal_code: session.get("postalCode"),
+          lastName: session.get("lastName"),
+          firstName: session.get("firstName"),
+          lastNameKana: session.get("lastNameKana"),
+          firstNameKana: session.get("firstNameKana"),
+          postalCode: session.get("postalCode"),
           prefecture: session.get("prefecture"),
           city: session.get("city"),
           address1: session.get("address1"),
           address2: session.get("address2"),
-          phone_number: session.get("phoneNumber"),
-          delete_flg: false,
-        },
+          phoneNumber: session.get("phoneNumber"),
+          deleteFlg: false,
+        }),
       ]);
 
-    inserted = data?.[0];
+    if (data) {
+      inserted = camelcaseKeys(data[0]);
+    }
 
     if (error) {
       throw error;
@@ -136,11 +141,11 @@ export const action = async ({ request }: ActionArgs) => {
 
   // save user data to auth session
   const authSession = await getAuthSession(request.headers.get("Cookie"));
-  authSession.set("user_id", inserted?.user_id);
+  authSession.set("userId", inserted?.userId);
   authSession.set("email", inserted?.email);
   authSession.set("password", inserted?.password);
-  authSession.set("lastName", inserted?.last_name);
-  authSession.set("firstName", inserted?.first_name);
+  authSession.set("lastName", inserted?.lastName);
+  authSession.set("firstName", inserted?.firstName);
 
   // destroy signup session and commit auth session
   const headers = new Headers();
