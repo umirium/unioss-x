@@ -16,6 +16,7 @@
     "@remix-validated-form/with-yup": "^2.0.1",
     "@supabase/supabase-js": "^1.35.6",
     "@vercel/node": "^2.5.11",
+    "camelcase-keys": "^8.0.2",
     "i18next": "^21.9.1",
     "i18next-browser-languagedetector": "^6.1.5",
     "i18next-fs-backend": "^1.1.5",
@@ -25,6 +26,7 @@
     "react-i18next": "^11.18.5",
     "remix-i18next": "^4.1.1",
     "remix-validated-form": "^4.5.5",
+    "snakecase-keys": "^5.4.4",
     "yup": "^0.32.11"
   },
   "devDependencies": {
@@ -38,6 +40,7 @@
     "eslint-config-prettier": "^8.5.0",
     "openapi-typescript": "^5.4.1",
     "prettier": "^2.7.1",
+    "snake-camel-types": "^1.0.1",
     "typescript": "^4.8.2"
   },
   "engines": {
