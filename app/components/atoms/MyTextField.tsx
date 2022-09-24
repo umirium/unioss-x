@@ -12,17 +12,16 @@ interface MyTextFieldProps extends StandardTextFieldProps {
 export const MyTextField = (props: MyTextFieldProps) => {
   const { error, getInputProps } = useField(props.label);
   const { t } = useTranslation(["front", "validator"]);
+  // Delete "required" as "please fill out this field" is displayed.
+  const { required, ...removeRequiredProps } = props;
 
   return (
     <>
       <TextField
         {...getInputProps({ id: props.label })}
+        {...removeRequiredProps}
         label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
-        type={props.type}
         variant={props.variant && "outlined"}
-        defaultValue={props.defaultValue}
-        multiline={props.multiline}
-        rows={props.rows}
         error={!!error}
         helperText={error && t(`validator:${error}`)}
       />

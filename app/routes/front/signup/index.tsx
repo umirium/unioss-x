@@ -122,7 +122,7 @@ export default function Index() {
     <>
       {validated &&
         Object.entries(validated.fieldErrors).map(([key, value], index) => {
-          // show only system errors
+          // show only system error
           if (key === "systemError") {
             return (
               <Alert key={index} severity="error">

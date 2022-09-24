@@ -15,9 +15,7 @@ export const MyInput = (props: MyInputProps) => {
     <>
       <Input
         {...getInputProps({ id: props.label })}
-        name={props.label}
-        type={props.type}
-        defaultValue={props.defaultValue}
+        {...props}
         error={!!error}
       />
     </>
