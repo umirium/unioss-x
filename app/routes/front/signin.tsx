@@ -57,7 +57,10 @@ export const action = async ({ request }: ActionArgs) => {
   const headers = new Headers({ "Set-Cookie": await commitSession(session) });
 
   if (user) {
-    return redirect("/front/aboutus", { headers });
+    const url = new URL(request.url);
+    const redirectTo = url.searchParams.get("r");
+
+    return redirect(redirectTo || "/front", { headers });
   }
 
   return validationError({

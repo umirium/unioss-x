@@ -15,7 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
-import { Link } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
 
@@ -39,6 +39,7 @@ export default function Outline(props: Props) {
   const { children, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const childCompRef = useRef({} as SettingsHandler);
+  const location = useLocation();
 
   const { t } = useTranslation();
 
@@ -94,7 +95,10 @@ export default function Outline(props: Props) {
               variant="contained"
               component={Link}
               onClick={handleClickSignin}
-              to="/front/signin"
+              disabled={location.pathname === "/front/signin"}
+              to={`/front/signin${
+                location.pathname && `?r=${location.pathname}`
+              }`}
             >
               {t("common:signin")}
             </Button>
