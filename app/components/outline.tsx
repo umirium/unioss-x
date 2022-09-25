@@ -10,6 +10,7 @@ import {
   Slide,
   useScrollTrigger,
   Button,
+  Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import TopButton from "./outline/topButton";
@@ -18,9 +19,12 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "@remix-run/react";
 import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
+import type { definitions } from "~/types/tables";
+import type { SnakeToCamel } from "snake-camel-types";
 
 interface Props {
   children: ReactElement;
+  authUser: SnakeToCamel<definitions["users"]> | null;
   drawerWidth?: number;
 }
 
@@ -91,17 +95,21 @@ export default function Outline(props: Props) {
               onClose={handleCloseMenu}
               sx={{ mr: 2 }}
             />
-            <Button
-              variant="contained"
-              component={Link}
-              onClick={handleClickSignin}
-              disabled={location.pathname === "/front/signin"}
-              to={`/front/signin${
-                location.pathname && `?r=${location.pathname}`
-              }`}
-            >
-              {t("common:signin")}
-            </Button>
+            {props.authUser ? (
+              <Avatar>{props.authUser.lastName?.substring(0, 1)}</Avatar>
+            ) : (
+              <Button
+                variant="contained"
+                component={Link}
+                onClick={handleClickSignin}
+                disabled={location.pathname === "/front/signin"}
+                to={`/front/signin${
+                  location.pathname && `?r=${location.pathname}`
+                }`}
+              >
+                {t("common:signin")}
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
       </HideAppbarOnScroll>

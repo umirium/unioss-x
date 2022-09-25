@@ -4,18 +4,20 @@ import { Button, ThemeProvider } from "@mui/material";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
+import type { LoaderArgs } from "@remix-run/node";
+import { authenticator } from "~/utils/auth.server";
 
-export const loader = async () => {
-  return { env: process.env.TEST };
+export const loader = async ({ request }: LoaderArgs) => {
+  return await authenticator.isAuthenticated(request);
 };
 
 export default function Front() {
-  const data = useLoaderData<typeof loader>();
+  const authUser = useLoaderData<typeof loader>();
   const { theme } = useDarkThemeContext();
 
   return (
     <ThemeProvider theme={theme}>
-      <Outline>
+      <Outline authUser={authUser}>
         <Box>
           <Outlet />
 
@@ -24,8 +26,6 @@ export default function Front() {
             <Button variant="contained">Contained</Button>
             <Button variant="outlined">Outlined</Button>
           </Box>
-
-          <Box sx={{ mt: 5 }}>{data.env}</Box>
 
           <Typography sx={{ paddingTop: "1em" }}>
             {[...new Array(10)]
