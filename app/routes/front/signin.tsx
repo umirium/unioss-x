@@ -1,59 +1,99 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Container,
   CssBaseline,
   Box,
   Avatar,
   Typography,
-  TextField,
   Button,
   Divider,
   Link as MUILink,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
+  Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link as RemixLink } from "@remix-run/react";
+import { Link as RemixLink, useActionData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
-import { useState } from "react";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import { authenticator } from "~/utils/auth.server";
+import { signinSchema } from "~/stores/validator";
+import { withYup } from "@remix-validated-form/with-yup";
+import {
+  useIsSubmitting,
+  ValidatedForm,
+  validationError,
+} from "remix-validated-form";
+import { MySubmitButton } from "~/components/atoms/MySubmitButton";
+import { MyTextField } from "~/components/atoms/MyTextField";
+import { MyPassword } from "~/components/atoms/MyPassword";
+import { commitSession, getSession } from "~/utils/sessions/auth.server";
 
-interface Form {
-  email: string;
-  password: string;
-  showPassword: boolean;
-}
+const validator = withYup(signinSchema);
+
+export const loader = async ({ request }: LoaderArgs) => {
+  return await authenticator.isAuthenticated(request, {
+    successRedirect: "/front",
+  });
+};
+
+export const action = async ({ request }: ActionArgs) => {
+  let user;
+
+  try {
+    user = await authenticator.authenticate("form", request);
+  } catch (error) {
+    return validationError({
+      fieldErrors: {
+        auth: "signinFailed",
+      },
+    });
+  }
+
+  // manually get the session and store the user data
+  const session = await getSession(request.headers.get("cookie"));
+  session.set(authenticator.sessionKey, user);
+
+  // commit the session
+  const headers = new Headers({ "Set-Cookie": await commitSession(session) });
+
+  if (user) {
+    return redirect("/front/aboutus", { headers });
+  }
+
+  return validationError({
+    fieldErrors: {
+      system: "db",
+    },
+  });
+};
 
 export default function Signin() {
-  const [values, setValues] = useState<Form>({
-    email: "",
-    password: "",
-    showPassword: false,
-  });
+  const validated = useActionData<typeof action>();
+  const isSubmitting = useIsSubmitting("myForm");
   const { t } = useTranslation();
 
-  const handleChange =
-    (prop: keyof Form) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: event.target.value });
-    };
-
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
   return (
-    <>
+    <ValidatedForm validator={validator} method="post" id="myForm">
       <Container component="main" maxWidth="xs">
         <CssBaseline />
+        {!isSubmitting &&
+          validated &&
+          Object.entries(validated?.fieldErrors).map(([key, value], index) => {
+            if (key === "system") {
+              return (
+                <Alert key={index} severity="error" sx={{ mb: 3 }}>
+                  {t(`validator:${key}`)}: {t(`validator:${value}`)}
+                </Alert>
+              );
+            } else if (key === "auth") {
+              return (
+                <Alert key={index} severity="error" sx={{ mb: 3 }}>
+                  {t(`validator:${value}`)}
+                </Alert>
+              );
+            }
+            return "";
+          })}
         <Box
           sx={{
             display: "flex",
@@ -68,55 +108,30 @@ export default function Signin() {
             {t("common:signin")}
           </Typography>
 
-          <Box
-            component="form"
-            // onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
-            <TextField
-              margin="normal"
-              label={t("front:email")}
-              name="email"
-              value={values.email}
-              onChange={handleChange("email")}
+          <Box sx={{ mt: 1 }}>
+            <MyTextField
+              label="email"
               autoComplete="email"
+              defaultValue=""
               autoFocus
               fullWidth
               required
             />
 
-            <FormControl sx={{ mt: 2 }} variant="outlined" fullWidth>
-              <InputLabel htmlFor="password">{t("front:password")}</InputLabel>
-              <OutlinedInput
-                id="password"
-                type={values.showPassword ? "text" : "password"}
-                value={values.password}
-                label={t("front:password")}
-                onChange={handleChange("password")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
+            <MyPassword
+              label="password"
+              defaultValue=""
+              sx={{ mt: 2 }}
+              required
+            />
 
-            <Button
+            <MySubmitButton
+              label="signin"
               type="submit"
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               fullWidth
-            >
-              {t("common:signin")}
-            </Button>
+            />
 
             <Divider>
               <Typography variant="subtitle2" sx={{ ml: 1, mr: 1 }}>
@@ -150,6 +165,6 @@ export default function Signin() {
           </Box>
         </Box>
       </Container>
-    </>
+    </ValidatedForm>
   );
 }

@@ -57,3 +57,8 @@ export const personalDataFormSchema: yup.SchemaOf<PersonalData> = yup.object({
     .max(13, "max13")
     .matches(/^[0-9\\-]*$/, "tel"),
 });
+
+export const signinSchema = yup.object({
+  email: yup.string().max(255, "max255").email("email").required("required"),
+  password: yup.string().max(255, "max255").required("required"),
+});

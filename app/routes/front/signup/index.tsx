@@ -77,7 +77,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     return validationError({
       fieldErrors: {
-        systemError: "dbRead",
+        system: "dbRead",
       },
     });
   }
@@ -123,10 +123,10 @@ export default function Index() {
       {validated &&
         Object.entries(validated.fieldErrors).map(([key, value], index) => {
           // show only system error
-          if (key === "systemError") {
+          if (key === "system") {
             return (
               <Alert key={index} severity="error">
-                {t(`front:${key}`)}: {t(`validator:${value}`)}
+                {t(`validator:${key}`)}: {t(`validator:${value}`)}
               </Alert>
             );
           }

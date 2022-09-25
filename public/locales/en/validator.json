@@ -1,4 +1,8 @@
 {
+  "// keys": "",
+  "auth": "Authentication Error",
+  "system": "System Error",
+  "// values": "",
   "required": "required",
   "email": "Please enter a valid email address",
   "emailRetype": "Must be one of the following value 'email'",
@@ -15,7 +19,10 @@
   "max128": "Please input 128 characters or less",
   "max255": "Please input 255 characters or less",
   "max1000": "Please input 1000 characters or less",
+  "db": "Database Error",
   "dbWrite": "Failed to write to database",
   "dbRead": "Failed to read to database",
-  "alreadyUsed": "Already used"
+  "alreadyUsed": "Already used",
+  "signinFailed": "Sign-in failed",
+  "unknown": "Unknown Error"
 }
