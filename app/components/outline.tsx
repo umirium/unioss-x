@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { useRef, useState } from "react";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   useScrollTrigger,
   Button,
   Avatar,
+  Snackbar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import TopButton from "./outline/topButton";
@@ -40,7 +41,7 @@ const HideAppbarOnScroll = (props: Props) => {
 };
 
 export default function Outline(props: Props) {
-  const { children, drawerWidth } = props;
+  const { children, authUser, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const childCompRef = useRef({} as SettingsHandler);
   const location = useLocation();
@@ -95,8 +96,8 @@ export default function Outline(props: Props) {
               onClose={handleCloseMenu}
               sx={{ mr: 2 }}
             />
-            {props.authUser ? (
-              <Avatar>{props.authUser.lastName?.substring(0, 1)}</Avatar>
+            {authUser ? (
+              <Avatar>{authUser.lastName?.substring(0, 1)}</Avatar>
             ) : (
               <Button
                 variant="contained"

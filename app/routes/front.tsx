@@ -1,19 +1,63 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Button, ThemeProvider } from "@mui/material";
+import type { SlideProps } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Slide,
+  Snackbar,
+  ThemeProvider,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
+import { commitSession, getSession } from "~/utils/sessions/auth.server";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+type TransitionProps = Omit<SlideProps, "direction">;
+
+const TransitionUp = (props: TransitionProps) => (
+  <Slide {...props} direction="up" />
+);
 
 export const loader = async ({ request }: LoaderArgs) => {
-  return await authenticator.isAuthenticated(request);
+  const authUser = await authenticator.isAuthenticated(request);
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const authed: boolean | undefined = session.get("authed");
+
+  return json(
+    { authUser, authed },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    }
+  );
 };
 
 export default function Front() {
-  const authUser = useLoaderData<typeof loader>();
+  const { authUser, authed } = useLoaderData<typeof loader>();
   const { theme } = useDarkThemeContext();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [transition, setTransition] = useState<
+    React.ComponentType<TransitionProps> | undefined
+  >(undefined);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    setTransition(() => TransitionUp);
+    setOpenSnackbar(authed || false);
+  }, [authed]);
+
+  const handleCloseSnackbar = (event: React.SyntheticEvent | Event) => {
+    setOpenSnackbar(false);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -63,6 +107,25 @@ export default function Front() {
           </Typography>
         </Box>
       </Outline>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={openSnackbar}
+        TransitionComponent={transition}
+        onClose={handleCloseSnackbar}
+        message={t("common:signinSuccessful")}
+        autoHideDuration={5000}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleCloseSnackbar}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
     </ThemeProvider>
   );
 }

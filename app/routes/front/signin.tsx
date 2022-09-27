@@ -53,6 +53,9 @@ export const action = async ({ request }: ActionArgs) => {
   const session = await getSession(request.headers.get("cookie"));
   session.set(authenticator.sessionKey, user);
 
+  // to show snackbar of successful sign-in
+  session.flash("authed", true);
+
   // commit the session
   const headers = new Headers({ "Set-Cookie": await commitSession(session) });
 
