@@ -69,6 +69,10 @@ export default function Outline(props: Props) {
   };
 
   const handleClickAvatar = (event: MouseEvent<HTMLButtonElement>) => {
+    // close menu and settings drawers
+    setMobileOpen(false);
+    settingButtonRef?.current.closeSettings();
+
     setAnchorEl(event.currentTarget);
   };
 
