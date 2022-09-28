@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import type { ReactElement, MouseEvent } from "react";
 import { useRef, useState } from "react";
 import {
   Box,
@@ -11,13 +11,15 @@ import {
   useScrollTrigger,
   Button,
   Avatar,
-  Snackbar,
+  Popover,
+  ButtonBase,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "@remix-run/react";
+import { Form, Link, useLocation, useSubmit } from "@remix-run/react";
 import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
@@ -43,9 +45,10 @@ const HideAppbarOnScroll = (props: Props) => {
 export default function Outline(props: Props) {
   const { children, authUser, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const childCompRef = useRef({} as SettingsHandler);
   const location = useLocation();
-
+  const submit = useSubmit();
   const { t } = useTranslation();
 
   const handleToggleMenu = () => {
@@ -63,6 +66,21 @@ export default function Outline(props: Props) {
     // close menu and settings drawers
     setMobileOpen(false);
     childCompRef?.current.closeSettings();
+  };
+
+  const handleClickAvatar = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSubmit = async (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
+    handleClosePopover();
+    submit(event.currentTarget);
   };
 
   return (
@@ -96,8 +114,11 @@ export default function Outline(props: Props) {
               onClose={handleCloseMenu}
               sx={{ mr: 2 }}
             />
+
             {authUser ? (
-              <Avatar>{authUser.lastName?.substring(0, 1)}</Avatar>
+              <Avatar component={ButtonBase} onClick={handleClickAvatar}>
+                {authUser.lastName?.substring(0, 1)}
+              </Avatar>
             ) : (
               <Button
                 variant="contained"
@@ -111,6 +132,46 @@ export default function Outline(props: Props) {
                 {t("common:signin")}
               </Button>
             )}
+
+            {/* for Avatar */}
+            <Popover
+              open={!!anchorEl}
+              anchorEl={anchorEl}
+              onClose={handleClosePopover}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              sx={{ mt: 2 }}
+            >
+              <Box sx={{ p: 2 }}>
+                <Box>
+                  {authUser?.lastName} {authUser?.firstName}
+                </Box>
+                <Box>{authUser?.email}</Box>
+                <Divider sx={{ mt: 2, mb: 2 }} />
+                <Box sx={{ textAlign: "center" }}>
+                  <Form method="post">
+                    <input
+                      type="hidden"
+                      name="redirectTo"
+                      value={location.pathname}
+                    />
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      name="signout"
+                      value={1}
+                      onClick={handleSubmit}
+                    >
+                      {t("common:signout")}
+                    </Button>
+                  </Form>
+                </Box>
+              </Box>
+            </Popover>
           </Toolbar>
         </AppBar>
       </HideAppbarOnScroll>

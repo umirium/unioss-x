@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { commitSession, getSession } from "~/utils/sessions/auth.server";
@@ -39,6 +39,22 @@ export const loader = async ({ request }: LoaderArgs) => {
       },
     }
   );
+};
+
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
+
+  // sign-out process from outline
+  if (formData.get("signout")) {
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 100));
+
+    const redirectTo = formData.get("redirectTo");
+    return await authenticator.logout(request, {
+      redirectTo: `/front/signin${redirectTo && `?r=${redirectTo}`}`,
+    });
+  }
+
+  return null;
 };
 
 export default function Front() {
