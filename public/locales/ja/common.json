@@ -1,7 +1,6 @@
 {
   "signin": "ログイン",
   "signout": "ログアウト",
-  "signinSuccessful": "ログインしました",
   "create_new_account": "新規アカウント作成",
   "forget_password": "パスワードを忘れた場合",
   "back": "戻る",

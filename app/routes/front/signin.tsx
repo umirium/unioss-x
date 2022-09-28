@@ -26,7 +26,14 @@ import {
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { MyPassword } from "~/components/atoms/MyPassword";
-import { commitSession, getSession } from "~/utils/sessions/auth.server";
+import {
+  commitSession as commitAuthSession,
+  getSession as getAuthSession,
+} from "~/utils/sessions/auth.server";
+import {
+  commitSession as commitNoticeSession,
+  getSession as getNoticeSession,
+} from "~/utils/sessions/notice.server";
 
 const validator = withYup(signinSchema);
 
@@ -49,19 +56,21 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  // manually get the session and store the user data
-  const session = await getSession(request.headers.get("cookie"));
-  session.set(authenticator.sessionKey, user);
-
-  // to show snackbar of successful sign-in
-  session.flash("authed", true);
-
-  // commit the session
-  const headers = new Headers({ "Set-Cookie": await commitSession(session) });
-
   if (user) {
     const url = new URL(request.url);
     const redirectTo = url.searchParams.get("r");
+
+    // manually get the session and store the user data
+    const authSession = await getAuthSession(request.headers.get("cookie"));
+    authSession.set(authenticator.sessionKey, user);
+
+    // to show snackbar of successful sign-in
+    const noticeSession = await getNoticeSession(request.headers.get("cookie"));
+    noticeSession.flash("notice", "signin");
+
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAuthSession(authSession));
+    headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
 
     return redirect(redirectTo || "/front", { headers });
   }
