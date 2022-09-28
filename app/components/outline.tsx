@@ -46,14 +46,14 @@ export default function Outline(props: Props) {
   const { children, authUser, drawerWidth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const childCompRef = useRef({} as SettingsHandler);
+  const settingButtonRef = useRef({} as SettingsHandler);
   const location = useLocation();
   const submit = useSubmit();
   const { t } = useTranslation();
 
   const handleToggleMenu = () => {
     // close settings drawer
-    childCompRef?.current.closeSettings();
+    settingButtonRef?.current.closeSettings();
 
     setMobileOpen(!mobileOpen);
   };
@@ -65,7 +65,7 @@ export default function Outline(props: Props) {
   const handleClickSignin = () => {
     // close menu and settings drawers
     setMobileOpen(false);
-    childCompRef?.current.closeSettings();
+    settingButtonRef?.current.closeSettings();
   };
 
   const handleClickAvatar = (event: MouseEvent<HTMLButtonElement>) => {
@@ -110,7 +110,7 @@ export default function Outline(props: Props) {
               {t("front:title")}
             </Typography>
             <SettingsButton
-              ref={childCompRef}
+              ref={settingButtonRef}
               onClose={handleCloseMenu}
               sx={{ mr: 2 }}
             />
