@@ -91,24 +91,6 @@ export default function Signin() {
     <ValidatedForm validator={validator} method="post" id="myForm">
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        {!isSubmitting &&
-          validated &&
-          Object.entries(validated?.fieldErrors).map(([key, value], index) => {
-            if (key === "system") {
-              return (
-                <Alert key={index} severity="error" sx={{ mb: 3 }}>
-                  {t(`validator:${key}`)}: {t(`validator:${value}`)}
-                </Alert>
-              );
-            } else if (key === "auth") {
-              return (
-                <Alert key={index} severity="error" sx={{ mb: 3 }}>
-                  {t(`validator:${value}`)}
-                </Alert>
-              );
-            }
-            return "";
-          })}
         <Box
           sx={{
             display: "flex",
@@ -139,6 +121,27 @@ export default function Signin() {
               sx={{ mt: 2 }}
               required
             />
+
+            {!isSubmitting &&
+              validated &&
+              Object.entries(validated?.fieldErrors).map(
+                ([key, value], index) => {
+                  if (key === "system") {
+                    return (
+                      <Alert key={index} severity="error" sx={{ mt: 2 }}>
+                        {t(`validator:${key}`)}: {t(`validator:${value}`)}
+                      </Alert>
+                    );
+                  } else if (key === "auth") {
+                    return (
+                      <Alert key={index} severity="error" sx={{ mt: 2 }}>
+                        {t(`validator:${value}`)}
+                      </Alert>
+                    );
+                  }
+                  return "";
+                }
+              )}
 
             <MySubmitButton
               label="signin"
