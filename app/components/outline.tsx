@@ -19,7 +19,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
-import { Form, Link, useLocation, useSubmit } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useLocation,
+  useNavigate,
+  useSubmit,
+} from "@remix-run/react";
 import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
@@ -48,6 +54,7 @@ export default function Outline(props: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const settingButtonRef = useRef({} as SettingsHandler);
   const location = useLocation();
+  const navigate = useNavigate();
   const submit = useSubmit();
   const { t } = useTranslation();
 
@@ -60,6 +67,16 @@ export default function Outline(props: Props) {
 
   const handleCloseMenu = () => {
     setMobileOpen(false);
+  };
+
+  const handleClickLogo = (
+    event: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>
+  ) => {
+    // close menu and settings drawers
+    setMobileOpen(false);
+    settingButtonRef?.current.closeSettings();
+
+    navigate("/front");
   };
 
   const handleClickSignin = () => {
@@ -105,14 +122,17 @@ export default function Outline(props: Props) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              {t("front:title")}
-            </Typography>
+
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h6"
+                sx={{ cursor: "pointer" }}
+                onClick={handleClickLogo}
+              >
+                {t("front:title")}
+              </Typography>
+            </Box>
+
             <SettingsButton
               ref={settingButtonRef}
               onClose={handleCloseMenu}
