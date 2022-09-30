@@ -1,12 +1,14 @@
+import { PassThrough } from "stream";
 import { RemixServer } from "@remix-run/react";
 import type { EntryContext } from "@remix-run/server-runtime";
 import { createInstance } from "i18next";
 import Backend from "i18next-fs-backend";
 import { resolve } from "node:path";
-import { renderToString } from "react-dom/server";
+import { renderToPipeableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import i18next from "./i18next.server";
 import i18n from "./i18n";
+import { Response } from "@remix-run/node";
 
 export default async function handleRequest(
   request: Request,
@@ -31,16 +33,26 @@ export default async function handleRequest(
       },
     });
 
-  const markup = renderToString(
-    <I18nextProvider i18n={instance}>
-      <RemixServer context={context} url={request.url} />
-    </I18nextProvider>
-  );
+  return new Promise((resolve) => {
+    const { pipe } = renderToPipeableStream(
+      <I18nextProvider i18n={instance}>
+        <RemixServer context={context} url={request.url} />
+      </I18nextProvider>,
+      {
+        onShellReady() {
+          const body = new PassThrough();
 
-  headers.set("Content-Type", "text/html");
+          headers.set("Content-Type", "text/html");
 
-  return new Response("<!DOCTYPE html>" + markup, {
-    status: statusCode,
-    headers: headers,
+          resolve(
+            new Response(body, {
+              status: statusCode,
+              headers: headers,
+            })
+          );
+          pipe(body);
+        },
+      }
+    );
   });
 }

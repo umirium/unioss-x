@@ -10,5 +10,5 @@ module.exports = {
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "api/index.js",
   // publicPath: "/build/",
-  serverDependenciesToBundle: ["camelcase", "camelcase-keys", "snakecase-keys"],
+  serverDependenciesToBundle: ["camelcase", "camelcase-keys", "snakecase-keys", "quick-lru"],
 };

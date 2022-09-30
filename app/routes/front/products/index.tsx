@@ -15,6 +15,9 @@ import { Link, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
+// import { Suspense } from "react";
+// TODO: error
+// import { defer } from "@remix-run/node";
 
 const PER_PAGE = 4;
 
@@ -48,6 +51,7 @@ export default function Index() {
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Grid container spacing={3} alignItems="center">
           {/* TODO: If 'defer' is implemented in Remix, use this code. */}
+          {/* cf. https://github.com/remix-run/remix/blob/deferred/docs/guides/streaming.md */}
           {!products
             ? [...new Array(12)].map((item, index) => (
                 <Grid key={index} xs={12} sm={6} md={4}>
