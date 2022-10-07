@@ -1,7 +1,8 @@
 import { RemixServer } from "@remix-run/react";
 import type { EntryContext } from "@remix-run/server-runtime";
 import { createInstance } from "i18next";
-import Backend from "i18next-fs-backend";
+import BackendFS from "i18next-fs-backend";
+import BackendHTTP from "i18next-http-backend";
 import { resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
@@ -19,17 +20,23 @@ export default async function handleRequest(
   const lng = await i18next.getLocale(request);
   const ns = i18next.getRouteNamespaces(context);
 
-  await instance
-    .use(initReactI18next)
-    .use(Backend)
-    .init({
-      ...i18n,
-      lng,
-      ns,
-      backend: {
-        loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json"),
-      },
-    });
+  if (process.env.NODE_ENV === "production") {
+    instance.use(BackendHTTP);
+  } else {
+    instance.use(BackendFS);
+  }
+
+  await instance.use(initReactI18next).init({
+    ...i18n,
+    lng,
+    ns,
+    backend: {
+      loadPath:
+        process.env.NODE_ENV === "production"
+          ? "https://umirium.github.io/unioss-x-i18n/locales/{{lng}}/{{ns}}.json"
+          : resolve("./public/locales/{{lng}}/{{ns}}.json"),
+    },
+  });
 
   const markup = renderToString(
     <I18nextProvider i18n={instance}>

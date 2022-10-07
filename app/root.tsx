@@ -13,6 +13,7 @@ import styles from "~/styles/root.css";
 import { useChangeLanguage } from "remix-i18next";
 import { useTranslation } from "react-i18next";
 import i18next from "~/i18next.server";
+import i18n from "./i18n";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const locale = await i18next.getLocale(request);
@@ -20,7 +21,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const handle = {
-  i18n: ["common", "front", "notice", "validator"],
+  i18n: i18n.ns,
 };
 
 export const meta: MetaFunction = () => ({
