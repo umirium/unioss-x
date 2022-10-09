@@ -1,10 +1,18 @@
 import type { IconButtonProps } from "@mui/material";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { Box, Drawer, List, ListItem, Toolbar } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  Toolbar,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
-import { Divider, IconButton } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import type { MouseEvent } from "react";
 import { forwardRef, useImperativeHandle } from "react";
@@ -58,8 +66,20 @@ const SettingButton = forwardRef<SettingsHandler, Props>(function SettingButton(
   const list = () => (
     <Box sx={{ width: "auto" }} role="presentation">
       <List>
-        <ListItem>
+        <ListItem
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Box>{t("settings")}</Box>
+          <Box
+            sx={{ display: "inline-flex", cursor: "pointer" }}
+            onClick={handleToggleDrawer}
+          >
+            <CloseIcon fontSize="small" />
+          </Box>
         </ListItem>
       </List>
       <Divider />
