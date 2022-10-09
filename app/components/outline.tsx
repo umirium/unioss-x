@@ -124,7 +124,7 @@ export default function Outline(props: Props) {
               <MenuIcon />
             </IconButton>
 
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 1, display: "flex" }}>
               <Typography
                 variant="h6"
                 sx={{ cursor: "pointer" }}
