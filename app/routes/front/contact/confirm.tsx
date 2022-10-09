@@ -32,6 +32,7 @@ import type {
 } from "~/types/contactFormType";
 import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 
 const validator = withYup(
   contactPersonalInfoSchema.concat(contactInquirySchema)
@@ -134,14 +135,9 @@ export default function Confirm() {
         </Paper>
 
         <Box sx={{ mt: 5, textAlign: "center" }}>
-          <Button
-            variant="outlined"
-            component={Link}
-            to="../inquiry"
-            sx={{ mr: 3 }}
-          >
+          <MyLinkButton variant="outlined" to="../inquiry" sx={{ mr: 3 }}>
             {t("common:back")}
-          </Button>
+          </MyLinkButton>
           <MySubmitButton
             label="send"
             endIcon={<SendIcon />}

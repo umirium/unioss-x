@@ -34,6 +34,7 @@ import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 
 const validator = withYup(signinSchema);
 
@@ -157,17 +158,17 @@ export default function Signin() {
               </Typography>
             </Divider>
 
-            <Button
-              component={RemixLink}
+            <Button></Button>
+
+            <MyLinkButton
               to={"/front/signup"}
-              type="submit"
               variant="contained"
               color="success"
               sx={{ mt: 3, mb: 2 }}
               fullWidth
             >
               {t("common:create_new_account")}
-            </Button>
+            </MyLinkButton>
 
             <Box sx={{ textAlign: "right" }}>
               <MUILink

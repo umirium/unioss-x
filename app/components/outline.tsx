@@ -30,6 +30,7 @@ import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
+import { MyLinkButton } from "./atoms/MyLinkButton";
 
 interface Props {
   children: ReactElement;
@@ -144,9 +145,8 @@ export default function Outline(props: Props) {
                 {authUser.lastName?.substring(0, 1)}
               </Avatar>
             ) : (
-              <Button
+              <MyLinkButton
                 variant="contained"
-                component={Link}
                 onClick={handleClickSignin}
                 disabled={location.pathname === "/front/signin"}
                 to={`/front/signin${
@@ -154,7 +154,7 @@ export default function Outline(props: Props) {
                 }`}
               >
                 {t("common:signin")}
-              </Button>
+              </MyLinkButton>
             )}
 
             {/* for Avatar */}

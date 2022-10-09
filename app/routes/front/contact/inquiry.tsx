@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import type { TFunction } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { ValidatedForm, validationError } from "remix-validated-form";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
@@ -118,9 +119,9 @@ export default function Inquiry() {
         </Grid>
 
         <Box sx={{ mt: 5, textAlign: "center" }}>
-          <Button variant="outlined" component={Link} to="../" sx={{ mr: 3 }}>
+          <MyLinkButton variant="outlined" to="../" sx={{ mr: 3 }}>
             {t("back")}
-          </Button>
+          </MyLinkButton>
 
           <MySubmitButton label="next" />
         </Box>
