@@ -1,5 +1,6 @@
 import type { ReactElement, MouseEvent } from "react";
 import { useRef, useState } from "react";
+import type { PaletteMode } from "@mui/material";
 import {
   Box,
   CssBaseline,
@@ -14,18 +15,17 @@ import {
   Popover,
   ButtonBase,
   Divider,
+  createTheme,
+  ThemeProvider,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { grey } from "@mui/material/colors";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
-import {
-  Form,
-  Link,
-  useLocation,
-  useNavigate,
-  useSubmit,
-} from "@remix-run/react";
+import { Form, useLocation, useNavigate, useSubmit } from "@remix-run/react";
 import SettingsButton from "./outline/settingsButton";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
@@ -49,47 +49,58 @@ const HideAppbarOnScroll = (props: Props) => {
   );
 };
 
+const getDesignTokens = (mode: PaletteMode) => ({
+  palette: {
+    primary: {
+      main: mode === "light" ? grey[800] : grey[100],
+    },
+  },
+});
+
 export default function Outline(props: Props) {
   const { children, authUser, drawerWidth } = props;
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const settingButtonRef = useRef({} as SettingsHandler);
+  const settingsButtonRef = useRef({} as SettingsHandler);
   const location = useLocation();
   const navigate = useNavigate();
   const submit = useSubmit();
   const { t } = useTranslation();
+  const darkTheme = useTheme();
 
-  const handleToggleMenu = () => {
+  const theme = createTheme(getDesignTokens(darkTheme.palette.mode));
+
+  const handleToggleMobileMenu = () => {
     // close settings drawer
-    settingButtonRef?.current.closeSettings();
+    settingsButtonRef?.current.closeSettings();
 
-    setMobileOpen(!mobileOpen);
+    setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  const handleCloseMenu = () => {
-    setMobileOpen(false);
+  const handleCloseSettingsMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   const handleClickLogo = (
     event: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>
   ) => {
     // close menu and settings drawers
-    setMobileOpen(false);
-    settingButtonRef?.current.closeSettings();
+    setMobileMenuOpen(false);
+    settingsButtonRef?.current.closeSettings();
 
     navigate("/front");
   };
 
   const handleClickSignin = () => {
     // close menu and settings drawers
-    setMobileOpen(false);
-    settingButtonRef?.current.closeSettings();
+    setMobileMenuOpen(false);
+    settingsButtonRef?.current.closeSettings();
   };
 
   const handleClickAvatar = (event: MouseEvent<HTMLButtonElement>) => {
     // close menu and settings drawers
-    setMobileOpen(false);
-    settingButtonRef?.current.closeSettings();
+    setMobileMenuOpen(false);
+    settingsButtonRef?.current.closeSettings();
 
     setAnchorEl(event.currentTarget);
   };
@@ -118,7 +129,7 @@ export default function Outline(props: Props) {
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={handleToggleMenu}
+              onClick={handleToggleMobileMenu}
               sx={{ mr: 2, display: { md: "none" } }}
             >
               <MenuIcon />
@@ -135,8 +146,8 @@ export default function Outline(props: Props) {
             </Box>
 
             <SettingsButton
-              ref={settingButtonRef}
-              onClose={handleCloseMenu}
+              ref={settingsButtonRef}
+              onClose={handleCloseSettingsMenu}
               sx={{ mr: 2 }}
             />
 
@@ -166,33 +177,68 @@ export default function Outline(props: Props) {
                 vertical: "bottom",
                 horizontal: "left",
               }}
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, minWidth: 350 }}
             >
-              <Box sx={{ p: 2 }}>
-                <Box>
-                  {authUser?.lastName} {authUser?.firstName}
-                </Box>
-                <Box>{authUser?.email}</Box>
-                <Divider sx={{ mt: 2, mb: 2 }} />
-                <Box sx={{ textAlign: "center" }}>
-                  <Form method="post">
-                    <input
-                      type="hidden"
-                      name="redirectTo"
-                      value={location.pathname}
-                    />
+              <Box sx={{ p: 2, textAlign: "center" }}>
+                {authUser?.email ? (
+                  <>
+                    <Box>
+                      {authUser?.lastName} {authUser?.firstName}
+                    </Box>
+                    <Box>{authUser?.email}</Box>
+                  </>
+                ) : (
+                  <Box>Guest</Box>
+                )}
 
-                    <Button
-                      type="submit"
+                <ThemeProvider theme={theme}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<SettingsIcon />}
+                    sx={{
+                      mt: 3,
+                      borderRadius: 28,
+                    }}
+                  >
+                    {t("common:settings")}
+                  </Button>
+                </ThemeProvider>
+
+                <Divider sx={{ mt: 2, mb: 2 }} />
+                <Box>
+                  {authUser?.email ? (
+                    <>
+                      <Form method="post">
+                        <input
+                          type="hidden"
+                          name="redirectTo"
+                          value={location.pathname}
+                        />
+
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color="secondary"
+                          name="signout"
+                          value={1}
+                          onClick={handleSubmit}
+                        >
+                          {t("common:signout")}
+                        </Button>
+                      </Form>
+                    </>
+                  ) : (
+                    <MyLinkButton
                       variant="contained"
-                      color="secondary"
-                      name="signout"
-                      value={1}
-                      onClick={handleSubmit}
+                      onClick={handleClickSignin}
+                      disabled={location.pathname === "/front/signin"}
+                      to={`/front/signin${
+                        location.pathname && `?r=${location.pathname}`
+                      }`}
                     >
-                      {t("common:signout")}
-                    </Button>
-                  </Form>
+                      {t("common:signin")}
+                    </MyLinkButton>
+                  )}
                 </Box>
               </Box>
             </Popover>
@@ -208,8 +254,8 @@ export default function Outline(props: Props) {
         {/* for mobile */}
         <FlexDrawer
           variant="temporary"
-          open={mobileOpen}
-          onClose={handleToggleMenu}
+          open={mobileMenuOpen}
+          onClose={handleToggleMobileMenu}
         />
 
         {/* for PC */}
