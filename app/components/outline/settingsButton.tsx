@@ -73,7 +73,7 @@ const SettingButton = forwardRef<SettingsHandler, Props>(function SettingButton(
             alignItems: "center",
           }}
         >
-          <Box>{t("settings")}</Box>
+          <Box>{t("common:settings")}</Box>
           <Box
             sx={{ display: "inline-flex", cursor: "pointer" }}
             onClick={handleToggleDrawer}
@@ -97,22 +97,22 @@ const SettingButton = forwardRef<SettingsHandler, Props>(function SettingButton(
           >
             <ToggleButton value="light">
               <LightModeIcon sx={{ mr: 1 }} />
-              {t("light")}
+              {t("common:light")}
             </ToggleButton>
             <ToggleButton value="system">
               <SettingsBrightnessIcon sx={{ mr: 1 }} />
-              {t("system")}
+              {t("common:system")}
             </ToggleButton>
             <ToggleButton value="dark">
               <DarkModeIcon sx={{ mr: 1 }} />
-              {t("dark")}
+              {t("common:dark")}
             </ToggleButton>
           </ToggleButtonGroup>
         </ListItem>
       </List>
       <List>
         <ListItem>
-          <Typography variant="subtitle2">{t("language")}</Typography>
+          <Typography variant="subtitle2">{t("common:language")}</Typography>
         </ListItem>
         <ListItem>
           <ToggleButtonGroup
@@ -124,8 +124,8 @@ const SettingButton = forwardRef<SettingsHandler, Props>(function SettingButton(
             aria-label="Platform"
             sx={{ width: "100%" }}
           >
-            <ToggleButton value="en">{t("english")}</ToggleButton>
-            <ToggleButton value="ja">{t("japanese")}</ToggleButton>
+            <ToggleButton value="en">{t("common:english")}</ToggleButton>
+            <ToggleButton value="ja">{t("common:japanese")}</ToggleButton>
           </ToggleButtonGroup>
         </ListItem>
       </List>

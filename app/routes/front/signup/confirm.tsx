@@ -200,7 +200,7 @@ export default function Confirm() {
           >
             <CircularProgress />{" "}
             <Typography sx={{ pl: 2, color: "primary.main" }}>
-              {t("sending")}
+              {t("common:sending")}
             </Typography>
           </Box>
         )}
