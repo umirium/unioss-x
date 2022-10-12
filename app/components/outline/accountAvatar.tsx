@@ -108,7 +108,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
         sx={{ mt: 2 }}
       >
         <Box sx={{ p: 2, textAlign: "center", minWidth: 250 }}>
-          {authUser?.email ? (
+          {authUser?.userId ? (
             <>
               <Box>
                 {authUser?.lastName} {authUser?.firstName}

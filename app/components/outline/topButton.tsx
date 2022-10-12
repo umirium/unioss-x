@@ -21,7 +21,7 @@ export default function TopButton() {
         role="presentation"
         sx={{ position: "fixed", bottom: 16, right: 16 }}
       >
-        <Fab size="small" aria-label="scroll back to top">
+        <Fab size="small">
           <KeyboardArrowUpIcon />
         </Fab>
       </Box>

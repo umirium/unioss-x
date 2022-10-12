@@ -80,7 +80,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
               value={mode === undefined ? "system" : mode}
               exclusive
               onChange={handleChangeMode}
-              aria-label="Platform"
             >
               <ToggleButton value="light">
                 <LightModeIcon sx={{ mr: 1 }} />
@@ -108,7 +107,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
               value={i18n.language}
               exclusive
               onChange={handleChangeLanguage}
-              aria-label="Platform"
               sx={{ width: "100%" }}
             >
               <ToggleButton value="en">{t("common:english")}</ToggleButton>

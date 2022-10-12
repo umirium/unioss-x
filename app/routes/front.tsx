@@ -114,7 +114,6 @@ export default function Front() {
         action={
           <IconButton
             size="small"
-            aria-label="close"
             color="inherit"
             onClick={handleCloseSnackbar}
           >

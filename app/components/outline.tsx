@@ -76,7 +76,6 @@ export default function Outline(props: Props) {
           <Toolbar>
             <IconButton
               color="inherit"
-              aria-label="open drawer"
               edge="start"
               onClick={handleToggleMobileMenu}
               sx={{ mr: 2, display: { md: "none" } }}
@@ -106,7 +105,6 @@ export default function Outline(props: Props) {
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth || 240 }, flexShrink: { md: 0 } }}
-        aria-label="menu"
       >
         {/* for mobile */}
         <FlexDrawer
