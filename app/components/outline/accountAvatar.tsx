@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { grey } from "@mui/material/colors";
+import { blue, grey, purple } from "@mui/material/colors";
 import { Form, useLocation, useSubmit } from "@remix-run/react";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
@@ -90,6 +90,15 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
     <>
       <Avatar
         component={ButtonBase}
+        sx={
+          authUser?.userId
+            ? darkTheme.palette.mode === "light"
+              ? { bgcolor: purple[700] }
+              : { bgcolor: blue[400] }
+            : darkTheme.palette.mode === "light"
+            ? { bgcolor: blue[900] }
+            : { bgcolor: grey[400] }
+        }
         onClick={handleClickAvatar}
         ref={(c: HTMLButtonElement) => {
           anchorRef(popupState)(c);

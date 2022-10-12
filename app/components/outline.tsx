@@ -9,8 +9,11 @@ import {
   Typography,
   Slide,
   useScrollTrigger,
+  Badge,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import TopButton from "./outline/topButton";
 import FlexDrawer from "./outline/flexDrawer";
 import { useTranslation } from "react-i18next";
@@ -43,6 +46,7 @@ export default function Outline(props: Props) {
   const settingsButtonRef = useRef({} as SettingsHandler);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const darkTheme = useTheme();
 
   const handleToggleMobileMenu = () => {
     // close settings drawer
@@ -92,6 +96,17 @@ export default function Outline(props: Props) {
                 {t("front:title")}
               </Typography>
             </Box>
+
+            <IconButton color="inherit" edge="start" sx={{ mr: 2 }}>
+              <Badge
+                badgeContent={100}
+                color={
+                  darkTheme.palette.mode === "light" ? "secondary" : "primary"
+                }
+              >
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
 
             <AccountAvatar
               authUser={authUser}
