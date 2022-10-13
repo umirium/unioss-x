@@ -69,6 +69,13 @@ export default function Outline(props: Props) {
     navigate("/front");
   };
 
+  const handleClickCart = () => {
+    setMobileMenuOpen(false);
+    settingsButtonRef?.current.closeSettingsDrawer();
+
+    navigate("/front/cart");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -97,7 +104,12 @@ export default function Outline(props: Props) {
               </Typography>
             </Box>
 
-            <IconButton color="inherit" edge="start" sx={{ mr: 2 }}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              sx={{ mr: 2 }}
+              onClick={handleClickCart}
+            >
               <Badge
                 badgeContent={100}
                 color={
