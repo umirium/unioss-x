@@ -15,7 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import TopButton from "./outline/topButton";
-import FlexDrawer from "./outline/flexDrawer";
+import NavMenuDrawer from "./outline/navMenuDrawer";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "@remix-run/react";
 import type { SettingsHandler } from "~/types/outline";
@@ -49,7 +49,6 @@ export default function Outline(props: Props) {
   const darkTheme = useTheme();
 
   const handleToggleMobileMenu = () => {
-    // close settings drawer
     settingsButtonRef?.current.closeSettingsDrawer();
 
     setMobileMenuOpen(!mobileMenuOpen);
@@ -62,7 +61,6 @@ export default function Outline(props: Props) {
   const handleClickLogo = (
     event: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>
   ) => {
-    // close menu and settings drawers
     setMobileMenuOpen(false);
     settingsButtonRef?.current.closeSettingsDrawer();
 
@@ -134,14 +132,14 @@ export default function Outline(props: Props) {
         sx={{ width: { md: drawerWidth || 240 }, flexShrink: { md: 0 } }}
       >
         {/* for mobile */}
-        <FlexDrawer
+        <NavMenuDrawer
           variant="temporary"
           open={mobileMenuOpen}
           onClose={handleToggleMobileMenu}
         />
 
         {/* for PC */}
-        <FlexDrawer variant="permanent" open />
+        <NavMenuDrawer variant="permanent" open />
       </Box>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, maxWidth: 1000 }}>

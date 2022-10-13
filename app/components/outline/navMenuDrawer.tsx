@@ -10,14 +10,14 @@ import {
 } from "@mui/material";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import type { ReactElement } from "react";
-import RouterLink from "./routerLink";
+import RouterLink from "./navMenuDrawer/routerLink";
 import { useTranslation } from "react-i18next";
 
 interface Props {
   children: ReactElement;
 }
 
-interface FlexDrawerProps extends DrawerProps {
+interface NavMenuDrawerProps extends DrawerProps {
   variant: "permanent" | "persistent" | "temporary" | undefined;
   drawerWidth?: number;
   open?: boolean | undefined;
@@ -34,7 +34,7 @@ const HideToolbarOnScroll = (props: Props) => {
   return <Collapse in={!trigger}>{children}</Collapse>;
 };
 
-export default function FrexDrawer(drawerProps: FlexDrawerProps) {
+export default function NavMenuDrawer(drawerProps: NavMenuDrawerProps) {
   const { t } = useTranslation();
 
   const handleClick = () => {
