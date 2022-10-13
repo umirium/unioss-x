@@ -125,7 +125,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
               <Box>{authUser?.email}</Box>
             </>
           ) : (
-            <Box>{t("front:guest")}</Box>
+            <Box>{t("common:guest")}</Box>
           )}
 
           <ThemeProvider theme={theme}>
