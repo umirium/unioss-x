@@ -37,5 +37,7 @@
   "aboutProducts": "商品について",
   "aboutAccess": "アクセスについて",
   "other": "その他",
-  "guest": "ゲスト"
+  "guest": "ゲスト",
+  "// others": "",
+  "add_to_cart": "カートに入れる"
 }
