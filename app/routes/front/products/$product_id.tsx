@@ -1,3 +1,4 @@
+import type { SelectChangeEvent } from "@mui/material";
 import {
   Box,
   Breadcrumbs,
@@ -7,8 +8,6 @@ import {
   Link as MUILink,
   MenuItem,
   Select,
-  SelectChangeEvent,
-  SelectProps,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -18,7 +17,6 @@ import { Link as RemixLink, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
-import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
