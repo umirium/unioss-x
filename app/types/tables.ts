@@ -16,7 +16,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          product_id?: parameters["rowFilter.products.product_id"];
+          id?: parameters["rowFilter.products.id"];
           product_name?: parameters["rowFilter.products.product_name"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
@@ -75,7 +75,7 @@ export interface paths {
     delete: {
       parameters: {
         query: {
-          product_id?: parameters["rowFilter.products.product_id"];
+          id?: parameters["rowFilter.products.id"];
           product_name?: parameters["rowFilter.products.product_name"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
@@ -98,7 +98,7 @@ export interface paths {
     patch: {
       parameters: {
         query: {
-          product_id?: parameters["rowFilter.products.product_id"];
+          id?: parameters["rowFilter.products.id"];
           product_name?: parameters["rowFilter.products.product_name"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
@@ -127,7 +127,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          user_id?: parameters["rowFilter.users.user_id"];
+          id?: parameters["rowFilter.users.id"];
           email?: parameters["rowFilter.users.email"];
           password?: parameters["rowFilter.users.password"];
           last_name?: parameters["rowFilter.users.last_name"];
@@ -193,7 +193,7 @@ export interface paths {
     delete: {
       parameters: {
         query: {
-          user_id?: parameters["rowFilter.users.user_id"];
+          id?: parameters["rowFilter.users.id"];
           email?: parameters["rowFilter.users.email"];
           password?: parameters["rowFilter.users.password"];
           last_name?: parameters["rowFilter.users.last_name"];
@@ -223,7 +223,7 @@ export interface paths {
     patch: {
       parameters: {
         query: {
-          user_id?: parameters["rowFilter.users.user_id"];
+          id?: parameters["rowFilter.users.id"];
           email?: parameters["rowFilter.users.email"];
           password?: parameters["rowFilter.users.password"];
           last_name?: parameters["rowFilter.users.last_name"];
@@ -260,11 +260,11 @@ export interface paths {
 export interface definitions {
   products: {
     /**
-     * Format: integer
+     * Format: bigint
      * @description Note:
      * This is a Primary Key.<pk/>
      */
-    product_id: number;
+    id: number;
     /** Format: character varying */
     product_name: string;
     /** Format: text */
@@ -293,11 +293,11 @@ export interface definitions {
   };
   users: {
     /**
-     * Format: integer
+     * Format: bigint
      * @description Note:
      * This is a Primary Key.<pk/>
      */
-    user_id: number;
+    id: number;
     /** Format: character varying */
     email: string;
     /** Format: character varying */
@@ -402,8 +402,8 @@ export interface parameters {
   limit: string;
   /** @description products */
   "body.products": definitions["products"];
-  /** Format: integer */
-  "rowFilter.products.product_id": string;
+  /** Format: bigint */
+  "rowFilter.products.id": string;
   /** Format: character varying */
   "rowFilter.products.product_name": string;
   /** Format: text */
@@ -422,8 +422,8 @@ export interface parameters {
   "rowFilter.products.delete_flg": string;
   /** @description users */
   "body.users": definitions["users"];
-  /** Format: integer */
-  "rowFilter.users.user_id": string;
+  /** Format: bigint */
+  "rowFilter.users.id": string;
   /** Format: character varying */
   "rowFilter.users.email": string;
   /** Format: character varying */

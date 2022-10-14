@@ -91,7 +91,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
       <Avatar
         component={ButtonBase}
         sx={
-          authUser?.userId
+          authUser?.id
             ? darkTheme.palette.mode === "light"
               ? { bgcolor: purple[700] }
               : { bgcolor: blue[400] }
@@ -117,7 +117,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
         sx={{ mt: 2 }}
       >
         <Box sx={{ p: 2, textAlign: "center", minWidth: 250 }}>
-          {authUser?.userId ? (
+          {authUser?.id ? (
             <>
               <Box>
                 {authUser?.lastName} {authUser?.firstName}
@@ -144,7 +144,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
 
           <Divider sx={{ mt: 2, mb: 2 }} />
           <Box>
-            {authUser?.userId ? (
+            {authUser?.id ? (
               <>
                 <Form method="post">
                   <input

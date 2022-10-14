@@ -28,7 +28,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const { data: products, count: dataLength } = await db
     .from<definitions["products"]>("products")
     .select("*", { count: "exact" })
-    .order("product_id")
+    .order("id")
     .range(start, end);
 
   const count = dataLength ? Math.ceil(dataLength / PER_PAGE) : 0;
@@ -80,7 +80,7 @@ export default function Index() {
                   <Card sx={{ width: "100%", height: 300 }}>
                     <CardActionArea
                       component={Link}
-                      to={`/front/products/${item.productId}${
+                      to={`/front/products/${item.id}${
                         page === 1 ? "" : `?page=${page}`
                       }`}
                       sx={{ height: "100%" }}

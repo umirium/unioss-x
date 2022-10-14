@@ -9,7 +9,7 @@ import { db } from "./db.server";
 export const signin = async (email: string, encryptedPassword: string) => {
   const { data } = await db
     .from<definitions["users"]>("users")
-    .select("user_id, email, last_name, first_name")
+    .select("id, email, last_name, first_name")
     .eq("email", email)
     .eq("password", encryptedPassword)
     .eq("delete_flg", false)

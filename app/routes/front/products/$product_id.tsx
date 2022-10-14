@@ -27,7 +27,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const { data: product } = await db
     .from<definitions["products"]>("products")
     .select("*")
-    .eq("product_id", params.product_id)
+    .eq("id", params.product_id)
     .single();
 
   return { product: product ? camelcaseKeys(product) : product, page };

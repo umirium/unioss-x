@@ -141,7 +141,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   // save user data to auth session
   const authSession = await getAuthSession(request.headers.get("Cookie"));
-  authSession.set("userId", inserted?.userId);
+  authSession.set("id", inserted?.id);
   authSession.set("email", inserted?.email);
   authSession.set("password", inserted?.password);
   authSession.set("lastName", inserted?.lastName);
