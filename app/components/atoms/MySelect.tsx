@@ -14,10 +14,24 @@ interface MySelectProps extends SelectProps {
     value: number | string;
     label: string;
   }[];
+  onValidate?: "blur" | "submit";
 }
 
 export const MySelect = (props: MySelectProps) => {
-  const { error, getInputProps } = useField(props.label);
+  const { error, getInputProps } = useField(props.label, {
+    validationBehavior:
+      props.onValidate === "submit"
+        ? {
+            initial: "onSubmit",
+            whenTouched: "onSubmit",
+            whenSubmitted: "onSubmit",
+          }
+        : {
+            initial: "onBlur",
+            whenTouched: "onChange",
+            whenSubmitted: "onChange",
+          },
+  });
   const { t } = useTranslation(["common", "front", "validator"]);
   const [value, setValue] = useState(props.defaultValue || "");
 

@@ -6,10 +6,24 @@ interface MyInputProps extends InputProps {
   type: string;
   label: string;
   defaultValue: string;
+  onValidate?: "blur" | "submit";
 }
 
 export const MyInput = (props: MyInputProps) => {
-  const { error, getInputProps } = useField(props.label);
+  const { error, getInputProps } = useField(props.label, {
+    validationBehavior:
+      props.onValidate === "submit"
+        ? {
+            initial: "onSubmit",
+            whenTouched: "onSubmit",
+            whenSubmitted: "onSubmit",
+          }
+        : {
+            initial: "onBlur",
+            whenTouched: "onChange",
+            whenSubmitted: "onChange",
+          },
+  });
 
   return (
     <>

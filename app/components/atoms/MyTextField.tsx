@@ -7,10 +7,24 @@ interface MyTextFieldProps extends StandardTextFieldProps {
   label: string;
   defaultValue: string | undefined;
   required?: boolean;
+  onValidate?: "blur" | "submit";
 }
 
 export const MyTextField = (props: MyTextFieldProps) => {
-  const { error, getInputProps } = useField(props.label);
+  const { error, getInputProps } = useField(props.label, {
+    validationBehavior:
+      props.onValidate === "submit"
+        ? {
+            initial: "onSubmit",
+            whenTouched: "onSubmit",
+            whenSubmitted: "onSubmit",
+          }
+        : {
+            initial: "onBlur",
+            whenTouched: "onChange",
+            whenSubmitted: "onChange",
+          },
+  });
   const { t } = useTranslation(["front", "validator"]);
   // Delete "required" as "please fill out this field" is displayed.
   const { required, ...removeRequiredProps } = props;
