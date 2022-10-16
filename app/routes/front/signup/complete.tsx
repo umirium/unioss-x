@@ -1,7 +1,7 @@
-import { Box, Button } from "@mui/material";
-import { Link } from "@remix-run/react";
+import { Box } from "@mui/material";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 import { useStep } from "../contact";
 
 export default function Complete() {
@@ -18,14 +18,7 @@ export default function Complete() {
       <h1>{t("front:registered")}</h1>
 
       <Box sx={{ textAlign: "center" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="../../"
-        >
-          {t("common:home")}
-        </Button>
+        <MyLinkButton to="../../" color="primary" />
       </Box>
     </Box>
   );

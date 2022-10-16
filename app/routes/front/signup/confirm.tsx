@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Grid,
   Paper,
@@ -12,7 +11,6 @@ import type { LoaderArgs, ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
-  Link,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -39,6 +37,8 @@ import {
 } from "~/utils/sessions/auth.server";
 import { db } from "~/utils/db.server";
 import type { definitions } from "~/types/tables";
+import { MySubmitButton } from "~/components/atoms/MySubmitButton";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -234,25 +234,20 @@ export default function Confirm() {
           </Paper>
 
           <Box sx={{ mt: 5, textAlign: "center" }}>
-            <Button
+            <MyLinkButton
               variant="outlined"
-              component={Link}
               to="../"
               disabled={transition.state === "submitting"}
               sx={{ mr: 3 }}
             >
               {t("common:back")}
-            </Button>
-            <Button
-              variant="contained"
-              type="submit"
+            </MyLinkButton>
+            <MySubmitButton
+              label="send"
               onClick={handleSend}
-              disabled={transition.state === "submitting"}
               sx={{ mr: 3 }}
               endIcon={<SendIcon />}
-            >
-              {t("common:send")}
-            </Button>
+            />
           </Box>
         </Box>
       </Form>
