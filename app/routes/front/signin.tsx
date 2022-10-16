@@ -10,7 +10,11 @@ import {
   Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link as RemixLink, useActionData } from "@remix-run/react";
+import {
+  Link as RemixLink,
+  useActionData,
+  useTransition,
+} from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
@@ -18,14 +22,9 @@ import { redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { signinSchema } from "~/stores/validator";
 import { withYup } from "@remix-validated-form/with-yup";
-import {
-  useIsSubmitting,
-  ValidatedForm,
-  validationError,
-} from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
-import { MyPassword } from "~/components/atoms/MyPassword";
 import {
   commitSession as commitAuthSession,
   getSession as getAuthSession,
@@ -35,6 +34,9 @@ import {
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
+import type { PasswordFieldHandler } from "~/types/outline";
+import { useRef, useEffect } from "react";
+import MyPassword from "~/components/atoms/MyPassword";
 
 const validator = withYup(signinSchema);
 
@@ -85,8 +87,15 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function Signin() {
   const validated = useActionData<typeof action>();
-  const isSubmitting = useIsSubmitting("myForm");
+  const transition = useTransition();
+  const passwordFieldRef = useRef({} as PasswordFieldHandler);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (transition.state === "idle") {
+      passwordFieldRef.current.reset();
+    }
+  }, [transition.state]);
 
   return (
     <ValidatedForm validator={validator} method="post" id="myForm">
@@ -118,6 +127,7 @@ export default function Signin() {
             />
 
             <MyPassword
+              ref={passwordFieldRef}
               label="password"
               defaultValue=""
               onValidate="submit"
@@ -125,7 +135,7 @@ export default function Signin() {
               required
             />
 
-            {!isSubmitting &&
+            {transition.state === "idle" &&
               validated &&
               Object.entries(validated?.fieldErrors).map(
                 ([key, value], index) => {
