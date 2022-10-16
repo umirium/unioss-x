@@ -111,6 +111,7 @@ export default function Signin() {
               label="email"
               autoComplete="email"
               defaultValue=""
+              onValidate="submit"
               autoFocus
               fullWidth
               required
@@ -119,6 +120,7 @@ export default function Signin() {
             <MyPassword
               label="password"
               defaultValue=""
+              onValidate="submit"
               sx={{ mt: 2 }}
               required
             />
