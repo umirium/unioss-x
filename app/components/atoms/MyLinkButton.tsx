@@ -8,14 +8,14 @@ export const MyLinkButton = <C extends ElementType>(
     to: string;
   }
 ) => {
-  const { children, ...rest } = props;
+  const { children, ...restProps } = props;
   const transition = useTransition();
 
   return (
     <Button
-      {...rest}
+      {...restProps}
       component={Link}
-      disabled={transition.state === "loading"}
+      disabled={transition.state !== "idle"}
     >
       {children}
     </Button>
