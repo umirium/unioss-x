@@ -4,14 +4,14 @@ import { useStep } from "../contact";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { withYup } from "@remix-validated-form/with-yup";
-import { contactPersonalInfoSchema } from "~/stores/validator";
+import { contactPersonalSchema } from "~/stores/validator";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { contactCookie } from "~/utils/cookies.server";
 import { t } from "i18next";
 import PersonalDataForm from "~/components/personalDataForm";
 
-const validator = withYup(contactPersonalInfoSchema);
+const validator = withYup(contactPersonalSchema);
 
 export const loader = async ({ request }: LoaderArgs) => {
   const cookieHeader = request.headers.get("Cookie");

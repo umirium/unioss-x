@@ -18,7 +18,7 @@ import { MyInput } from "~/components/atoms/MyInput";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import {
   contactInquirySchema,
-  contactPersonalInfoSchema,
+  contactPersonalSchema,
 } from "~/stores/validator";
 import type {
   ContactInquiryType,
@@ -31,7 +31,7 @@ import prefectures from "~/stores/prefectures";
 import { categories } from "~/stores/contact";
 
 const validator = withYup(
-  contactPersonalInfoSchema.omit(["emailRetype"]).concat(contactInquirySchema)
+  contactPersonalSchema.omit(["emailRetype"]).concat(contactInquirySchema)
 );
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -43,9 +43,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  // for test
-  // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
-
   // validation
   const form = await validator.validate(await request.formData());
   if (form.error) return validationError(form.error);
@@ -161,6 +158,7 @@ export default function Confirm() {
           <MyLinkButton variant="outlined" to="../inquiry" sx={{ mr: 3 }}>
             {t("common:back")}
           </MyLinkButton>
+
           <MySubmitButton
             label="send"
             endIcon={<SendIcon />}

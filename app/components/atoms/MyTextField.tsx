@@ -27,13 +27,13 @@ export const MyTextField = (props: MyTextFieldProps) => {
   });
   const { t } = useTranslation(["front", "validator"]);
   // Delete "required" as "please fill out this field" is displayed.
-  const { required, ...removeRequiredProps } = props;
+  const { required, onValidate, ...restProps } = props;
 
   return (
     <>
       <TextField
         {...getInputProps({ id: props.label })}
-        {...removeRequiredProps}
+        {...restProps}
         label={`${t(`front:${props.label}`)}${props.required ? " *" : ""}`}
         variant={props.variant && "outlined"}
         error={!!error}

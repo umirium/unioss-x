@@ -25,7 +25,7 @@ interface MyPasswordProps extends OutlinedInputProps {
 export default forwardRef<PasswordFieldHandler, MyPasswordProps>(
   function MyPassword(props: MyPasswordProps, ref) {
     // Delete "required" as "please fill out this field" is displayed.
-    const { defaultValue, required, sx, ...restProps } = props;
+    const { defaultValue, required, onValidate, sx, ...restProps } = props;
     const [value, setValue] = useState(defaultValue);
     const [showPassword, setShowPassword] = useState(false);
     const { error, getInputProps } = useField(props.label, {

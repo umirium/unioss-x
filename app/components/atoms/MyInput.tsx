@@ -10,6 +10,7 @@ interface MyInputProps extends InputProps {
 }
 
 export const MyInput = (props: MyInputProps) => {
+  const { onValidate, ...restProps } = props;
   const { error, getInputProps } = useField(props.label, {
     validationBehavior:
       props.onValidate === "submit"
@@ -29,7 +30,7 @@ export const MyInput = (props: MyInputProps) => {
     <>
       <Input
         {...getInputProps({ id: props.label })}
-        {...props}
+        {...restProps}
         error={!!error}
       />
     </>
