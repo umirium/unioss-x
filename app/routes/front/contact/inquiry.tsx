@@ -4,13 +4,13 @@ import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect } from "react";
-import type { TFunction } from "react-i18next";
 import { useTranslation } from "react-i18next";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 import { MySelect } from "~/components/atoms/MySelect";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
+import { categories } from "~/stores/contact";
 import { contactInquirySchema } from "~/stores/validator";
 import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
@@ -52,25 +52,6 @@ export default function Inquiry() {
   useEffect(() => {
     handleChangeStep(1);
   });
-
-  const categories = (t: TFunction<"front">) => [
-    {
-      value: 1,
-      label: t("front:aboutThisWebSite"),
-    },
-    {
-      value: 2,
-      label: t("front:aboutProducts"),
-    },
-    {
-      value: 3,
-      label: t("front:aboutAccess"),
-    },
-    {
-      value: 4,
-      label: t("front:other"),
-    },
-  ];
 
   return (
     <ValidatedForm validator={validator} method="post">

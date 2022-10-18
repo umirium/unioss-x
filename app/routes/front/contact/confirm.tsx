@@ -27,6 +27,8 @@ import type {
 import { contactCookie } from "~/utils/cookies.server";
 import { useStep } from "../contact";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
+import prefectures from "~/stores/prefectures";
+import { categories } from "~/stores/contact";
 
 const validator = withYup(
   contactPersonalInfoSchema.concat(contactInquirySchema)
@@ -109,23 +111,45 @@ export default function Confirm() {
 
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Paper elevation={1} sx={{ pb: 2 }}>
-          {Object.entries(formData).map(([key, value], index) => (
-            <Grid container key={key} spacing={3} sx={{ mt: 1, mb: 1 }}>
-              <MyInput type="hidden" label={key} defaultValue={value} />
-              <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
-                {t(`front:${key}`)}
-              </Grid>
-              <Grid
-                xs={6}
-                sm={6}
-                md={6}
-                sx={{ textAlign: "center", overflowWrap: "break-word" }}
-                item
-              >
-                {value}
-              </Grid>
-            </Grid>
-          ))}
+          {Object.entries(formData)
+            .map(([key, value], _index) => {
+              if (key === "emailRetype") {
+                return undefined;
+              }
+
+              let confirmValue = value;
+
+              if (key === "prefecture") {
+                confirmValue = prefectures(t).filter(
+                  (e) => e.value.toString() === value
+                )[0]?.label;
+              }
+
+              if (key === "category") {
+                confirmValue = categories(t).filter(
+                  (e) => e.value.toString() === value
+                )[0]?.label;
+              }
+
+              return (
+                <Grid container key={key} spacing={3} sx={{ mt: 1, mb: 1 }}>
+                  <MyInput type="hidden" label={key} defaultValue={value} />
+                  <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
+                    {t(`front:${key}`)}
+                  </Grid>
+                  <Grid
+                    xs={6}
+                    sm={6}
+                    md={6}
+                    sx={{ textAlign: "center", overflowWrap: "break-word" }}
+                    item
+                  >
+                    {confirmValue}
+                  </Grid>
+                </Grid>
+              );
+            })
+            .filter((e) => typeof e !== "undefined")}
         </Paper>
 
         <Box sx={{ mt: 5, textAlign: "center" }}>
