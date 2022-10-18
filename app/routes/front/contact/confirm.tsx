@@ -31,7 +31,7 @@ import prefectures from "~/stores/prefectures";
 import { categories } from "~/stores/contact";
 
 const validator = withYup(
-  contactPersonalInfoSchema.concat(contactInquirySchema)
+  contactPersonalInfoSchema.omit(["emailRetype"]).concat(contactInquirySchema)
 );
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -133,7 +133,12 @@ export default function Confirm() {
 
               return (
                 <Grid container key={key} spacing={3} sx={{ mt: 1, mb: 1 }}>
-                  <MyInput type="hidden" label={key} defaultValue={value} />
+                  <MyInput
+                    type="hidden"
+                    label={key}
+                    defaultValue={value}
+                    onValidate="submit"
+                  />
                   <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
                     {t(`front:${key}`)}
                   </Grid>
