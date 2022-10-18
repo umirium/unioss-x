@@ -29,7 +29,11 @@ export const personalDataFormSchema: SchemaOf<PersonalData> = object({
     .matches(/^[0-9\\-]*$/, "tel"),
 });
 
-export const signinSchema = personalDataFormSchema.pick(["email", "password"]);
+export const signinSchema = personalDataFormSchema.pick(["email"]).concat(
+  object({
+    password: string().max(255, "max255").required("required"),
+  })
+);
 
 // for contact
 export const contactPersonalSchema = personalDataFormSchema.omit([
