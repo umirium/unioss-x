@@ -255,6 +255,111 @@ export interface paths {
       };
     };
   };
+  "/carts": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.carts.id"];
+          user_id?: parameters["rowFilter.carts.user_id"];
+          product_id?: parameters["rowFilter.carts.product_id"];
+          quantity?: parameters["rowFilter.carts.quantity"];
+          created_at?: parameters["rowFilter.carts.created_at"];
+          updated_at?: parameters["rowFilter.carts.updated_at"];
+          delete_flg?: parameters["rowFilter.carts.delete_flg"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["carts"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** carts */
+          carts?: definitions["carts"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.carts.id"];
+          user_id?: parameters["rowFilter.carts.user_id"];
+          product_id?: parameters["rowFilter.carts.product_id"];
+          quantity?: parameters["rowFilter.carts.quantity"];
+          created_at?: parameters["rowFilter.carts.created_at"];
+          updated_at?: parameters["rowFilter.carts.updated_at"];
+          delete_flg?: parameters["rowFilter.carts.delete_flg"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.carts.id"];
+          user_id?: parameters["rowFilter.carts.user_id"];
+          product_id?: parameters["rowFilter.carts.product_id"];
+          quantity?: parameters["rowFilter.carts.quantity"];
+          created_at?: parameters["rowFilter.carts.created_at"];
+          updated_at?: parameters["rowFilter.carts.updated_at"];
+          delete_flg?: parameters["rowFilter.carts.delete_flg"];
+        };
+        body: {
+          /** carts */
+          carts?: definitions["carts"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
 }
 
 export interface definitions {
@@ -365,6 +470,40 @@ export interface definitions {
     /** Format: boolean */
     delete_flg: boolean;
   };
+  carts: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `users.id`.<fk table='users' column='id'/>
+     */
+    user_id?: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `products.id`.<fk table='products' column='id'/>
+     */
+    product_id: number;
+    /** Format: integer */
+    quantity: number;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    created_at: string;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    updated_at: string;
+    /** Format: boolean */
+    delete_flg: boolean;
+  };
 }
 
 export interface parameters {
@@ -454,6 +593,22 @@ export interface parameters {
   "rowFilter.users.updated_at": string;
   /** Format: boolean */
   "rowFilter.users.delete_flg": string;
+  /** @description carts */
+  "body.carts": definitions["carts"];
+  /** Format: bigint */
+  "rowFilter.carts.id": string;
+  /** Format: bigint */
+  "rowFilter.carts.user_id": string;
+  /** Format: bigint */
+  "rowFilter.carts.product_id": string;
+  /** Format: integer */
+  "rowFilter.carts.quantity": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.carts.created_at": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.carts.updated_at": string;
+  /** Format: boolean */
+  "rowFilter.carts.delete_flg": string;
 }
 
 export interface operations {}
