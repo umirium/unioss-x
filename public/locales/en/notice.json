@@ -1,4 +1,6 @@
 {
   "signin": "Sign-in successful!",
-  "signout": "Sign-out successful"
+  "signout": "Sign-out successful",
+  "addedToCart": "Added to cart",
+  "dbError": "Database error"
 }

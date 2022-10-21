@@ -17,7 +17,6 @@ export const MySubmitButton = (props: Props) => {
       type="submit"
       disabled={transition.state !== "idle"}
       variant="contained"
-      color="primary"
     >
       {t(`common:${props.label}`)}
     </Button>

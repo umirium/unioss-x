@@ -6,13 +6,13 @@ import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import {
   destroySession as destroyAuthSession,
   getSession as getAuthSession,
 } from "~/utils/sessions/auth.server";
+import { getSession as getCartSession } from "~/utils/sessions/cart.server";
 import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
@@ -28,18 +28,18 @@ const TransitionUp = (props: TransitionProps) => (
 
 export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);
-
-  const session = await getNoticeSession(request.headers.get("Cookie"));
-  const flash = session.get("notice");
-
-  let notice: string | undefined =
-    ["signin", "signout"].includes(flash) && flash;
+  const cartSession = await getCartSession(request.headers.get("Cookie"));
+  const noticeSession = await getNoticeSession(request.headers.get("Cookie"));
 
   return json(
-    { authUser, notice },
+    {
+      authUser,
+      cart: cartSession.get("cart"),
+      notice: noticeSession.get("notice"),
+    },
     {
       headers: {
-        "Set-Cookie": await commitNoticeSession(session),
+        "Set-Cookie": await commitNoticeSession(noticeSession),
       },
     }
   );
@@ -79,7 +79,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Front() {
-  const { authUser, notice } = useLoaderData<typeof loader>();
+  const { authUser, cart, notice } = useLoaderData<typeof loader>();
   const { theme } = useDarkThemeContext();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [transition, setTransition] = useState<
@@ -89,7 +89,7 @@ export default function Front() {
 
   useEffect(() => {
     setTransition(() => TransitionUp);
-    setOpenSnackbar(notice ? !!notice : false);
+    setOpenSnackbar(!!notice);
   }, [notice]);
 
   const handleCloseSnackbar = (event: React.SyntheticEvent | Event) => {
@@ -98,7 +98,7 @@ export default function Front() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Outline authUser={authUser}>
+      <Outline authUser={authUser} cart={cart}>
         <Box>
           <Outlet />
         </Box>

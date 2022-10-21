@@ -26,6 +26,7 @@ import AccountAvatar from "./outline/accountAvatar";
 interface Props {
   children: ReactElement;
   authUser: SnakeToCamel<definitions["users"]> | null;
+  cart: Array<SnakeToCamel<definitions["carts"]>> | null;
   drawerWidth?: number;
 }
 
@@ -41,7 +42,7 @@ const HideAppbarOnScroll = (props: Props) => {
 };
 
 export default function Outline(props: Props) {
-  const { children, authUser, drawerWidth } = props;
+  const { children, authUser, cart, drawerWidth } = props;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const settingsButtonRef = useRef({} as SettingsHandler);
   const navigate = useNavigate();
@@ -109,10 +110,11 @@ export default function Outline(props: Props) {
               onClick={handleClickCart}
             >
               <Badge
-                badgeContent={100}
+                badgeContent={cart?.length || 0}
                 color={
                   darkTheme.palette.mode === "light" ? "secondary" : "primary"
                 }
+                showZero
               >
                 <ShoppingCartIcon />
               </Badge>
