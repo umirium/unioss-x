@@ -109,7 +109,8 @@ export default function Front() {
         open={openSnackbar}
         TransitionComponent={transition}
         onClose={handleCloseSnackbar}
-        message={t(`notice:${notice}`)}
+        // NOTE: If possibility of same data is sent, timestamp shall be given.
+        message={notice ? t(`notice:${notice.split("_")[0]}`) : ""}
         autoHideDuration={5000}
         action={
           <IconButton

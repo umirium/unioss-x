@@ -72,7 +72,7 @@ export const action = async ({ request }: ActionArgs) => {
         throw error;
       }
     } catch (e) {
-      noticeSession.flash("notice", "dbError");
+      noticeSession.flash("notice", `dbError_${Date.now()}`);
 
       return redirect("/front/cart", {
         headers: {
@@ -89,7 +89,7 @@ export const action = async ({ request }: ActionArgs) => {
   cart.push(insert);
 
   cartSession.set("cart", cart);
-  noticeSession.flash("notice", "addedToCart");
+  noticeSession.flash("notice", `addedToCart_${Date.now()}`);
 
   const headers = new Headers();
   headers.append("Set-Cookie", await commitCartSession(cartSession));
