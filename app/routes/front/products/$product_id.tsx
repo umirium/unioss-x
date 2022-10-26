@@ -45,33 +45,77 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
+  const form = await request.formData();
 
   // show snackbar of 'added to cart' or error
   const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   const authUser = await authenticator.isAuthenticated(request);
 
-  const insert = {
-    productId: Number.parseInt(formData.get("id") as string),
-    quantity: Number.parseInt(formData.get("quantity") as string),
+  const formData = {
+    productId: Number.parseInt(form.get("id") as string),
+    quantity: Number.parseInt(form.get("quantity") as string),
   };
 
+  // if signed-in, update cart data in database
   if (authUser) {
-    // insert cart data to database
+    /**
+     * save cart data to database
+     */
+
+    // If same product is in database as putting cart, add quantity.
     try {
-      const { error } = await db.from<definitions["carts"]>("carts").insert([
-        snakecaseKeys({
-          userId: authUser.id,
-          deleteFlg: false,
-          ...insert,
-        }),
-      ]);
+      // get cart data from database
+      const { data, error } = await db
+        .from<definitions["carts"]>("carts")
+        .select("*")
+        .eq("user_id", authUser.id)
+        .eq("delete_flg", false);
 
       if (error) {
         throw error;
       }
-    } catch (e) {
+
+      const same = data?.find((e) => {
+        const item = camelcaseKeys(e);
+        return item.productId === formData.productId;
+      });
+
+      if (same) {
+        // same product is exist in database
+
+        // update cart data in database
+        const updater = camelcaseKeys(same);
+
+        const { error } = await db
+          .from<definitions["carts"]>("carts")
+          .update(
+            snakecaseKeys({
+              quantity: updater.quantity + formData.quantity,
+            })
+          )
+          .eq("id", updater.id);
+
+        if (error) {
+          throw error;
+        }
+      } else {
+        // same product isn't exist in database
+
+        // insert cart data to database
+        const { error } = await db.from<definitions["carts"]>("carts").insert([
+          snakecaseKeys({
+            userId: authUser.id,
+            deleteFlg: false,
+            ...formData,
+          }),
+        ]);
+
+        if (error) {
+          throw error;
+        }
+      }
+    } catch (error) {
       noticeSession.flash("notice", `dbError_${Date.now()}`);
 
       return redirect("/front/cart", {
@@ -82,13 +126,33 @@ export const action = async ({ request }: ActionArgs) => {
     }
   }
 
-  // save cart data to cookie
+  /**
+   * save cart data to cookie
+   */
   const cartSession = await getCartSession(request.headers.get("Cookie"));
   const cart = cartSession.get("cart") || [];
 
-  cart.push(insert);
+  // If same product is in cookie as putting cart, add quantity.
+  let flg = false;
+  const newCart = cart.map((e: typeof formData) => {
+    if (e.productId === formData.productId) {
+      flg = true;
 
-  cartSession.set("cart", cart);
+      return {
+        productId: e.productId,
+        quantity: e.quantity + formData.quantity,
+      };
+    }
+
+    return e;
+  });
+
+  if (!flg) {
+    // same product isn't exist in cookie
+    newCart.push(formData);
+  }
+
+  cartSession.set("cart", newCart);
   noticeSession.flash("notice", `addedToCart_${Date.now()}`);
 
   const headers = new Headers();
