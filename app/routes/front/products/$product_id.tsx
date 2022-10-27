@@ -240,7 +240,7 @@ export default function Product() {
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   <MySubmitButton
-                    label="add_to_cart"
+                    label="addToCart"
                     type="submit"
                     color="warning"
                     endIcon={<AddShoppingCartIcon />}
