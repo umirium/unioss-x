@@ -11,6 +11,8 @@
   "guest": "ゲスト",
   "quantity": "数量",
   "addToCart": "カートに入れる",
+  "subtotal": "小計",
+  "total": "合計",
   "_pleaseSelect_": "- 選択してください -",
   "// settings": "",
   "settings": "設定",

@@ -11,6 +11,8 @@
   "guest": "Guest",
   "quantity": "Quantity",
   "addToCart": "Add to cart",
+  "subtotal": "Subtotal",
+  "total": "Total",
   "_pleaseSelect_": "- Please select -",
   "// settings": "",
   "settings": "Settings",
