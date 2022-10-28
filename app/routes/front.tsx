@@ -17,10 +17,19 @@ import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { definitions } from "~/types/tables";
+import type { SnakeToCamel } from "snake-camel-types";
 
 type TransitionProps = Omit<SlideProps, "direction">;
+
+type NoticeType = {
+  key: string;
+  options?: {
+    [key: string]: string;
+  };
+};
 
 const TransitionUp = (props: TransitionProps) => (
   <Slide {...props} direction="up" />
@@ -31,12 +40,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const cartSession = await getCartSession(request.headers.get("Cookie"));
   const noticeSession = await getNoticeSession(request.headers.get("Cookie"));
 
+  const cart: Array<SnakeToCamel<definitions["carts"]>> =
+    cartSession.get("cart");
+  const notice: NoticeType = noticeSession.get("notice");
+
   return json(
-    {
-      authUser,
-      cart: cartSession.get("cart"),
-      notice: noticeSession.get("notice"),
-    },
+    { authUser, cart, notice },
     {
       headers: {
         "Set-Cookie": await commitNoticeSession(noticeSession),
@@ -54,7 +63,7 @@ export const action = async ({ request }: ActionArgs) => {
 
     // to show snackbar of successful sign-out
     const noticeSession = await getNoticeSession(request.headers.get("cookie"));
-    noticeSession.flash("notice", "signout");
+    noticeSession.flash("notice", { key: "signout" });
 
     // manually destroy auth session because headers can't be send to redirect on logout of remix-auth
     //
@@ -86,6 +95,26 @@ export default function Front() {
     React.ComponentType<TransitionProps> | undefined
   >(undefined);
   const { t } = useTranslation();
+  const transNotice = useMemo(() => {
+    if (!notice) {
+      return "";
+    }
+
+    // translate options as well
+    const transOptions: {
+      [key: string]: string;
+    } = {};
+
+    Object.keys(notice.options || {}).forEach((key) => {
+      if (notice.options === undefined) {
+        return;
+      }
+
+      transOptions[key] = t(notice.options[key]);
+    });
+
+    return t(`notice:${notice.key.split("_")[0]}`, transOptions);
+  }, [notice, t]);
 
   useEffect(() => {
     setTransition(() => TransitionUp);
@@ -110,7 +139,7 @@ export default function Front() {
         TransitionComponent={transition}
         onClose={handleCloseSnackbar}
         // NOTE: If possibility of same data is sent, timestamp shall be given.
-        message={notice ? t(`notice:${notice.split("_")[0]}`) : ""}
+        message={transNotice}
         autoHideDuration={5000}
         action={
           <IconButton

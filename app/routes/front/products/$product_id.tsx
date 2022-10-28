@@ -153,7 +153,7 @@ export const action = async ({ request }: ActionArgs) => {
   }
 
   cartSession.set("cart", newCart);
-  noticeSession.flash("notice", `addedToCart_${Date.now()}`);
+  noticeSession.flash("notice", { key: `addedToCart_${Date.now()}` });
 
   const headers = new Headers();
   headers.append("Set-Cookie", await commitCartSession(cartSession));
