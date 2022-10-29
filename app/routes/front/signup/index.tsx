@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -44,7 +44,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   // for test
   // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
 

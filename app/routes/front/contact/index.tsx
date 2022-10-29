@@ -5,7 +5,7 @@ import { useActionData, useLoaderData } from "@remix-run/react";
 import { validationError } from "remix-validated-form";
 import { withYup } from "@remix-validated-form/with-yup";
 import { contactPersonalSchema } from "~/stores/validator";
-import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { contactCookie } from "~/utils/cookies.server";
 import { t } from "i18next";
@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   return cookie;
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   // for test
   // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
 

@@ -1,5 +1,5 @@
 import { Grid, FormControl, Box } from "@mui/material";
-import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
@@ -24,7 +24,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   return cookie;
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   // for test
   // await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
 
