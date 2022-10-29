@@ -73,7 +73,7 @@ export const action = async ({ request }: ActionArgs) => {
         .eq("delete_flg", false);
 
       if (error) {
-        throw error;
+        throw new Error("read");
       }
 
       const same = data?.find((e) => {
@@ -97,7 +97,7 @@ export const action = async ({ request }: ActionArgs) => {
           .eq("id", updater.id);
 
         if (error) {
-          throw error;
+          throw new Error("update");
         }
       } else {
         // same product isn't exist in database
@@ -112,17 +112,32 @@ export const action = async ({ request }: ActionArgs) => {
         ]);
 
         if (error) {
-          throw error;
+          throw new Error("create");
         }
       }
-    } catch (error) {
-      noticeSession.flash("notice", `dbError_${Date.now()}`);
+    } catch (error: Error | unknown) {
+      if (error instanceof Error) {
+        noticeSession.flash("notice", {
+          key: `dbDetailError_${Date.now()}`,
+          options: { error: `common:${error.message}` },
+        });
 
-      return redirect("/front/cart", {
-        headers: {
-          "Set-Cookie": await commitNoticeSession(noticeSession),
-        },
-      });
+        return redirect("/front/cart", {
+          headers: {
+            "Set-Cookie": await commitNoticeSession(noticeSession),
+          },
+        });
+      } else {
+        noticeSession.flash("notice", {
+          key: `unknownError_${Date.now()}`,
+        });
+
+        return redirect(request.url, {
+          headers: {
+            "Set-Cookie": await commitNoticeSession(noticeSession),
+          },
+        });
+      }
     }
   }
 

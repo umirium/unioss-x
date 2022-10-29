@@ -2,5 +2,7 @@
   "signin": "Sign-in successful!",
   "signout": "Sign-out successful",
   "addedToCart": "Added to cart",
-  "dbError": "Database error"
+  "dbError": "Database Error",
+  "dbDetailError": "Database {{error, string}} Error",
+  "unknownError": "Unknown Error"
 }
