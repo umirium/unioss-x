@@ -1,7 +1,7 @@
-import Box from "@mui/material/Box";
-import type { SlideProps } from "@mui/material";
-import { IconButton, Slide, Snackbar, ThemeProvider } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import type { SyntheticEvent } from "react";
+import { useEffect, useState } from "react";
+import { Box } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
@@ -17,23 +17,10 @@ import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
-
-type TransitionProps = Omit<SlideProps, "direction">;
-
-type NoticeType = {
-  key: string;
-  options?: {
-    [key: string]: string;
-  };
-};
-
-const TransitionUp = (props: TransitionProps) => (
-  <Slide {...props} direction="up" />
-);
+import type { NoticeType } from "~/types/outline";
+import MyNotice from "~/components/atoms/MyNotice";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);
@@ -90,39 +77,14 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Front() {
   const { authUser, cart, notice } = useLoaderData<typeof loader>();
   const { theme } = useDarkThemeContext();
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [transition, setTransition] = useState<
-    React.ComponentType<TransitionProps> | undefined
-  >(undefined);
-  const { t } = useTranslation();
-  const transNotice = useMemo(() => {
-    if (!notice) {
-      return "";
-    }
-
-    // translate options as well
-    const transOptions: {
-      [key: string]: string;
-    } = {};
-
-    Object.keys(notice.options || {}).forEach((key) => {
-      if (notice.options === undefined) {
-        return;
-      }
-
-      transOptions[key] = t(notice.options[key]);
-    });
-
-    return t(`notice:${notice.key.split("_")[0]}`, transOptions);
-  }, [notice, t]);
+  const [openNotice, setOpenNotice] = useState(false);
 
   useEffect(() => {
-    setTransition(() => TransitionUp);
-    setOpenSnackbar(!!notice);
+    setOpenNotice(!!notice);
   }, [notice]);
 
-  const handleCloseSnackbar = (event: React.SyntheticEvent | Event) => {
-    setOpenSnackbar(false);
+  const handleCloseSnackbar = (event: SyntheticEvent | Event) => {
+    setOpenNotice(false);
   };
 
   return (
@@ -133,23 +95,11 @@ export default function Front() {
         </Box>
       </Outline>
 
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        open={openSnackbar}
-        TransitionComponent={transition}
+      {/* show Snackbar */}
+      <MyNotice
+        open={openNotice}
         onClose={handleCloseSnackbar}
-        // NOTE: If possibility of same data is sent, timestamp shall be given.
-        message={transNotice}
-        autoHideDuration={5000}
-        action={
-          <IconButton
-            size="small"
-            color="inherit"
-            onClick={handleCloseSnackbar}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        }
+        i18nObj={notice}
       />
     </ThemeProvider>
   );
