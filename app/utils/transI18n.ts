@@ -3,7 +3,7 @@ import type { NoticeType } from "~/types/outline";
 
 const transI18n = (
   type: "alert" | "notice",
-  i18nObj: NoticeType,
+  i18nObj: NoticeType | undefined,
   t: TFunction
 ) => {
   if (!i18nObj) {

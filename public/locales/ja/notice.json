@@ -1,8 +1,5 @@
 {
   "signin": "ログインしました",
   "signout": "ログアウトしました",
-  "addedToCart": "カートに追加しました",
-  "dbError": "データベースエラーが発生しました",
-  "dbDetailError": "データベース{{error, string}}エラーが発生しました",
-  "unknownError": "不明なエラーが発生しました"
+  "addedToCart": "カートに追加しました"
 }

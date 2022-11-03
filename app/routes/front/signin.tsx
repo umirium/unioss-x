@@ -7,24 +7,27 @@ import {
   Button,
   Divider,
   Link as MUILink,
-  Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   Link as RemixLink,
-  useActionData,
+  useLoaderData,
   useTransition,
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { signinSchema } from "~/stores/validator";
 import { withYup } from "@remix-validated-form/with-yup";
-import { ValidatedForm, validationError } from "remix-validated-form";
+import { ValidatedForm } from "remix-validated-form";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
+import {
+  commitSession as commitAlertSession,
+  getSession as getAlertSession,
+} from "~/utils/sessions/alert.server";
 import {
   commitSession as commitAuthSession,
   getSession as getAuthSession,
@@ -34,27 +37,46 @@ import {
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
-import type { PasswordFieldHandler } from "~/types/outline";
+import type { NoticeType, PasswordFieldHandler } from "~/types/outline";
 import { useRef, useEffect } from "react";
 import MyPassword from "~/components/atoms/MyPassword";
+import MyAlert from "~/components/atoms/MyAlert";
 
 const validator = withYup(signinSchema);
 
 export const loader = async ({ request }: LoaderArgs) => {
-  return await authenticator.isAuthenticated(request, {
-    successRedirect: "/front",
-  });
+  const authUser = await authenticator.isAuthenticated(request);
+
+  if (authUser) {
+    return redirect("/front");
+  }
+
+  const alertSession = await getAlertSession(request.headers.get("Cookie"));
+  const alert: NoticeType = alertSession.get("alert");
+
+  return json(
+    { alert },
+    {
+      headers: {
+        "Set-Cookie": await commitAlertSession(alertSession),
+      },
+    }
+  );
 };
 
 export const action = async ({ request }: ActionArgs) => {
   let user;
+  const alertSession = await getAlertSession(request.headers.get("cookie"));
 
   try {
     user = await authenticator.authenticate("form", request);
   } catch (error) {
-    return validationError({
-      fieldErrors: {
-        auth: "signinFailed",
+    // show alert of sign-in failure
+    alertSession.flash("alert", { key: "signinFailed" });
+
+    return redirect(request.url, {
+      headers: {
+        "Set-Cookie": await commitAlertSession(alertSession),
       },
     });
   }
@@ -78,15 +100,18 @@ export const action = async ({ request }: ActionArgs) => {
     return redirect(redirectTo || "/front", { headers });
   }
 
-  return validationError({
-    fieldErrors: {
-      system: "db",
+  // show alert of database error
+  alertSession.flash("alert", { key: "db" });
+
+  return redirect(request.url, {
+    headers: {
+      "Set-Cookie": await commitAlertSession(alertSession),
     },
   });
 };
 
 export default function Signin() {
-  const validated = useActionData<typeof action>();
+  const { alert } = useLoaderData<typeof loader>();
   const transition = useTransition();
   const passwordFieldRef = useRef({} as PasswordFieldHandler);
   const { t } = useTranslation();
@@ -98,104 +123,88 @@ export default function Signin() {
   }, [transition.state]);
 
   return (
-    <ValidatedForm validator={validator} method="post" id="myForm">
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            {t("common:signin")}
-          </Typography>
+    <>
+      {/* show errors with alert */}
+      <MyAlert i18nObj={alert} />
 
-          <Box sx={{ mt: 1 }}>
-            <MyTextField
-              label="email"
-              autoComplete="email"
-              defaultValue=""
-              onValidate="submit"
-              autoFocus
-              fullWidth
-              required
-            />
+      <ValidatedForm validator={validator} method="post" id="myForm">
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              {t("common:signin")}
+            </Typography>
 
-            <MyPassword
-              ref={passwordFieldRef}
-              label="password"
-              defaultValue=""
-              onValidate="submit"
-              sx={{ mt: 2 }}
-              required
-            />
+            <Box sx={{ mt: 1 }}>
+              <MyTextField
+                label="email"
+                autoComplete="email"
+                defaultValue=""
+                onValidate="submit"
+                autoFocus
+                fullWidth
+                required
+              />
 
-            {transition.state === "idle" &&
-              validated &&
-              Object.entries(validated?.fieldErrors).map(
-                ([key, value], index) => {
-                  if (key === "system") {
-                    return (
-                      <Alert key={index} severity="error" sx={{ mt: 2 }}>
-                        {t(`validator:${key}`)}: {t(`validator:${value}`)}
-                      </Alert>
-                    );
-                  } else if (key === "auth") {
-                    return (
-                      <Alert key={index} severity="error" sx={{ mt: 2 }}>
-                        {t(`validator:${value}`)}
-                      </Alert>
-                    );
-                  }
-                  return "";
-                }
-              )}
+              <MyPassword
+                ref={passwordFieldRef}
+                label="password"
+                defaultValue=""
+                onValidate="submit"
+                sx={{ mt: 2 }}
+                required
+              />
 
-            <MySubmitButton
-              label="signin"
-              type="submit"
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              fullWidth
-            />
+              <MySubmitButton
+                label="signin"
+                type="submit"
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                fullWidth
+              />
 
-            <Divider>
-              <Typography variant="subtitle2" sx={{ ml: 1, mr: 1 }}>
-                or
-              </Typography>
-            </Divider>
+              <Divider>
+                <Typography variant="subtitle2" sx={{ ml: 1, mr: 1 }}>
+                  or
+                </Typography>
+              </Divider>
 
-            <Button></Button>
+              <Button></Button>
 
-            <MyLinkButton
-              to={"/front/signup"}
-              variant="contained"
-              color="success"
-              sx={{ mt: 3, mb: 2 }}
-              fullWidth
-            >
-              {t("common:create_new_account")}
-            </MyLinkButton>
-
-            <Box sx={{ textAlign: "right" }}>
-              <MUILink
-                to="#"
-                component={RemixLink}
-                color={blue[500]}
-                underline="hover"
-                variant="subtitle2"
+              <MyLinkButton
+                to={"/front/signup"}
+                variant="contained"
+                color="success"
+                sx={{ mt: 3, mb: 2 }}
+                fullWidth
               >
-                {t("common:forget_password")}
-              </MUILink>
+                {t("common:create_new_account")}
+              </MyLinkButton>
+
+              <Box sx={{ textAlign: "right" }}>
+                <MUILink
+                  to="#"
+                  component={RemixLink}
+                  color={blue[500]}
+                  underline="hover"
+                  variant="subtitle2"
+                >
+                  {t("common:forget_password")}
+                </MUILink>
+              </Box>
             </Box>
           </Box>
-        </Box>
-      </Container>
-    </ValidatedForm>
+        </Container>
+      </ValidatedForm>
+    </>
   );
 }

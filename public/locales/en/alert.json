@@ -1,0 +1,6 @@
+{
+  "db": "Database Error",
+  "dbErrors": "Database {{error, string}} Error",
+  "signinFailed": "Sign-in failed",
+  "unknown": "Unknown Error"
+}

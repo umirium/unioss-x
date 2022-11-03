@@ -12,13 +12,17 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, Link as RemixLink, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import {
+  commitSession as commitAlertSession,
+  getSession as getAlertSession,
+} from "~/utils/sessions/alert.server";
 import {
   getSession as getCartSession,
   commitSession as commitCartSession,
@@ -30,6 +34,8 @@ import {
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { authenticator } from "~/utils/auth.server";
 import snakecaseKeys from "snakecase-keys";
+import MyAlert from "~/components/atoms/MyAlert";
+import type { NoticeType } from "~/types/outline";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -41,14 +47,21 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     .eq("id", params.product_id)
     .single();
 
-  return { product: product ? camelcaseKeys(product) : product, page };
+  const alertSession = await getAlertSession(request.headers.get("Cookie"));
+  const alert: NoticeType = alertSession.get("alert");
+
+  return json(
+    { product: product ? camelcaseKeys(product) : product, page, alert },
+    {
+      headers: {
+        "Set-Cookie": await commitAlertSession(alertSession),
+      },
+    }
+  );
 };
 
 export const action = async ({ request }: ActionArgs) => {
   const form = await request.formData();
-
-  // show snackbar of 'added to cart' or error
-  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   const authUser = await authenticator.isAuthenticated(request);
 
@@ -116,28 +129,25 @@ export const action = async ({ request }: ActionArgs) => {
         }
       }
     } catch (error: Error | unknown) {
+      // show alert of database errors
+      const alertSession = await getAlertSession(request.headers.get("cookie"));
+
       if (error instanceof Error) {
-        noticeSession.flash("notice", {
-          key: `dbDetailError_${Date.now()}`,
+        alertSession.flash("alert", {
+          key: `dbErrors_${Date.now()}`,
           options: { error: `common:${error.message}` },
         });
-
-        return redirect("/front/cart", {
-          headers: {
-            "Set-Cookie": await commitNoticeSession(noticeSession),
-          },
-        });
       } else {
-        noticeSession.flash("notice", {
-          key: `unknownError_${Date.now()}`,
-        });
-
-        return redirect(request.url, {
-          headers: {
-            "Set-Cookie": await commitNoticeSession(noticeSession),
-          },
+        alertSession.flash("alert", {
+          key: `unknown_${Date.now()}`,
         });
       }
+
+      return redirect(request.url, {
+        headers: {
+          "Set-Cookie": await commitAlertSession(alertSession),
+        },
+      });
     }
   }
 
@@ -168,6 +178,9 @@ export const action = async ({ request }: ActionArgs) => {
   }
 
   cartSession.set("cart", newCart);
+
+  // show snackbar of 'added to cart'
+  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
   noticeSession.flash("notice", { key: `addedToCart_${Date.now()}` });
 
   const headers = new Headers();
@@ -178,7 +191,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Product() {
-  const { product, page } = useLoaderData<typeof loader>();
+  const { product, page, alert } = useLoaderData<typeof loader>();
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState("1");
 
@@ -188,6 +201,9 @@ export default function Product() {
 
   return (
     <>
+      {/* show errors with alert */}
+      <MyAlert i18nObj={alert} />
+
       <Breadcrumbs sx={{ mb: 5 }}>
         <MUILink
           underline="hover"
