@@ -48,7 +48,7 @@ export const action = async ({ request }: ActionArgs) => {
   if (formData.get("signout")) {
     await new Promise((resolve) => setTimeout(resolve, Math.random() * 100));
 
-    // to show snackbar of successful sign-out
+    // show snackbar of successful sign-out
     const noticeSession = await getNoticeSession(request.headers.get("cookie"));
     noticeSession.flash("notice", { key: "signout" });
 

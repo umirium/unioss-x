@@ -89,25 +89,19 @@ export const action = async ({ request }: ActionArgs) => {
         throw new Error("read");
       }
 
-      const same = data?.find((e) => {
-        const item = camelcaseKeys(e);
-        return item.productId === formData.productId;
+      const same = camelcaseKeys(data).find((e) => {
+        return e.productId === formData.productId;
       });
 
       if (same) {
-        // same product is exist in database
-
-        // update cart data in database
-        const updater = camelcaseKeys(same);
-
         const { error } = await db
           .from<definitions["carts"]>("carts")
           .update(
             snakecaseKeys({
-              quantity: updater.quantity + formData.quantity,
+              quantity: same.quantity + formData.quantity,
             })
           )
-          .eq("id", updater.id);
+          .eq("id", same.id);
 
         if (error) {
           throw new Error("update");

@@ -35,25 +35,23 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     return {
       // add cart item quantity to product info
-      cart: camelcaseKeys(
-        data.map((e) => {
-          const product = camelcaseKeys(e);
+      cart: camelcaseKeys(data).map((e) => {
+        const product = e;
 
-          const cartItem = cart.find((e) => {
-            const item = camelcaseKeys(e);
+        const cartItem = camelcaseKeys(cart).find((e) => {
+          const item = e;
 
-            if (item.productId === product.id) {
-              return true;
-            }
+          if (item.productId === product.id) {
+            return true;
+          }
 
-            return false;
-          });
+          return false;
+        });
 
-          product.quantity = cartItem ? cartItem.quantity : 0;
+        product.quantity = cartItem ? cartItem.quantity : 0;
 
-          return product;
-        })
-      ),
+        return product;
+      }),
     };
   } catch (error) {
     console.log(error);
