@@ -26,7 +26,7 @@ import AccountAvatar from "./outline/accountAvatar";
 interface Props {
   children: ReactElement;
   authUser: SnakeToCamel<definitions["users"]> | null;
-  cart: Array<SnakeToCamel<definitions["carts"]>> | null;
+  cart: Array<SnakeToCamel<definitions["carts"]>>;
   drawerWidth?: number;
 }
 
@@ -110,7 +110,7 @@ export default function Outline(props: Props) {
               onClick={handleClickCart}
             >
               <Badge
-                badgeContent={cart?.length || 0}
+                badgeContent={cart.reduce((sum, e) => sum + e.quantity, 0)}
                 color={
                   darkTheme.palette.mode === "light" ? "secondary" : "primary"
                 }

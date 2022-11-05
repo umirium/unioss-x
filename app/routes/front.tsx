@@ -31,7 +31,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const noticeSession = await getNoticeSession(request.headers.get("Cookie"));
 
   const cart: Array<SnakeToCamel<definitions["carts"]>> =
-    cartSession.get("cart");
+    cartSession.get("cart") || [];
   const notice: NoticeType = noticeSession.get("notice");
 
   return json(
