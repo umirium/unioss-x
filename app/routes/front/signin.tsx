@@ -33,6 +33,10 @@ import {
   getSession as getAuthSession,
 } from "~/utils/sessions/auth.server";
 import {
+  commitSession as commitCartSession,
+  getSession as getCartSession,
+} from "~/utils/sessions/cart.server";
+import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
@@ -41,6 +45,11 @@ import type { NoticeType, PasswordFieldHandler } from "~/types/outline";
 import { useRef, useEffect } from "react";
 import MyPassword from "~/components/atoms/MyPassword";
 import MyAlert from "~/components/atoms/MyAlert";
+import type { definitions } from "~/types/tables";
+import { db } from "~/utils/db.server";
+import type { SnakeToCamel } from "snake-camel-types";
+import camelcaseKeys from "camelcase-keys";
+import snakecaseKeys from "snakecase-keys";
 
 const validator = withYup(signinSchema);
 
@@ -65,7 +74,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  let user;
+  let user: SnakeToCamel<definitions["users"]> | null;
   const alertSession = await getAlertSession(request.headers.get("cookie"));
 
   try {
@@ -93,8 +102,128 @@ export const action = async ({ request }: ActionArgs) => {
     const noticeSession = await getNoticeSession(request.headers.get("cookie"));
     noticeSession.flash("notice", { key: "signin" });
 
+    /**
+     * merge session and database cart data
+     */
+    let cartDB: Array<SnakeToCamel<definitions["carts"]>> | undefined =
+      undefined;
+
+    // get cart data from database
+    try {
+      const { data, error } = await db
+        .from<definitions["carts"]>("carts")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("delete_flg", false);
+
+      if (error) {
+        console.log(error);
+        throw new Error("read");
+      }
+
+      cartDB = camelcaseKeys(data);
+    } catch (error) {
+      // show alert of database errors
+      if (error instanceof Error) {
+        alertSession.flash("alert", {
+          key: `dbErrors_${Date.now()}`,
+          options: { error: `common:${error.message}` },
+        });
+      } else {
+        alertSession.flash("alert", {
+          key: `unknown_${Date.now()}`,
+        });
+      }
+
+      return redirect(request.url, {
+        headers: {
+          "Set-Cookie": await commitAlertSession(alertSession),
+        },
+      });
+    }
+
+    // get cart data from cookie
+    const cartSession = await getCartSession(request.headers.get("Cookie"));
+    const cart: Array<
+      Pick<SnakeToCamel<definitions["carts"]>, "productId" | "quantity">
+    > = cartSession.get("cart") || [];
+
+    // update DB
+    const upserter = cart?.map((item) => {
+      const extract = cartDB?.find((e) => e.productId === item.productId);
+
+      // update
+      if (extract) {
+        return {
+          id: extract.id,
+          userId: user?.id,
+          productId: item.productId,
+          quantity: item.quantity + extract.quantity,
+        };
+      }
+
+      // insert
+      return { id: null, userId: user?.id, ...item };
+    });
+
+    if (upserter) {
+      try {
+        const { error } = await db
+          .from("carts")
+          .upsert(snakecaseKeys(upserter))
+          .select();
+
+        if (error) {
+          console.log(error);
+          throw new Error("create");
+        }
+      } catch (error: Error | unknown) {
+        // show alert of database errors
+        const alertSession = await getAlertSession(
+          request.headers.get("cookie")
+        );
+
+        if (error instanceof Error) {
+          alertSession.flash("alert", {
+            key: `dbErrors_${Date.now()}`,
+            options: { error: `common:${error.message}` },
+          });
+        } else {
+          alertSession.flash("alert", {
+            key: `unknown_${Date.now()}`,
+          });
+        }
+
+        return redirect(request.url, {
+          headers: {
+            "Set-Cookie": await commitAlertSession(alertSession),
+          },
+        });
+      }
+    }
+
+    // update cart
+    const newCart = [...cart];
+
+    cartDB.forEach((item) => {
+      const index = cart?.findIndex((e) => e.productId === item.productId);
+
+      if (index !== -1) {
+        newCart[index].quantity += item.quantity;
+        return;
+      }
+
+      newCart?.push({
+        productId: item.productId,
+        quantity: item.quantity,
+      });
+    });
+
+    cartSession.set("cart", newCart);
+
     const headers = new Headers();
     headers.append("Set-Cookie", await commitAuthSession(authSession));
+    headers.append("Set-Cookie", await commitCartSession(cartSession));
     headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
 
     return redirect(redirectTo || "/front", { headers });
