@@ -36,6 +36,7 @@ import { authenticator } from "~/utils/auth.server";
 import snakecaseKeys from "snakecase-keys";
 import MyAlert from "~/components/atoms/MyAlert";
 import type { NoticeType } from "~/types/outline";
+import type { SnakeToCamel } from "snake-camel-types";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -89,9 +90,9 @@ export const action = async ({ request }: ActionArgs) => {
         throw new Error("read");
       }
 
-      const same = camelcaseKeys(data).find((e) => {
-        return e.productId === formData.productId;
-      });
+      const same = camelcaseKeys(data).find(
+        (e) => e.productId === formData.productId
+      );
 
       if (same) {
         const { error } = await db
@@ -149,7 +150,9 @@ export const action = async ({ request }: ActionArgs) => {
    * save cart data to cookie
    */
   const cartSession = await getCartSession(request.headers.get("Cookie"));
-  const cart = cartSession.get("cart") || [];
+  const cart: Array<
+    Pick<SnakeToCamel<definitions["carts"]>, "productId" | "quantity">
+  > = cartSession.get("cart") || [];
 
   // If same product is in cookie as putting cart, add quantity.
   let flg = false;
