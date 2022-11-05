@@ -12,7 +12,10 @@ import {
   destroySession as destroyAuthSession,
   getSession as getAuthSession,
 } from "~/utils/sessions/auth.server";
-import { getSession as getCartSession } from "~/utils/sessions/cart.server";
+import {
+  destroySession as destroyCartSession,
+  getSession as getCartSession,
+} from "~/utils/sessions/cart.server";
 import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
@@ -62,9 +65,12 @@ export const action = async ({ request }: ActionArgs) => {
     const redirectTo = formData.get("redirectTo");
     const authSession = await getAuthSession(request.headers.get("Cookie"));
 
+    const cartSession = await getCartSession(request.headers.get("Cookie"));
+
     const headers = new Headers();
-    headers.append("Set-Cookie", await destroyAuthSession(authSession));
     headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
+    headers.append("Set-Cookie", await destroyAuthSession(authSession));
+    headers.append("Set-Cookie", await destroyCartSession(cartSession));
 
     return redirect(`/front/signin${redirectTo && `?r=${redirectTo}`}`, {
       headers,
