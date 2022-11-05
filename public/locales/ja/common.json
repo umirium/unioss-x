@@ -17,6 +17,7 @@
   "read": "読み込み",
   "update": "更新",
   "delete": "削除",
+  "upsert": "作成・更新",
   "_pleaseSelect_": "- 選択してください -",
   "// settings": "",
   "settings": "設定",

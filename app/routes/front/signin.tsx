@@ -175,7 +175,7 @@ export const action = async ({ request }: ActionArgs) => {
 
         if (error) {
           console.log(error);
-          throw new Error("create");
+          throw new Error("upsert");
         }
       } catch (error: Error | unknown) {
         // show alert of database errors

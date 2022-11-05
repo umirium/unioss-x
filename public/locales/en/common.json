@@ -17,6 +17,7 @@
   "read": "Read",
   "update": "Update",
   "delete": "Delete",
+  "upsert": "Create and Update",
   "_pleaseSelect_": "- Please select -",
   "// settings": "",
   "settings": "Settings",
