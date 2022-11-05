@@ -393,7 +393,10 @@ export interface definitions {
      * @default now()
      */
     updated_at: string;
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default false
+     */
     delete_flg: boolean;
   };
   users: {
@@ -467,7 +470,10 @@ export interface definitions {
      * @default now()
      */
     updated_at: string;
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default false
+     */
     delete_flg: boolean;
   };
   carts: {
@@ -501,7 +507,10 @@ export interface definitions {
      * @default now()
      */
     updated_at: string;
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default false
+     */
     delete_flg: boolean;
   };
 }
