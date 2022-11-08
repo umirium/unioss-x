@@ -1,5 +1,6 @@
 {
   "signin": "Sign-in successful!",
   "signout": "Sign-out successful",
-  "addedToCart": "Added to cart"
+  "addedToCart": "Added to cart",
+  "cartUpdate": "Cart updated"
 }

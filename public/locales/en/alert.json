@@ -2,5 +2,6 @@
   "db": "Database Error",
   "dbErrors": "Database {{error, string}} Error",
   "signinFailed": "Sign-in failed",
+  "params": "Parameters error",
   "unknown": "Unknown Error"
 }

@@ -1,5 +1,6 @@
 {
   "signin": "ログインしました",
   "signout": "ログアウトしました",
-  "addedToCart": "カートに追加しました"
+  "addedToCart": "カートに追加しました",
+  "cartUpdate": "カートを更新しました"
 }

@@ -2,5 +2,6 @@
   "db": "データベースエラーです",
   "dbErrors": "データベース{{error, string}}エラーが発生しました",
   "signinFailed": "ログインに失敗しました",
+  "params": "パラメータエラーです",
   "unknown": "不明なエラーです"
 }
