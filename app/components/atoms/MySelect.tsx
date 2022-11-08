@@ -1,5 +1,11 @@
 import type { SelectChangeEvent, SelectProps } from "@mui/material";
-import { InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+} from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useState } from "react";
 import type { TFunction } from "react-i18next";
@@ -15,6 +21,7 @@ interface MySelectProps extends SelectProps {
     label: string;
   }[];
   onValidate?: "blur" | "submit";
+  fullWidth?: boolean;
 }
 
 export const MySelect = (props: MySelectProps) => {
@@ -40,7 +47,7 @@ export const MySelect = (props: MySelectProps) => {
   };
 
   return (
-    <>
+    <FormControl fullWidth={props.fullWidth || false}>
       <InputLabel error={!!error}>{`${t(`front:${props.label}`)}${
         props.required ? " *" : ""
       }`}</InputLabel>
@@ -65,6 +72,6 @@ export const MySelect = (props: MySelectProps) => {
       <FormHelperText sx={{ color: red[500] }}>
         {error && t(`validator:${error}`)}
       </FormHelperText>
-    </>
+    </FormControl>
   );
 };

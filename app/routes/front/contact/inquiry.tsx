@@ -58,14 +58,13 @@ export default function Inquiry() {
       <Box sx={{ maxWidth: 800, m: "auto" }}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={12}>
-            <FormControl fullWidth>
-              <MySelect
-                label="category"
-                defaultValue={formData?.category}
-                menuItems={categories}
-                required
-              />
-            </FormControl>
+            <MySelect
+              label="category"
+              defaultValue={formData?.category}
+              menuItems={categories}
+              fullWidth
+              required
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={6}>

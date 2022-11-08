@@ -120,13 +120,12 @@ export default function personalDataForm(props: Props) {
 
         <Grid container spacing={3} sx={{ mt: 1 }}>
           <Grid xs={12} sm={6} md={6}>
-            <FormControl fullWidth>
-              <MySelect
-                label="prefecture"
-                defaultValue={props.formData?.prefecture}
-                menuItems={prefectures}
-              />
-            </FormControl>
+            <MySelect
+              label="prefecture"
+              defaultValue={props.formData?.prefecture}
+              menuItems={prefectures}
+              fullWidth
+            />
           </Grid>
 
           <Grid xs={12} sm={6} md={6}>
