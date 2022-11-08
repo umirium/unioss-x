@@ -83,7 +83,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
     event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
   ) => {
     popupState.close();
-    submit(event.currentTarget);
+    submit(event.currentTarget, { method: "post" });
   };
 
   return (
@@ -154,7 +154,6 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
                   />
 
                   <Button
-                    type="submit"
                     variant="contained"
                     color="secondary"
                     name="signout"

@@ -227,7 +227,7 @@ export default function Product() {
               <Typography variant="h4">{product?.productName}</Typography>
               <Box sx={{ mt: 3 }}>{product?.description}</Box>
               <Box sx={{ mt: 3 }}>
-                金額：
+                {t("common:price")}：
                 <Typography variant="h5" component="span">
                   {product?.price.toLocaleString()}
                 </Typography>

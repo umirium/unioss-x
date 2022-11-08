@@ -98,7 +98,7 @@ export const action = async ({ request }: ActionArgs) => {
     const authSession = await getAuthSession(request.headers.get("cookie"));
     authSession.set(authenticator.sessionKey, user);
 
-    // to show snackbar of successful sign-in
+    // show snackbar of successful sign-in
     const noticeSession = await getNoticeSession(request.headers.get("cookie"));
     noticeSession.flash("notice", { key: "signin" });
 
