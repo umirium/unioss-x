@@ -13,8 +13,9 @@ import {
   useTheme,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { blue, grey, purple } from "@mui/material/colors";
-import { Form, useLocation, useSubmit } from "@remix-run/react";
+import { Form, useLocation, useNavigate, useSubmit } from "@remix-run/react";
 import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
@@ -50,6 +51,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
   const location = useLocation();
   const submit = useSubmit();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const darkTheme = useTheme();
   const theme = createTheme(getDesignTokens(darkTheme.palette.mode));
 
@@ -84,6 +86,19 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
   ) => {
     popupState.close();
     submit(event.currentTarget, { method: "post" });
+  };
+
+  const handleClickMypage = async (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
+    popupState.close();
+
+    if (authUser) {
+      navigate("/front/mypage");
+      return;
+    }
+
+    navigate("/front/signin?r=/front/mypage");
   };
 
   return (
@@ -128,19 +143,36 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
             <Box>{t("common:guest")}</Box>
           )}
 
-          <ThemeProvider theme={theme}>
-            <Button
-              variant="outlined"
-              startIcon={<SettingsIcon />}
-              sx={{
-                mt: 3,
-                borderRadius: 28,
-              }}
-              onClick={handleClickSettings}
-            >
-              {t("common:settings")}
-            </Button>
-          </ThemeProvider>
+          <Box>
+            <ThemeProvider theme={theme}>
+              <Button
+                variant="outlined"
+                startIcon={<SettingsIcon />}
+                sx={{
+                  mt: 3,
+                  borderRadius: 28,
+                }}
+                onClick={handleClickSettings}
+              >
+                {t("common:settings")}
+              </Button>
+            </ThemeProvider>
+          </Box>
+
+          <Box>
+            <ThemeProvider theme={theme}>
+              <Button
+                variant="contained"
+                startIcon={<ShoppingBagIcon />}
+                sx={{
+                  mt: 3,
+                }}
+                onClick={handleClickMypage}
+              >
+                {t("front:mypage")}
+              </Button>
+            </ThemeProvider>
+          </Box>
 
           <Divider sx={{ mt: 2, mb: 2 }} />
           <Box>
