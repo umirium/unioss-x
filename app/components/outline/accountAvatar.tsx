@@ -12,8 +12,8 @@ import {
   ThemeProvider,
   useTheme,
 } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { blue, grey, purple } from "@mui/material/colors";
 import { Form, useLocation, useNavigate, useSubmit } from "@remix-run/react";
 import type { SettingsHandler } from "~/types/outline";
@@ -143,13 +143,34 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
             <Box>{t("common:guest")}</Box>
           )}
 
+          {authUser?.id && (
+            <>
+              <Box>
+                <ThemeProvider theme={theme}>
+                  <Button
+                    variant="contained"
+                    startIcon={<PersonIcon />}
+                    sx={{
+                      mt: 3,
+                    }}
+                    onClick={handleClickMypage}
+                  >
+                    {t("front:mypage")}
+                  </Button>
+                </ThemeProvider>
+              </Box>
+            </>
+          )}
+
+          <Divider sx={{ mt: 2 }} />
+
           <Box>
             <ThemeProvider theme={theme}>
               <Button
                 variant="outlined"
                 startIcon={<SettingsIcon />}
                 sx={{
-                  mt: 3,
+                  mt: 2,
                   borderRadius: 28,
                 }}
                 onClick={handleClickSettings}
@@ -159,23 +180,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
             </ThemeProvider>
           </Box>
 
-          <Box>
-            <ThemeProvider theme={theme}>
-              <Button
-                variant="contained"
-                startIcon={<ShoppingBagIcon />}
-                sx={{
-                  mt: 3,
-                }}
-                onClick={handleClickMypage}
-              >
-                {t("front:mypage")}
-              </Button>
-            </ThemeProvider>
-          </Box>
-
-          <Divider sx={{ mt: 2, mb: 2 }} />
-          <Box>
+          <Box sx={{ mt: 3 }}>
             {authUser?.id ? (
               <>
                 <Form method="post">
