@@ -7,6 +7,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
@@ -256,10 +257,13 @@ export default function Cart() {
 
       <Box>
         {t("common:total")}:{" "}
-        {cart
-          ?.reduce((sum, e) => sum + e.quantity * e.price, 0)
-          .toLocaleString()}
-        円
+        <Typography variant="h5" component="span">
+          {t("common:jpy", {
+            price: cart
+              ?.reduce((sum, e) => sum + e.quantity * e.price, 0)
+              .toLocaleString(),
+          })}
+        </Typography>
       </Box>
       <br />
       <Box>
@@ -275,13 +279,20 @@ export default function Cart() {
               <Box sx={{ ml: 2 }}>
                 {t("front:productName")}: {item.productName}
                 <br />
-                {t("common:price")}: {item.price.toLocaleString()}
+                {t("common:price")}:{" "}
+                {t("common:jpy", {
+                  price: item.price.toLocaleString(),
+                })}
                 <br />
                 {t("common:quantity")}: {item.quantity}
                 <br />
                 <br />
                 {t("common:subtotal")}:{" "}
-                {(item.quantity * item.price).toLocaleString()}円
+                <Typography variant="h6" component="span">
+                  {t("common:jpy", {
+                    price: (item.quantity * item.price).toLocaleString(),
+                  })}
+                </Typography>
                 <br />
                 <br />
                 <FormControl>

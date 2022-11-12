@@ -227,11 +227,10 @@ export default function Product() {
               <Typography variant="h4">{product?.productName}</Typography>
               <Box sx={{ mt: 3 }}>{product?.description}</Box>
               <Box sx={{ mt: 3 }}>
-                {t("common:price")}：
+                {t("common:price")}:{" "}
                 <Typography variant="h5" component="span">
-                  {product?.price.toLocaleString()}
+                  {t("common:jpy", { price: product?.price.toLocaleString() })}
                 </Typography>
-                円
               </Box>
             </Grid>
 

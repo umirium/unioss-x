@@ -14,6 +14,7 @@
   "subtotal": "Subtotal",
   "total": "Total",
   "price": "Price",
+  "jpy": "¥{{price, string}}",
   "create": "Create",
   "read": "Read",
   "update": "Update",
