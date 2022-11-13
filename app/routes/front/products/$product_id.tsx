@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link as RemixLink, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
@@ -37,6 +37,12 @@ import snakecaseKeys from "snakecase-keys";
 import MyAlert from "~/components/atoms/MyAlert";
 import type { NoticeType } from "~/types/outline";
 import type { SnakeToCamel } from "snake-camel-types";
+
+export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
+  return {
+    title: `${parentsData["routes/front"].siteTitle} | products | ${data.product?.productName}`,
+  };
+};
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);

@@ -16,7 +16,7 @@ import {
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { signinSchema } from "~/stores/validator";
@@ -52,6 +52,12 @@ import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
 
 const validator = withYup(signinSchema);
+
+export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
+  return {
+    title: `${parentsData["routes/front"].siteTitle} | sign-in`,
+  };
+};
 
 export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);

@@ -1,6 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import {
@@ -10,6 +10,12 @@ import {
 import type { NoticeType } from "~/types/outline";
 import MyAlert from "~/components/atoms/MyAlert";
 import { Box } from "@mui/material";
+
+export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
+  return {
+    title: `${parentsData["routes/front"].siteTitle} | My page`,
+  };
+};
 
 export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);

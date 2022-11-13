@@ -9,7 +9,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
@@ -40,6 +40,12 @@ import snakecaseKeys from "snakecase-keys";
 import type { NoticeType } from "~/types/outline";
 import MyAlert from "~/components/atoms/MyAlert";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
+
+export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
+  return {
+    title: `${parentsData["routes/front"].siteTitle} | cart`,
+  };
+};
 
 export const loader = async ({ request }: LoaderArgs) => {
   const cartSession = await getCartSession(request.headers.get("Cookie"));

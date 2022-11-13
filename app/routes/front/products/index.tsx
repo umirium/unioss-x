@@ -10,13 +10,19 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
 const PER_PAGE = 4;
+
+export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
+  return {
+    title: `${parentsData["routes/front"].siteTitle} | products`,
+  };
+};
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);

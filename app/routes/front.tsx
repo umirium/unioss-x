@@ -5,7 +5,7 @@ import { ThemeProvider } from "@mui/material";
 import Outline from "~/components/outline";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import {
@@ -25,6 +25,12 @@ import type { SnakeToCamel } from "snake-camel-types";
 import type { NoticeType } from "~/types/outline";
 import MyNotice from "~/components/atoms/MyNotice";
 
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return {
+    title: data.siteTitle,
+  };
+};
+
 export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);
   const cartSession = await getCartSession(request.headers.get("Cookie"));
@@ -34,8 +40,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     cartSession.get("cart") || [];
   const notice: NoticeType = noticeSession.get("notice");
 
+  // site title
+  const siteTitle = "UNIOSS-X";
+
   return json(
-    { authUser, cart, notice },
+    { authUser, cart, notice, siteTitle },
     {
       headers: {
         "Set-Cookie": await commitNoticeSession(noticeSession),
