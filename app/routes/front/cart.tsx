@@ -39,6 +39,7 @@ import { authenticator } from "~/utils/auth.server";
 import snakecaseKeys from "snakecase-keys";
 import type { NoticeType } from "~/types/outline";
 import MyAlert from "~/components/atoms/MyAlert";
+import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const cartSession = await getCartSession(request.headers.get("Cookie"));
@@ -256,17 +257,32 @@ export default function Cart() {
       </Box>
 
       <Box>
-        {t("common:total")}:{" "}
-        <Typography variant="h5" component="span">
-          {t("common:jpy", {
-            price: cart
-              ?.reduce((sum, e) => sum + e.quantity * e.price, 0)
-              .toLocaleString(),
-          })}
-        </Typography>
+        {cart && cart.length !== 0 ? (
+          <>
+            {t("common:total")}:{" "}
+            <Typography variant="h5" component="span">
+              {t("common:jpy", {
+                price: cart
+                  ?.reduce((sum, e) => sum + e.quantity * e.price, 0)
+                  .toLocaleString(),
+              })}
+            </Typography>
+          </>
+        ) : (
+          <>
+            <Typography variant="h6" component="span">
+              {t("front:yourCartIsEmpty")}
+            </Typography>
+            <Box sx={{ mt: 5, textAlign: "center" }}>
+              <MyLinkButton variant="contained" to={"/front/products"}>
+                {t("front:goToProducts")}
+              </MyLinkButton>
+            </Box>
+          </>
+        )}
       </Box>
-      <br />
-      <Box>
+
+      <Box sx={{ mt: 5 }}>
         <Form method="post">
           {cart?.map((item, index) => (
             <Box key={index} sx={{ display: "flex" }}>

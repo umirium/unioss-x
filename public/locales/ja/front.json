@@ -38,5 +38,7 @@
   "aboutAccess": "アクセスについて",
   "other": "その他",
   "// others": "",
-  "mypage": "マイページ"
+  "mypage": "マイページ",
+  "yourCartIsEmpty": "カートに商品がありません",
+  "goToProducts": "商品一覧へ"
 }
