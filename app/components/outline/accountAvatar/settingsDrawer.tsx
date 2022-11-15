@@ -1,3 +1,5 @@
+import type { MouseEvent } from "react";
+import { useLocation, useSubmit, useTransition } from "@remix-run/react";
 import type { DrawerProps } from "@mui/material";
 import {
   Box,
@@ -14,7 +16,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
-import type { MouseEvent } from "react";
 import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { useTranslation } from "react-i18next";
 
@@ -24,19 +25,26 @@ interface SettingsDrawerProps extends DrawerProps {
 
 export default function SettingsDrawer(props: SettingsDrawerProps) {
   const { mode, setMode } = useDarkThemeContext();
+  const submit = useSubmit();
+  const location = useLocation();
+  const transition = useTransition();
   const { t, i18n } = useTranslation();
 
-  const handleChangeMode = (_event: MouseEvent<HTMLElement>, mode: string) => {
-    if (mode === "light" || mode === "dark") {
-      setMode(mode);
-    } else {
-      setMode(undefined);
-    }
+  const handleToggleDrawer = () => {
+    // close settings drawer
+    props.onClose();
   };
 
-  const handleToggleDrawer = () => {
-    // close setting drawer
-    props.onClose();
+  const handleChangeMode = (_event: MouseEvent<HTMLElement>, mode: string) => {
+    if (mode === "light" || mode === "dark" || mode === "system") {
+      setMode(mode);
+
+      // give current url to action to stay on this page
+      const formData = new FormData();
+      formData.set("redirectTo", location.pathname);
+      formData.set("darkMode", mode);
+      submit(formData, { method: "post" });
+    }
   };
 
   const handleChangeLanguage = (
@@ -45,6 +53,12 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
   ) => {
     if (language === "en" || language === "ja") {
       i18n.changeLanguage(language);
+
+      // give current url to action to stay on this page
+      const formData = new FormData();
+      formData.set("redirectTo", location.pathname);
+      formData.set("lang", language);
+      submit(formData, { method: "post" });
     }
   };
 
@@ -77,9 +91,10 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
           <ListItem>
             <ToggleButtonGroup
               color="primary"
-              value={mode === undefined ? "system" : mode}
+              value={mode}
               exclusive
               onChange={handleChangeMode}
+              disabled={transition.state !== "idle"}
             >
               <ToggleButton value="light">
                 <LightModeIcon sx={{ mr: 1 }} />
@@ -108,6 +123,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
               exclusive
               onChange={handleChangeLanguage}
               sx={{ width: "100%" }}
+              disabled={transition.state !== "idle"}
             >
               <ToggleButton value="en">{t("common:english")}</ToggleButton>
               <ToggleButton value="ja">{t("common:japanese")}</ToggleButton>

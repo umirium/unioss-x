@@ -3,15 +3,16 @@ import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material";
 import type { Dispatch, ReactElement } from "react";
 import { createContext, useContext, useMemo, useState } from "react";
-import type { DarkModeType } from "~/types/outline";
+import type { SettingsType } from "~/types/outline";
 
 interface Props {
+  darkMode: SettingsType["darkMode"];
   children: ReactElement;
 }
 
 interface ContextInterface {
-  mode: DarkModeType;
-  setMode: Dispatch<React.SetStateAction<DarkModeType>>;
+  mode: SettingsType["darkMode"];
+  setMode: Dispatch<React.SetStateAction<SettingsType["darkMode"]>>;
   darkMode: {
     toggle: () => void;
   };
@@ -33,7 +34,9 @@ export function useDarkThemeContext() {
 }
 
 export function DarkThemeProvider(props: Props) {
-  const [mode, setMode] = useState<DarkModeType>(undefined);
+  // NOTE: type error: useState<Pick<SettingsType, "darkMode">>
+  // cf. https://stackoverflow.com/questions/71472835/having-issues-using-pick-utility-type-with-react-usestate-hook
+  const [mode, setMode] = useState<SettingsType["darkMode"]>(props.darkMode);
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const darkMode = useMemo(
@@ -49,8 +52,7 @@ export function DarkThemeProvider(props: Props) {
     () =>
       createTheme({
         palette: {
-          mode:
-            mode === undefined ? (prefersDarkMode ? "dark" : "light") : mode,
+          mode: mode === "system" ? (prefersDarkMode ? "dark" : "light") : mode,
         },
       }),
     [mode, prefersDarkMode]

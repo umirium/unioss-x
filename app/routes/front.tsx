@@ -20,9 +20,13 @@ import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
+import {
+  commitSession as commitSettingsSession,
+  getSession as getSettingsSession,
+} from "~/utils/sessions/settings.server";
 import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
-import type { NoticeType } from "~/types/outline";
+import type { NoticeType, SettingsType } from "~/types/outline";
 import MyNotice from "~/components/atoms/MyNotice";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -43,6 +47,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   // site title
   const siteTitle = "UNIOSS-X";
 
+  // NOTE: Be sure to commit notice session because it will pop up permanently.
   return json(
     { authUser, cart, notice, siteTitle },
     {
@@ -82,6 +87,31 @@ export const action = async ({ request }: ActionArgs) => {
     headers.append("Set-Cookie", await destroyCartSession(cartSession));
 
     return redirect(`/front/signin${redirectTo && `?r=${redirectTo}`}`, {
+      headers,
+    });
+  }
+
+  // change of darkmode or language from settingsDrawer
+  if (formData.get("darkMode") || formData.get("lang")) {
+    const settingsSession = await getSettingsSession(
+      request.headers.get("Cookie")
+    );
+
+    const settings: SettingsType = settingsSession.get("settings");
+
+    const darkMode = formData.get("darkMode") || settings.darkMode;
+    const lang = formData.get("lang") || settings.lang;
+
+    settings.darkMode =
+      darkMode === "light" || darkMode === "dark" ? darkMode : "system";
+    settings.lang = lang === "en" || lang === "ja" ? lang : "en";
+
+    settingsSession.set("settings", settings);
+
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
+
+    return redirect(formData.get("redirectTo") as string, {
       headers,
     });
   }

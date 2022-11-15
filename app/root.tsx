@@ -1,4 +1,5 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,16 +9,46 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+import {
+  commitSession as commitSettingsSession,
+  getSession as getSettingsSession,
+} from "~/utils/sessions/settings.server";
 import { DarkThemeProvider } from "~/providers/darkThemeProvider";
 import styles from "~/styles/root.css";
 import { useChangeLanguage } from "remix-i18next";
 import { useTranslation } from "react-i18next";
 import i18next from "~/i18next.server";
 import i18n from "./i18n";
+import type { SettingsType } from "./types/outline";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const locale = await i18next.getLocale(request);
-  return { locale };
+  // load site settings cookie
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
+
+  let settings: SettingsType = settingsSession.get("settings");
+
+  // If settings cookie is not exist, initialize it.
+  if (!settings) {
+    const locale = await i18next.getLocale(request);
+
+    settings = {
+      darkMode: "system",
+      lang: locale === "en" || locale === "ja" ? locale : "en",
+    };
+
+    settingsSession.set("settings", settings);
+  }
+
+  return json(
+    { settings },
+    {
+      headers: {
+        "Set-Cookie": await commitSettingsSession(settingsSession),
+      },
+    }
+  );
 };
 
 export const handle = {
@@ -35,19 +66,19 @@ export const links = () => {
 };
 
 export default function App() {
-  const { locale } = useLoaderData<typeof loader>();
+  const { settings } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
 
-  useChangeLanguage(locale);
+  useChangeLanguage(settings.lang);
 
   return (
-    <html lang={locale} dir={i18n.dir()}>
+    <html lang={settings.lang} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
       </head>
       <body>
-        <DarkThemeProvider>
+        <DarkThemeProvider darkMode={settings.darkMode}>
           <Outlet />
         </DarkThemeProvider>
         <ScrollRestoration />

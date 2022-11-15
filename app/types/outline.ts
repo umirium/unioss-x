@@ -1,4 +1,7 @@
-export type DarkModeType = "light" | "dark" | undefined;
+export type SettingsType = {
+  darkMode: "light" | "dark" | "system";
+  lang: "en" | "ja";
+};
 
 export type SettingsHandler = { closeSettingsDrawer(): void };
 

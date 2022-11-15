@@ -6,8 +6,10 @@ import BackendHTTP from "i18next-http-backend";
 import { resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
+import { getSession as getSettingsSession } from "~/utils/sessions/settings.server";
 import i18next from "./i18next.server";
 import i18n from "./i18n";
+import type { SettingsType } from "./types/outline";
 
 export default async function handleRequest(
   request: Request,
@@ -17,7 +19,12 @@ export default async function handleRequest(
 ) {
   const instance = createInstance();
 
-  const lng = await i18next.getLocale(request);
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
+  const settings: SettingsType = settingsSession.get("settings");
+
+  const lng = settings ? settings.lang : await i18next.getLocale(request);
   const ns = i18next.getRouteNamespaces(context);
 
   if (process.env.NODE_ENV === "production") {
