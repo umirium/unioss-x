@@ -114,7 +114,7 @@ export const action = async ({ request }: ActionArgs) => {
           throw new Error("update");
         }
       } else {
-        // same product isn't exist in database
+        // same product does not exist in database
 
         // insert cart data to database
         const { error } = await db.from<definitions["carts"]>("carts").insert([
@@ -176,7 +176,7 @@ export const action = async ({ request }: ActionArgs) => {
   });
 
   if (!flg) {
-    // same product isn't exist in cookie
+    // same product does not exist in cookie
     newCart.push(formData);
   }
 

@@ -29,7 +29,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   let settings: SettingsType = settingsSession.get("settings");
 
-  // If settings cookie is not exist, initialize it.
+  // If settings cookie does not exist, initialize it.
   if (!settings) {
     const locale = await i18next.getLocale(request);
 
