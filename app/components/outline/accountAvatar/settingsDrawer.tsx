@@ -24,7 +24,7 @@ interface SettingsDrawerProps extends DrawerProps {
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps) {
-  const { mode, setMode } = useDarkThemeContext();
+  const { mode } = useDarkThemeContext();
   const submit = useSubmit();
   const location = useLocation();
   const transition = useTransition();
@@ -37,7 +37,8 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
 
   const handleChangeMode = (_event: MouseEvent<HTMLElement>, mode: string) => {
     if (mode === "light" || mode === "dark" || mode === "system") {
-      setMode(mode);
+      // this process is done by Front's one instead
+      // setMode(mode);
 
       // give current url to action to stay on this page
       const formData = new FormData();

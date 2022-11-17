@@ -40,8 +40,16 @@ import {
   commitSession as commitNoticeSession,
   getSession as getNoticeSession,
 } from "~/utils/sessions/notice.server";
+import {
+  commitSession as commitSettingsSession,
+  getSession as getSettingsSession,
+} from "~/utils/sessions/settings.server";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
-import type { NoticeType, PasswordFieldHandler } from "~/types/outline";
+import type {
+  NoticeType,
+  PasswordFieldHandler,
+  SettingsType,
+} from "~/types/outline";
 import { useRef, useEffect } from "react";
 import MyPassword from "~/components/atoms/MyPassword";
 import MyAlert from "~/components/atoms/MyAlert";
@@ -50,6 +58,7 @@ import { db } from "~/utils/db.server";
 import type { SnakeToCamel } from "snake-camel-types";
 import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
+import { MODE_DARK, MODE_LIGHT } from "~/utils/constants/index.server";
 
 const validator = withYup(signinSchema);
 
@@ -107,6 +116,11 @@ export const action = async ({ request }: ActionArgs) => {
     // show snackbar of successful sign-in
     const noticeSession = await getNoticeSession(request.headers.get("cookie"));
     noticeSession.flash("notice", { key: "signin" });
+
+    // load user's site settings
+    const settingsSession = await getSettingsSession(
+      request.headers.get("Cookie")
+    );
 
     /**
      * merge session and database cart data
@@ -227,10 +241,62 @@ export const action = async ({ request }: ActionArgs) => {
 
     cartSession.set("cart", newCart);
 
+    /**
+     * load site settings data from database
+     */
+    let settingsDB: SnakeToCamel<definitions["settings"]> | undefined =
+      undefined;
+
+    try {
+      const { data, error } = await db
+        .from<definitions["settings"]>("settings")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("delete_flg", false)
+        .single();
+
+      if (error) {
+        console.log(error);
+        throw new Error("read");
+      }
+
+      settingsDB = camelcaseKeys(data);
+    } catch (error) {
+      // show alert of database errors
+      if (error instanceof Error) {
+        alertSession.flash("alert", {
+          key: `dbErrors_${Date.now()}`,
+          options: { error: `common:${error.message}` },
+        });
+      } else {
+        alertSession.flash("alert", {
+          key: `unknown_${Date.now()}`,
+        });
+      }
+    }
+
+    let settings: SettingsType = settingsSession.get("settings");
+
+    if (settingsDB) {
+      settings.darkMode =
+        settingsDB.darkMode === MODE_LIGHT
+          ? "light"
+          : settingsDB.darkMode === MODE_DARK
+          ? "dark"
+          : "system";
+      settings.lang =
+        settingsDB.language === "en" || settingsDB.language === "ja"
+          ? settingsDB.language
+          : settings.lang;
+    }
+
+    settingsSession.set("settings", settings);
+
     const headers = new Headers();
     headers.append("Set-Cookie", await commitAuthSession(authSession));
     headers.append("Set-Cookie", await commitCartSession(cartSession));
     headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
+    headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
 
     return redirect(redirectTo || "/front", { headers });
   }

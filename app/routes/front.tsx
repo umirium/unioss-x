@@ -9,6 +9,10 @@ import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import {
+  commitSession as commitAlertSession,
+  getSession as getAlertSession,
+} from "~/utils/sessions/alert.server";
+import {
   destroySession as destroyAuthSession,
   getSession as getAuthSession,
 } from "~/utils/sessions/auth.server";
@@ -28,6 +32,13 @@ import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
 import type { NoticeType, SettingsType } from "~/types/outline";
 import MyNotice from "~/components/atoms/MyNotice";
+import snakecaseKeys from "snakecase-keys";
+import { db } from "~/utils/db.server";
+import {
+  MODE_DARK,
+  MODE_LIGHT,
+  MODE_SYSTEM,
+} from "~/utils/constants/index.server";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return {
@@ -47,9 +58,15 @@ export const loader = async ({ request }: LoaderArgs) => {
   // site title
   const siteTitle = "UNIOSS-X";
 
+  // site settings
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
+  const settings: SettingsType = settingsSession.get("settings");
+
   // NOTE: Be sure to commit notice session because it will pop up permanently.
   return json(
-    { authUser, cart, notice, siteTitle },
+    { authUser, cart, notice, siteTitle, settings },
     {
       headers: {
         "Set-Cookie": await commitNoticeSession(noticeSession),
@@ -111,6 +128,57 @@ export const action = async ({ request }: ActionArgs) => {
     const headers = new Headers();
     headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
 
+    // if singed-in, write settings data to database.
+    const authUser = await authenticator.isAuthenticated(request);
+
+    if (authUser) {
+      // insert settings data to database
+      try {
+        const { error } = await db
+          .from<definitions["settings"]>("settings")
+          .update(
+            snakecaseKeys({
+              darkMode:
+                settings.darkMode === "light"
+                  ? MODE_LIGHT
+                  : settings.darkMode === "dark"
+                  ? MODE_DARK
+                  : MODE_SYSTEM,
+              language: settings.lang,
+            })
+          )
+          .eq("user_id", authUser.id)
+          .eq("delete_flg", false);
+
+        if (error) {
+          console.log(error);
+          throw new Error("update");
+        }
+      } catch (error: Error | unknown) {
+        // show alert of database errors
+        const alertSession = await getAlertSession(
+          request.headers.get("cookie")
+        );
+
+        if (error instanceof Error) {
+          alertSession.flash("alert", {
+            key: `dbErrors_${Date.now()}`,
+            options: { error: `common:${error.message}` },
+          });
+        } else {
+          alertSession.flash("alert", {
+            key: `unknown_${Date.now()}`,
+          });
+        }
+
+        headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+        return redirect(formData.get("redirectTo") as string, {
+          headers,
+        });
+      }
+    }
+
     return redirect(formData.get("redirectTo") as string, {
       headers,
     });
@@ -120,9 +188,13 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Front() {
-  const { authUser, cart, notice } = useLoaderData<typeof loader>();
-  const { theme } = useDarkThemeContext();
+  const { authUser, cart, notice, settings } = useLoaderData<typeof loader>();
+  const { theme, setMode } = useDarkThemeContext();
   const [openNotice, setOpenNotice] = useState(false);
+
+  useEffect(() => {
+    setMode(settings.darkMode || "system");
+  }, [setMode, settings.darkMode]);
 
   useEffect(() => {
     setOpenNotice(!!notice);

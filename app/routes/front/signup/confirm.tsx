@@ -26,10 +26,11 @@ import type { SnakeToCamel } from "snake-camel-types";
 import { personalDataFormSchema } from "~/stores/validator";
 import type { PersonalData } from "~/types/contactFormType";
 import { useStep } from "../signup";
+import { getSession as getSettingsSession } from "~/utils/sessions/settings.server";
 import {
-  commitSession,
-  destroySession,
-  getSession,
+  commitSession as commitSignupSession,
+  destroySession as destroySignupSession,
+  getSession as getSignupSession,
 } from "~/utils/sessions/signup.server";
 import {
   commitSession as commitAuthSession,
@@ -39,11 +40,17 @@ import { db } from "~/utils/db.server";
 import type { definitions } from "~/types/tables";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
+import {
+  MODE_DARK,
+  MODE_LIGHT,
+  MODE_SYSTEM,
+} from "~/utils/constants/index.server";
+import type { SettingsType } from "~/types/outline";
 
 const validator = withYup(personalDataFormSchema);
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const session = await getSession(request.headers.get("Cookie"));
+  const session = await getSignupSession(request.headers.get("Cookie"));
 
   const data: PersonalData = {
     email: session.get("email"),
@@ -62,31 +69,32 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json(data, {
     headers: {
-      "Set-Cookie": await commitSession(session),
+      "Set-Cookie": await commitSignupSession(session),
     },
   });
 };
 
 export const action = async ({ request }: ActionArgs) => {
   let inserted: SnakeToCamel<definitions["users"]> | undefined;
-  const session = await getSession(request.headers.get("Cookie"));
+
+  const signupSession = await getSignupSession(request.headers.get("Cookie"));
 
   // validate input data in form
   const data: PersonalData = {
-    email: session.get("email"),
-    emailRetype: session.get("emailRetype"),
-    password: session.get("password"),
-    passwordRetype: session.get("passwordRetype"),
-    lastName: session.get("lastName"),
-    firstName: session.get("firstName"),
-    lastNameKana: session.get("lastNameKana"),
-    firstNameKana: session.get("firstNameKana"),
-    postalCode: session.get("postalCode"),
-    prefecture: session.get("prefecture"),
-    city: session.get("city"),
-    address1: session.get("address1"),
-    address2: session.get("address2"),
-    phoneNumber: session.get("phoneNumber"),
+    email: signupSession.get("email"),
+    emailRetype: signupSession.get("emailRetype"),
+    password: signupSession.get("password"),
+    passwordRetype: signupSession.get("passwordRetype"),
+    lastName: signupSession.get("lastName"),
+    firstName: signupSession.get("firstName"),
+    lastNameKana: signupSession.get("lastNameKana"),
+    firstNameKana: signupSession.get("firstNameKana"),
+    postalCode: signupSession.get("postalCode"),
+    prefecture: signupSession.get("prefecture"),
+    city: signupSession.get("city"),
+    address1: signupSession.get("address1"),
+    address2: signupSession.get("address2"),
+    phoneNumber: signupSession.get("phoneNumber"),
   };
 
   // validation
@@ -97,7 +105,7 @@ export const action = async ({ request }: ActionArgs) => {
   const crypto = require("crypto");
   const encryptedPassword = crypto
     .createHash("sha256")
-    .update(session.get("password"))
+    .update(signupSession.get("password"))
     .digest("base64");
 
   // insert user data to database
@@ -106,18 +114,18 @@ export const action = async ({ request }: ActionArgs) => {
       .from<definitions["users"]>("users")
       .insert([
         snakecaseKeys({
-          email: session.get("email"),
+          email: signupSession.get("email"),
           password: encryptedPassword,
-          lastName: session.get("lastName"),
-          firstName: session.get("firstName"),
-          lastNameKana: session.get("lastNameKana"),
-          firstNameKana: session.get("firstNameKana"),
-          postalCode: session.get("postalCode"),
-          prefecture: session.get("prefecture"),
-          city: session.get("city"),
-          address1: session.get("address1"),
-          address2: session.get("address2"),
-          phoneNumber: session.get("phoneNumber"),
+          lastName: signupSession.get("lastName"),
+          firstName: signupSession.get("firstName"),
+          lastNameKana: signupSession.get("lastNameKana"),
+          firstNameKana: signupSession.get("firstNameKana"),
+          postalCode: signupSession.get("postalCode"),
+          prefecture: signupSession.get("prefecture"),
+          city: signupSession.get("city"),
+          address1: signupSession.get("address1"),
+          address2: signupSession.get("address2"),
+          phoneNumber: signupSession.get("phoneNumber"),
           deleteFlg: false,
         }),
       ]);
@@ -125,6 +133,41 @@ export const action = async ({ request }: ActionArgs) => {
     if (data) {
       inserted = camelcaseKeys(data[0]);
     }
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.log(error);
+
+    return validationError({
+      fieldErrors: {
+        system: "dbWrite",
+      },
+    });
+  }
+
+  // create user's site settings data in database
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
+  const settings: SettingsType = settingsSession.get("settings");
+
+  try {
+    const { error } = await db
+      .from<definitions["settings"]>("settings")
+      .insert([
+        snakecaseKeys({
+          userId: inserted?.id,
+          darkMode:
+            settings.darkMode === "light"
+              ? MODE_LIGHT
+              : settings.darkMode === "dark"
+              ? MODE_DARK
+              : MODE_SYSTEM,
+          language: settings.lang,
+        }),
+      ]);
 
     if (error) {
       throw error;
@@ -149,7 +192,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   // destroy signup session and commit auth session
   const headers = new Headers();
-  headers.append("Set-Cookie", await destroySession(session));
+  headers.append("Set-Cookie", await destroySignupSession(signupSession));
   headers.append("Set-Cookie", await commitAuthSession(authSession));
 
   return redirect("/front/signup/complete", { headers });
