@@ -165,7 +165,7 @@ export const action = async ({ request }: ActionArgs) => {
               : settings.darkMode === "dark"
               ? MODE_DARK
               : MODE_SYSTEM,
-          language: settings.lang,
+          language: settings.language,
         }),
       ]);
 

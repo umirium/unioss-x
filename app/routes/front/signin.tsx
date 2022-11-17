@@ -284,10 +284,10 @@ export const action = async ({ request }: ActionArgs) => {
           : settingsDB.darkMode === MODE_DARK
           ? "dark"
           : "system";
-      settings.lang =
+      settings.language =
         settingsDB.language === "en" || settingsDB.language === "ja"
           ? settingsDB.language
-          : settings.lang;
+          : settings.language;
     }
 
     settingsSession.set("settings", settings);

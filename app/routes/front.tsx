@@ -109,7 +109,7 @@ export const action = async ({ request }: ActionArgs) => {
   }
 
   // change of darkmode or language from settingsDrawer
-  if (formData.get("darkMode") || formData.get("lang")) {
+  if (formData.get("darkMode") || formData.get("language")) {
     const settingsSession = await getSettingsSession(
       request.headers.get("Cookie")
     );
@@ -117,11 +117,12 @@ export const action = async ({ request }: ActionArgs) => {
     const settings: SettingsType = settingsSession.get("settings");
 
     const darkMode = formData.get("darkMode") || settings.darkMode;
-    const lang = formData.get("lang") || settings.lang;
+    const language = formData.get("language") || settings.language;
 
     settings.darkMode =
       darkMode === "light" || darkMode === "dark" ? darkMode : "system";
-    settings.lang = lang === "en" || lang === "ja" ? lang : "en";
+    settings.language =
+      language === "en" || language === "ja" ? language : "en";
 
     settingsSession.set("settings", settings);
 
@@ -144,7 +145,7 @@ export const action = async ({ request }: ActionArgs) => {
                   : settings.darkMode === "dark"
                   ? MODE_DARK
                   : MODE_SYSTEM,
-              language: settings.lang,
+              language: settings.language,
             })
           )
           .eq("user_id", authUser.id)

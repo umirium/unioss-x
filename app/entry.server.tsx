@@ -24,7 +24,7 @@ export default async function handleRequest(
   );
   const settings: SettingsType = settingsSession.get("settings");
 
-  const lng = settings ? settings.lang : await i18next.getLocale(request);
+  const lng = settings ? settings.language : await i18next.getLocale(request);
   const ns = i18next.getRouteNamespaces(context);
 
   if (process.env.NODE_ENV === "production") {

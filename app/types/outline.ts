@@ -1,6 +1,6 @@
 export type SettingsType = {
   darkMode: "light" | "dark" | "system";
-  lang: "en" | "ja";
+  language: "en" | "ja";
 };
 
 export type SettingsHandler = { closeSettingsDrawer(): void };

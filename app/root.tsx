@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     settings = {
       darkMode: "system",
-      lang: locale === "en" || locale === "ja" ? locale : "en",
+      language: locale === "en" || locale === "ja" ? locale : "en",
     };
 
     settingsSession.set("settings", settings);
@@ -69,10 +69,10 @@ export default function App() {
   const { settings } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
 
-  useChangeLanguage(settings.lang);
+  useChangeLanguage(settings.language);
 
   return (
-    <html lang={settings.lang} dir={i18n.dir()}>
+    <html lang={settings.language} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
