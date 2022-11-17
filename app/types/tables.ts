@@ -123,6 +123,111 @@ export interface paths {
       };
     };
   };
+  "/settings": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.settings.id"];
+          user_id?: parameters["rowFilter.settings.user_id"];
+          dark_mode?: parameters["rowFilter.settings.dark_mode"];
+          language?: parameters["rowFilter.settings.language"];
+          created_at?: parameters["rowFilter.settings.created_at"];
+          updated_at?: parameters["rowFilter.settings.updated_at"];
+          delete_flg?: parameters["rowFilter.settings.delete_flg"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["settings"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** settings */
+          settings?: definitions["settings"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.settings.id"];
+          user_id?: parameters["rowFilter.settings.user_id"];
+          dark_mode?: parameters["rowFilter.settings.dark_mode"];
+          language?: parameters["rowFilter.settings.language"];
+          created_at?: parameters["rowFilter.settings.created_at"];
+          updated_at?: parameters["rowFilter.settings.updated_at"];
+          delete_flg?: parameters["rowFilter.settings.delete_flg"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.settings.id"];
+          user_id?: parameters["rowFilter.settings.user_id"];
+          dark_mode?: parameters["rowFilter.settings.dark_mode"];
+          language?: parameters["rowFilter.settings.language"];
+          created_at?: parameters["rowFilter.settings.created_at"];
+          updated_at?: parameters["rowFilter.settings.updated_at"];
+          delete_flg?: parameters["rowFilter.settings.delete_flg"];
+        };
+        body: {
+          /** settings */
+          settings?: definitions["settings"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/users": {
     get: {
       parameters: {
@@ -399,6 +504,39 @@ export interface definitions {
      */
     delete_flg: boolean;
   };
+  settings: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `users.id`.<fk table='users' column='id'/>
+     */
+    user_id: number;
+    /** Format: smallint */
+    dark_mode: number;
+    /** Format: character varying */
+    language: string;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    created_at: string;
+    /**
+     * Format: timestamp without time zone
+     * @default now()
+     */
+    updated_at: string;
+    /**
+     * Format: boolean
+     * @default false
+     */
+    delete_flg: boolean;
+  };
   users: {
     /**
      * Format: bigint
@@ -568,6 +706,22 @@ export interface parameters {
   "rowFilter.products.updated_at": string;
   /** Format: boolean */
   "rowFilter.products.delete_flg": string;
+  /** @description settings */
+  "body.settings": definitions["settings"];
+  /** Format: bigint */
+  "rowFilter.settings.id": string;
+  /** Format: bigint */
+  "rowFilter.settings.user_id": string;
+  /** Format: smallint */
+  "rowFilter.settings.dark_mode": string;
+  /** Format: character varying */
+  "rowFilter.settings.language": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.settings.created_at": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.settings.updated_at": string;
+  /** Format: boolean */
+  "rowFilter.settings.delete_flg": string;
   /** @description users */
   "body.users": definitions["users"];
   /** Format: bigint */
