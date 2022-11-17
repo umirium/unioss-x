@@ -27,14 +27,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const alertSession = await getAlertSession(request.headers.get("Cookie"));
   const alert: NoticeType = alertSession.get("alert");
 
-  return json(
-    { authUser, alert },
-    {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    }
-  );
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+  return json({ authUser, alert }, { headers });
 };
 
 export default function Mypage() {

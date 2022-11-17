@@ -63,11 +63,10 @@ export const loader = async ({ request }: LoaderArgs) => {
     phoneNumber: session.get("phoneNumber"),
   };
 
-  return json(data, {
-    headers: {
-      "Set-Cookie": await commitSignupSession(session),
-    },
-  });
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitSignupSession(session));
+
+  return json(data, { headers });
 };
 
 export const action = async ({ request }: ActionArgs) => {
