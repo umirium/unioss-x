@@ -50,11 +50,10 @@ export const action = async ({ request }: ActionArgs) => {
   // transmission process...
   await new Promise((resolve) => setTimeout(resolve, Math.random() * 10000));
 
-  return redirect("/front/contact/complete", {
-    headers: {
-      "Set-Cookie": await contactCookie.serialize({}),
-    },
-  });
+  const headers = new Headers();
+  headers.append("Set-Cookie", await contactCookie.serialize({}));
+
+  return redirect("/front/contact/complete", { headers });
 };
 
 export default function Confirm() {

@@ -56,14 +56,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   if (!cart) {
     const alert: NoticeType = alertSession.get("alert");
 
-    return json(
-      { cart: undefined, alert },
-      {
-        headers: {
-          "Set-Cookie": await commitAlertSession(alertSession),
-        },
-      }
-    );
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+    return json({ cart: undefined, alert }, { headers });
   }
 
   let newCart;
@@ -123,14 +119,10 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const alert: NoticeType = alertSession.get("alert");
 
-  return json(
-    { cart: newCart, alert },
-    {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    }
-  );
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+  return json({ cart: newCart, alert }, { headers });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -148,11 +140,10 @@ export const action = async ({ request }: ActionArgs) => {
       key: `params_${Date.now()}`,
     });
 
-    return redirect(request.url, {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    });
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+    return redirect(request.url, { headers });
   }
 
   // update DB
@@ -185,11 +176,10 @@ export const action = async ({ request }: ActionArgs) => {
         });
       }
 
-      return redirect(request.url, {
-        headers: {
-          "Set-Cookie": await commitAlertSession(alertSession),
-        },
-      });
+      const headers = new Headers();
+      headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+      return redirect(request.url, { headers });
     }
   }
 

@@ -41,14 +41,10 @@ export const loader = async ({ request }: LoaderArgs) => {
     settingsSession.set("settings", settings);
   }
 
-  return json(
-    { settings },
-    {
-      headers: {
-        "Set-Cookie": await commitSettingsSession(settingsSession),
-      },
-    }
-  );
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
+
+  return json({ settings }, { headers });
 };
 
 export const handle = {

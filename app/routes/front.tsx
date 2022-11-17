@@ -65,14 +65,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const settings: SettingsType = settingsSession.get("settings");
 
   // NOTE: Be sure to commit notice session because it will pop up permanently.
-  return json(
-    { authUser, cart, notice, siteTitle, settings },
-    {
-      headers: {
-        "Set-Cookie": await commitNoticeSession(noticeSession),
-      },
-    }
-  );
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
+
+  return json({ authUser, cart, notice, siteTitle, settings }, { headers });
 };
 
 export const action = async ({ request }: ActionArgs) => {

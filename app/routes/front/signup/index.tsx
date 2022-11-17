@@ -37,11 +37,10 @@ export const loader = async ({ request }: LoaderArgs) => {
     phoneNumber: session.get("phoneNumber"),
   };
 
-  return json(data, {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitSession(session));
+
+  return json(data, { headers });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -100,11 +99,10 @@ export const action = async ({ request }: ActionArgs) => {
   session.set("address2", form.data.address2);
   session.set("phoneNumber", form.data.phoneNumber);
 
-  return redirect("/front/signup/confirm", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitSession(session));
+
+  return redirect("/front/signup/confirm", { headers });
 };
 
 export default function Index() {

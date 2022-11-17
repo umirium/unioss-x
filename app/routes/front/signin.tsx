@@ -78,14 +78,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const alertSession = await getAlertSession(request.headers.get("Cookie"));
   const alert: NoticeType = alertSession.get("alert");
 
-  return json(
-    { alert },
-    {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    }
-  );
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+  return json({ alert }, { headers });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -98,22 +94,20 @@ export const action = async ({ request }: ActionArgs) => {
     // show alert of sign-in failure
     alertSession.flash("alert", { key: "signinFailed" });
 
-    return redirect(request.url, {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    });
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+    return redirect(request.url, { headers });
   }
 
   if (!user) {
     // show alert of database error
     alertSession.flash("alert", { key: "db" });
 
-    return redirect(request.url, {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    });
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+    return redirect(request.url, { headers });
   }
 
   const url = new URL(request.url);
@@ -164,11 +158,10 @@ export const action = async ({ request }: ActionArgs) => {
       });
     }
 
-    return redirect(request.url, {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    });
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+    return redirect(request.url, { headers });
   }
 
   // get cart data from cookie
@@ -221,11 +214,10 @@ export const action = async ({ request }: ActionArgs) => {
         });
       }
 
-      return redirect(request.url, {
-        headers: {
-          "Set-Cookie": await commitAlertSession(alertSession),
-        },
-      });
+      const headers = new Headers();
+      headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+      return redirect(request.url, { headers });
     }
   }
 

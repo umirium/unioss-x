@@ -57,13 +57,12 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const alertSession = await getAlertSession(request.headers.get("Cookie"));
   const alert: NoticeType = alertSession.get("alert");
 
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
   return json(
     { product: product ? camelcaseKeys(product) : product, page, alert },
-    {
-      headers: {
-        "Set-Cookie": await commitAlertSession(alertSession),
-      },
-    }
+    { headers }
   );
 };
 
@@ -144,11 +143,10 @@ export const action = async ({ request }: ActionArgs) => {
         });
       }
 
-      return redirect(request.url, {
-        headers: {
-          "Set-Cookie": await commitAlertSession(alertSession),
-        },
-      });
+      const headers = new Headers();
+      headers.append("Set-Cookie", await commitAlertSession(alertSession));
+
+      return redirect(request.url, { headers });
     }
   }
 

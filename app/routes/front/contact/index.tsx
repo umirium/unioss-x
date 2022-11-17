@@ -32,11 +32,13 @@ export const action = async ({ request }: ActionArgs) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await contactCookie.parse(cookieHeader)) || {};
 
-  return redirect("/front/contact/inquiry", {
-    headers: {
-      "Set-Cookie": await contactCookie.serialize({ ...cookie, ...form.data }),
-    },
-  });
+  const headers = new Headers();
+  headers.append(
+    "Set-Cookie",
+    await contactCookie.serialize({ ...cookie, ...form.data })
+  );
+
+  return redirect("/front/contact/inquiry", { headers });
 };
 
 export default function Index() {
