@@ -105,45 +105,111 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  if (user) {
-    const url = new URL(request.url);
-    const redirectTo = url.searchParams.get("r");
+  if (!user) {
+    // show alert of database error
+    alertSession.flash("alert", { key: "db" });
 
-    // manually get the session and store the user data
-    const authSession = await getAuthSession(request.headers.get("cookie"));
-    authSession.set(authenticator.sessionKey, user);
+    return redirect(request.url, {
+      headers: {
+        "Set-Cookie": await commitAlertSession(alertSession),
+      },
+    });
+  }
 
-    // show snackbar of successful sign-in
-    const noticeSession = await getNoticeSession(request.headers.get("cookie"));
-    noticeSession.flash("notice", { key: "signin" });
+  const url = new URL(request.url);
+  const redirectTo = url.searchParams.get("r");
 
-    // load user's site settings
-    const settingsSession = await getSettingsSession(
-      request.headers.get("Cookie")
-    );
+  // manually get the session and store the user data
+  const authSession = await getAuthSession(request.headers.get("cookie"));
+  authSession.set(authenticator.sessionKey, user);
 
-    /**
-     * merge session and database cart data
-     */
-    let cartDB: Array<SnakeToCamel<definitions["carts"]>> | undefined =
-      undefined;
+  // show snackbar of successful sign-in
+  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
+  noticeSession.flash("notice", { key: "signin" });
 
-    // get cart data from database
+  // load user's site settings
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
+
+  /**
+   * merge session and database cart data
+   */
+  let cartDB: Array<SnakeToCamel<definitions["carts"]>> | undefined = undefined;
+
+  // get cart data from database
+  try {
+    const { data, error } = await db
+      .from<definitions["carts"]>("carts")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("delete_flg", false);
+
+    if (error) {
+      console.log(error);
+      throw new Error("read");
+    }
+
+    cartDB = camelcaseKeys(data);
+  } catch (error) {
+    // show alert of database errors
+    if (error instanceof Error) {
+      alertSession.flash("alert", {
+        key: `dbErrors_${Date.now()}`,
+        options: { error: `common:${error.message}` },
+      });
+    } else {
+      alertSession.flash("alert", {
+        key: `unknown_${Date.now()}`,
+      });
+    }
+
+    return redirect(request.url, {
+      headers: {
+        "Set-Cookie": await commitAlertSession(alertSession),
+      },
+    });
+  }
+
+  // get cart data from cookie
+  const cartSession = await getCartSession(request.headers.get("Cookie"));
+  const cart: Array<
+    Pick<SnakeToCamel<definitions["carts"]>, "productId" | "quantity">
+  > = cartSession.get("cart") || [];
+
+  // update DB
+  const upserter = cart?.map((item) => {
+    const extract = cartDB?.find((e) => e.productId === item.productId);
+
+    // update
+    if (extract) {
+      return {
+        id: extract.id,
+        userId: user?.id,
+        productId: item.productId,
+        quantity: item.quantity + extract.quantity,
+      };
+    }
+
+    // insert
+    return { id: null, userId: user?.id, ...item };
+  });
+
+  if (upserter) {
     try {
-      const { data, error } = await db
-        .from<definitions["carts"]>("carts")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("delete_flg", false);
+      const { error } = await db
+        .from("carts")
+        .upsert(snakecaseKeys(upserter))
+        .select();
 
       if (error) {
         console.log(error);
-        throw new Error("read");
+        throw new Error("upsert");
       }
-
-      cartDB = camelcaseKeys(data);
-    } catch (error) {
+    } catch (error: Error | unknown) {
       // show alert of database errors
+      const alertSession = await getAlertSession(request.headers.get("cookie"));
+
       if (error instanceof Error) {
         alertSession.flash("alert", {
           key: `dbErrors_${Date.now()}`,
@@ -161,154 +227,84 @@ export const action = async ({ request }: ActionArgs) => {
         },
       });
     }
-
-    // get cart data from cookie
-    const cartSession = await getCartSession(request.headers.get("Cookie"));
-    const cart: Array<
-      Pick<SnakeToCamel<definitions["carts"]>, "productId" | "quantity">
-    > = cartSession.get("cart") || [];
-
-    // update DB
-    const upserter = cart?.map((item) => {
-      const extract = cartDB?.find((e) => e.productId === item.productId);
-
-      // update
-      if (extract) {
-        return {
-          id: extract.id,
-          userId: user?.id,
-          productId: item.productId,
-          quantity: item.quantity + extract.quantity,
-        };
-      }
-
-      // insert
-      return { id: null, userId: user?.id, ...item };
-    });
-
-    if (upserter) {
-      try {
-        const { error } = await db
-          .from("carts")
-          .upsert(snakecaseKeys(upserter))
-          .select();
-
-        if (error) {
-          console.log(error);
-          throw new Error("upsert");
-        }
-      } catch (error: Error | unknown) {
-        // show alert of database errors
-        const alertSession = await getAlertSession(
-          request.headers.get("cookie")
-        );
-
-        if (error instanceof Error) {
-          alertSession.flash("alert", {
-            key: `dbErrors_${Date.now()}`,
-            options: { error: `common:${error.message}` },
-          });
-        } else {
-          alertSession.flash("alert", {
-            key: `unknown_${Date.now()}`,
-          });
-        }
-
-        return redirect(request.url, {
-          headers: {
-            "Set-Cookie": await commitAlertSession(alertSession),
-          },
-        });
-      }
-    }
-
-    // update cart
-    const newCart = [...cart];
-
-    cartDB.forEach((item) => {
-      const index = cart?.findIndex((e) => e.productId === item.productId);
-
-      if (index !== -1) {
-        newCart[index].quantity += item.quantity;
-        return;
-      }
-
-      newCart?.push({
-        productId: item.productId,
-        quantity: item.quantity,
-      });
-    });
-
-    cartSession.set("cart", newCart);
-
-    /**
-     * load site settings data from database
-     */
-    let settingsDB: SnakeToCamel<definitions["settings"]> | undefined =
-      undefined;
-
-    try {
-      const { data, error } = await db
-        .from<definitions["settings"]>("settings")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("delete_flg", false)
-        .single();
-
-      if (error) {
-        console.log(error);
-        throw new Error("read");
-      }
-
-      settingsDB = camelcaseKeys(data);
-    } catch (error) {
-      // show alert of database errors
-      if (error instanceof Error) {
-        alertSession.flash("alert", {
-          key: `dbErrors_${Date.now()}`,
-          options: { error: `common:${error.message}` },
-        });
-      } else {
-        alertSession.flash("alert", {
-          key: `unknown_${Date.now()}`,
-        });
-      }
-    }
-
-    let settings: SettingsType = settingsSession.get("settings");
-
-    if (settingsDB) {
-      settings.darkMode =
-        settingsDB.darkMode === MODE_LIGHT
-          ? "light"
-          : settingsDB.darkMode === MODE_DARK
-          ? "dark"
-          : "system";
-      settings.language =
-        settingsDB.language === "en" || settingsDB.language === "ja"
-          ? settingsDB.language
-          : settings.language;
-    }
-
-    settingsSession.set("settings", settings);
-
-    const headers = new Headers();
-    headers.append("Set-Cookie", await commitAuthSession(authSession));
-    headers.append("Set-Cookie", await commitCartSession(cartSession));
-    headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
-    headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
-
-    return redirect(redirectTo || "/front", { headers });
   }
 
-  // show alert of database error
-  alertSession.flash("alert", { key: "db" });
+  // update cart
+  const newCart = [...cart];
 
-  return redirect(request.url, {
-    headers: {
-      "Set-Cookie": await commitAlertSession(alertSession),
-    },
+  cartDB.forEach((item) => {
+    const index = cart?.findIndex((e) => e.productId === item.productId);
+
+    if (index !== -1) {
+      newCart[index].quantity += item.quantity;
+      return;
+    }
+
+    newCart?.push({
+      productId: item.productId,
+      quantity: item.quantity,
+    });
   });
+
+  cartSession.set("cart", newCart);
+
+  /**
+   * load site settings data from database
+   */
+  let settingsDB: SnakeToCamel<definitions["settings"]> | undefined = undefined;
+
+  try {
+    const { data, error } = await db
+      .from<definitions["settings"]>("settings")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("delete_flg", false)
+      .single();
+
+    if (error) {
+      console.log(error);
+      throw new Error("read");
+    }
+
+    settingsDB = camelcaseKeys(data);
+  } catch (error) {
+    // show alert of database errors
+    if (error instanceof Error) {
+      alertSession.flash("alert", {
+        key: `dbErrors_${Date.now()}`,
+        options: { error: `common:${error.message}` },
+      });
+    } else {
+      alertSession.flash("alert", {
+        key: `unknown_${Date.now()}`,
+      });
+    }
+  }
+
+  let settings: SettingsType = settingsSession.get("settings");
+
+  if (settingsDB) {
+    settings.darkMode =
+      settingsDB.darkMode === MODE_LIGHT
+        ? "light"
+        : settingsDB.darkMode === MODE_DARK
+        ? "dark"
+        : "system";
+    settings.language =
+      settingsDB.language === "en" || settingsDB.language === "ja"
+        ? settingsDB.language
+        : settings.language;
+  }
+
+  settingsSession.set("settings", settings);
+
+  const headers = new Headers();
+  headers.append("Set-Cookie", await commitAuthSession(authSession));
+  headers.append("Set-Cookie", await commitCartSession(cartSession));
+  headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
+  headers.append("Set-Cookie", await commitSettingsSession(settingsSession));
+
+  return redirect(redirectTo || "/front", { headers });
 };
 
 export default function Signin() {
