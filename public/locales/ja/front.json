@@ -40,5 +40,6 @@
   "// others": "",
   "mypage": "マイページ",
   "yourCartIsEmpty": "カートに商品がありません",
-  "goToProducts": "商品一覧へ"
+  "goToProducts": "商品一覧へ",
+  "goToSignin": "ログインへ"
 }

@@ -40,5 +40,6 @@
   "// others": "",
   "mypage": "My page",
   "yourCartIsEmpty": "Your cart is empty",
-  "goToProducts": "Go to products"
+  "goToProducts": "Go to products",
+  "goToSignin": "Go to sign-in"
 }

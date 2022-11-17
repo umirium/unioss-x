@@ -15,6 +15,7 @@ export const MyLinkButton = <C extends ElementType>(
     <Button
       {...restProps}
       component={Link}
+      variant="contained"
       disabled={transition.state !== "idle"}
     >
       {children}

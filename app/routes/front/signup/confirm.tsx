@@ -32,10 +32,6 @@ import {
   destroySession as destroySignupSession,
   getSession as getSignupSession,
 } from "~/utils/sessions/signup.server";
-import {
-  commitSession as commitAuthSession,
-  getSession as getAuthSession,
-} from "~/utils/sessions/auth.server";
 import { db } from "~/utils/db.server";
 import type { definitions } from "~/types/tables";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
@@ -182,18 +178,9 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  // save user data to auth session
-  const authSession = await getAuthSession(request.headers.get("Cookie"));
-  authSession.set("id", inserted?.id);
-  authSession.set("email", inserted?.email);
-  authSession.set("password", inserted?.password);
-  authSession.set("lastName", inserted?.lastName);
-  authSession.set("firstName", inserted?.firstName);
-
-  // destroy signup session and commit auth session
+  // destroy signup session
   const headers = new Headers();
   headers.append("Set-Cookie", await destroySignupSession(signupSession));
-  headers.append("Set-Cookie", await commitAuthSession(authSession));
 
   return redirect("/front/signup/complete", { headers });
 };
