@@ -194,8 +194,8 @@ export default function Front() {
   const [openNotice, setOpenNotice] = useState(false);
 
   useEffect(() => {
-    setMode(settings.darkMode || "system");
-  }, [setMode, settings.darkMode]);
+    setMode(settings?.darkMode || "system");
+  });
 
   useEffect(() => {
     setOpenNotice(!!notice);
