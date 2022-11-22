@@ -5,7 +5,7 @@ import type {
   SnackbarCloseReason,
   SnackbarProps,
 } from "@mui/material";
-import { Slide } from "@mui/material";
+import { Slide, Typography } from "@mui/material";
 import { Snackbar, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { NoticeType } from "~/types/outline";
@@ -46,7 +46,11 @@ export default function MyNotice(
       open={props.open}
       TransitionComponent={cmpTransition}
       onClose={handleCloseSnackbar}
-      message={transNotice}
+      message={
+        <Typography color={props.i18nObj?.isAlert ? "error" : "common"}>
+          {transNotice}
+        </Typography>
+      }
       autoHideDuration={5000}
       action={
         <IconButton size="small" color="inherit" onClick={handleCloseSnackbar}>

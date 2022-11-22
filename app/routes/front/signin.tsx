@@ -72,15 +72,16 @@ export const loader = async ({ request }: LoaderArgs) => {
 export const action = async ({ request }: ActionArgs) => {
   let user: SnakeToCamel<definitions["users"]> | null;
   const alertSession = await getAlertSession(request.headers.get("cookie"));
+  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   try {
     user = await authenticator.authenticate("form", request);
   } catch (error) {
-    // show alert of sign-in failure
-    alertSession.flash("alert", { key: "signinFailed" });
+    // show notice of sign-in failure
+    noticeSession.flash("notice", { key: "signinFailed", isAlert: true });
 
     const headers = new Headers();
-    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+    headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
 
     return redirect(request.url, { headers });
   }
@@ -101,15 +102,6 @@ export const action = async ({ request }: ActionArgs) => {
   // manually get the session and store the user data
   const authSession = await getAuthSession(request.headers.get("cookie"));
   authSession.set(authenticator.sessionKey, user);
-
-  // show snackbar of successful sign-in
-  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
-  noticeSession.flash("notice", { key: "signin" });
-
-  // load user's site settings
-  const settingsSession = await getSettingsSession(
-    request.headers.get("Cookie")
-  );
 
   /**
    * merge session and database cart data
@@ -258,6 +250,10 @@ export const action = async ({ request }: ActionArgs) => {
     }
   }
 
+  // load user's site settings
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
   let settings: SettingsType = settingsSession.get("settings");
 
   if (settingsDB) {
@@ -274,6 +270,9 @@ export const action = async ({ request }: ActionArgs) => {
   }
 
   settingsSession.set("settings", settings);
+
+  // show snackbar of successful sign-in
+  noticeSession.flash("notice", { key: "signin" });
 
   const headers = new Headers();
   headers.append("Set-Cookie", await commitAuthSession(authSession));
