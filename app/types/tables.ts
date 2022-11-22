@@ -626,7 +626,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `users.id`.<fk table='users' column='id'/>
      */
-    user_id?: number;
+    user_id: number;
     /**
      * Format: bigint
      * @description Note:
