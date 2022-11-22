@@ -219,8 +219,6 @@ export default function Front() {
   // manually show alerts with child components
   // e.g. Error on loader
   const handleShowAlert = (i18nObj: NoticeType | undefined) => {
-    console.log(i18nObj);
-
     if (i18nObj) {
       setI18nObj(i18nObj);
     }
