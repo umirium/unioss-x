@@ -122,7 +122,8 @@ export const action = async ({ request }: ActionArgs) => {
               quantity: same.quantity + formData.quantity,
             })
           )
-          .eq("id", same.id);
+          .eq("id", same.id)
+          .eq("delete_flg", false);
 
         if (error) {
           throw new Error("update");

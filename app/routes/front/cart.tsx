@@ -142,7 +142,8 @@ export const action = async ({ request }: ActionArgs) => {
           snakecaseKeys(proc === "update" ? { quantity } : { deleteFlg: true })
         )
         .eq("user_id", authUser.id)
-        .eq("product_id", productId);
+        .eq("product_id", productId)
+        .eq("delete_flg", false);
 
       if (error) {
         console.log(error);
