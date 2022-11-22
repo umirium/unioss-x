@@ -1,4 +1,5 @@
 import type { MouseEvent, ReactNode } from "react";
+import { useEffect } from "react";
 import type { SelectChangeEvent } from "@mui/material";
 import {
   Box,
@@ -10,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -38,8 +39,8 @@ import {
 import { authenticator } from "~/utils/auth.server";
 import snakecaseKeys from "snakecase-keys";
 import type { NoticeType } from "~/types/outline";
-import MyAlert from "~/components/atoms/MyAlert";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
+import { useShowAlertContext } from "~/providers/alertProvider";
 
 export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
   return {
@@ -51,15 +52,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const cartSession = await getCartSession(request.headers.get("Cookie"));
   const cart: Array<SnakeToCamel<definitions["carts"]>> =
     cartSession.get("cart");
-  const alertSession = await getAlertSession(request.headers.get("Cookie"));
+  let alert: NoticeType | undefined = undefined;
 
   if (!cart) {
-    const alert: NoticeType = alertSession.get("alert");
-
-    const headers = new Headers();
-    headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-    return json({ cart: undefined, alert }, { headers });
+    return { cart, alert };
   }
 
   let newCart;
@@ -101,8 +97,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     });
   } catch (error: Error | unknown) {
     // show alert of database errors
-    let alert: NoticeType;
-
     if (error instanceof Error) {
       alert = {
         key: `dbErrors_${Date.now()}`,
@@ -113,16 +107,9 @@ export const loader = async ({ request }: LoaderArgs) => {
         key: `unknown_${Date.now()}`,
       };
     }
-
-    return json({ cart: newCart, alert });
   }
 
-  const alert: NoticeType = alertSession.get("alert");
-
-  const headers = new Headers();
-  headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-  return json({ cart: newCart, alert }, { headers });
+  return { cart: newCart, alert };
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -219,9 +206,14 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function Cart() {
   const { cart, alert } = useLoaderData<typeof loader>();
+  const { showAlert } = useShowAlertContext();
   const submit = useSubmit();
   const { t } = useTranslation();
   const transition = useTransition();
+
+  useEffect(() => {
+    showAlert(alert);
+  }, [alert, showAlert]);
 
   const handleChangeQuantity = (event: SelectChangeEvent, child: ReactNode) => {
     // NOTE: 'currentTarget' does not work with SelectChangeEvent, so can not get dataset.
@@ -245,9 +237,6 @@ export default function Cart() {
 
   return (
     <>
-      {/* show errors with alert */}
-      <MyAlert i18nObj={alert} />
-
       <Box>
         <h1>{t("front:cart")}</h1>
       </Box>

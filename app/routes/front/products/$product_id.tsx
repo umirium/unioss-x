@@ -12,13 +12,13 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Form, Link as RemixLink, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   commitSession as commitAlertSession,
   getSession as getAlertSession,
@@ -34,9 +34,9 @@ import {
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { authenticator } from "~/utils/auth.server";
 import snakecaseKeys from "snakecase-keys";
-import MyAlert from "~/components/atoms/MyAlert";
 import type { NoticeType } from "~/types/outline";
 import type { SnakeToCamel } from "snake-camel-types";
+import { useShowAlertContext } from "~/providers/alertProvider";
 
 export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
   return {
@@ -47,23 +47,38 @@ export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
   const page = url.searchParams.get("page");
+  let alert: NoticeType | undefined = undefined;
 
-  const { data: product } = await db
-    .from<definitions["products"]>("products")
-    .select("*")
-    .eq("id", params.product_id)
-    .single();
+  let product;
 
-  const alertSession = await getAlertSession(request.headers.get("Cookie"));
-  const alert: NoticeType = alertSession.get("alert");
+  try {
+    const { data, error } = await db
+      .from<definitions["products"]>("products")
+      .select("*")
+      .eq("id", params.product_id)
+      .single();
 
-  const headers = new Headers();
-  headers.append("Set-Cookie", await commitAlertSession(alertSession));
+    if (error) {
+      console.log(error);
+      throw new Error("read");
+    }
 
-  return json(
-    { product: product ? camelcaseKeys(product) : product, page, alert },
-    { headers }
-  );
+    product = data;
+  } catch (error: Error | unknown) {
+    // show alert of database errors
+    if (error instanceof Error) {
+      alert = {
+        key: `dbErrors_${Date.now()}`,
+        options: { error: `common:${error.message}` },
+      };
+    } else {
+      alert = {
+        key: `unknown_${Date.now()}`,
+      };
+    }
+  }
+
+  return { product: product ? camelcaseKeys(product) : product, page, alert };
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -193,8 +208,13 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function Product() {
   const { product, page, alert } = useLoaderData<typeof loader>();
-  const { t } = useTranslation();
   const [quantity, setQuantity] = useState("1");
+  const { showAlert } = useShowAlertContext();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    showAlert(alert);
+  }, [alert, showAlert]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setQuantity(event.target.value);
@@ -202,86 +222,89 @@ export default function Product() {
 
   return (
     <>
-      {/* show errors with alert */}
-      <MyAlert i18nObj={alert} />
-
-      <Breadcrumbs sx={{ mb: 5 }}>
-        <MUILink
-          underline="hover"
-          color="inherit"
-          component={RemixLink}
-          to={`/front/products${page ? `?page=${page}` : ""}`}
-        >
-          products
-        </MUILink>
-        <Typography color="text.primary">{product?.productName}</Typography>
-      </Breadcrumbs>
-
-      <Grid container spacing={3}>
-        <Grid xs={12} sm={12} md={6}>
-          <img
-            src={product?.imageUrl}
-            alt={product?.productName}
-            width="100%"
-          />
-        </Grid>
-        <Grid xs={12} sm={12} md={6}>
-          <Grid container spacing={3}>
-            <Grid xs={12} sm={8} md={12}>
-              <Typography variant="h4">{product?.productName}</Typography>
-              <Box sx={{ mt: 3 }}>{product?.description}</Box>
-              <Box sx={{ mt: 3 }}>
-                {t("common:price")}:{" "}
-                <Typography variant="h5" component="span">
-                  {t("common:jpy", { price: product?.price.toLocaleString() })}
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid
-              xs={12}
-              sm={4}
-              md={12}
-              sx={{
-                mt: { xs: 3, sm: 0, md: 3 },
-                textAlign: { xs: "center", sm: "right", md: "center" },
-              }}
+      {product && (
+        <>
+          <Breadcrumbs sx={{ mb: 5 }}>
+            <MUILink
+              underline="hover"
+              color="inherit"
+              component={RemixLink}
+              to={`/front/products${page ? `?page=${page}` : ""}`}
             >
-              <Form method="post">
-                <Box>
-                  <FormControl sx={{ minWidth: 80 }} size="small">
-                    <input type="hidden" name="id" value={product?.id} />
-                    <InputLabel id="quantity">
-                      {t("common:quantity")}
-                    </InputLabel>
-                    <Select
-                      name="quantity"
-                      labelId="quantity"
-                      label={t("common:quantity")}
-                      value={quantity}
-                      onChange={handleChange}
-                    >
-                      {[...new Array(30)].map((_key, value) => (
-                        <MenuItem key={value} value={value + 1}>
-                          {value + 1}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box sx={{ mt: 2 }}>
-                  <MySubmitButton
-                    label="addToCart"
-                    type="submit"
-                    color="warning"
-                    endIcon={<AddShoppingCartIcon />}
-                  />
-                </Box>
-              </Form>
+              products
+            </MUILink>
+            <Typography color="text.primary">{product?.productName}</Typography>
+          </Breadcrumbs>
+
+          <Grid container spacing={3}>
+            <Grid xs={12} sm={12} md={6}>
+              <img
+                src={product?.imageUrl}
+                alt={product?.productName}
+                width="100%"
+              />
+            </Grid>
+            <Grid xs={12} sm={12} md={6}>
+              <Grid container spacing={3}>
+                <Grid xs={12} sm={8} md={12}>
+                  <Typography variant="h4">{product?.productName}</Typography>
+                  <Box sx={{ mt: 3 }}>{product?.description}</Box>
+                  <Box sx={{ mt: 3 }}>
+                    {t("common:price")}:{" "}
+                    <Typography variant="h5" component="span">
+                      {t("common:jpy", {
+                        price: product?.price.toLocaleString(),
+                      })}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid
+                  xs={12}
+                  sm={4}
+                  md={12}
+                  sx={{
+                    mt: { xs: 3, sm: 0, md: 3 },
+                    textAlign: { xs: "center", sm: "right", md: "center" },
+                  }}
+                >
+                  <Form method="post">
+                    <Box>
+                      <FormControl sx={{ minWidth: 80 }} size="small">
+                        <input type="hidden" name="id" value={product?.id} />
+                        <InputLabel id="quantity">
+                          {t("common:quantity")}
+                        </InputLabel>
+                        <Select
+                          name="quantity"
+                          labelId="quantity"
+                          label={t("common:quantity")}
+                          value={quantity}
+                          onChange={handleChange}
+                        >
+                          {[...new Array(30)].map((_key, value) => (
+                            <MenuItem key={value} value={value + 1}>
+                              {value + 1}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                      <MySubmitButton
+                        label="addToCart"
+                        type="submit"
+                        color="warning"
+                        endIcon={<AddShoppingCartIcon />}
+                      />
+                    </Box>
+                  </Form>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+        </>
+      )}
     </>
   );
 }

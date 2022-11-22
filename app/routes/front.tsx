@@ -39,6 +39,8 @@ import {
   MODE_LIGHT,
   MODE_SYSTEM,
 } from "~/utils/constants/index.server";
+import MyAlert from "~/components/atoms/MyAlert";
+import { ShowAlertProvider } from "~/providers/alertProvider";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return {
@@ -50,6 +52,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const authUser = await authenticator.isAuthenticated(request);
   const cartSession = await getCartSession(request.headers.get("Cookie"));
   const noticeSession = await getNoticeSession(request.headers.get("Cookie"));
+  const alertSession = await getAlertSession(request.headers.get("Cookie"));
 
   const cart: Array<SnakeToCamel<definitions["carts"]>> =
     cartSession.get("cart") || [];
@@ -64,11 +67,17 @@ export const loader = async ({ request }: LoaderArgs) => {
   );
   const settings: SettingsType = settingsSession.get("settings");
 
+  const alert: NoticeType = alertSession.get("alert");
+
   // NOTE: Be sure to commit notice session because it will pop up permanently.
   const headers = new Headers();
   headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
+  headers.append("Set-Cookie", await commitAlertSession(alertSession));
 
-  return json({ authUser, cart, notice, siteTitle, settings }, { headers });
+  return json(
+    { authUser, alert, cart, notice, siteTitle, settings },
+    { headers }
+  );
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -185,9 +194,11 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Front() {
-  const { authUser, cart, notice, settings } = useLoaderData<typeof loader>();
+  const { authUser, cart, alert, notice, settings } =
+    useLoaderData<typeof loader>();
   const { theme, setMode } = useDarkThemeContext();
   const [openNotice, setOpenNotice] = useState(false);
+  const [i18nObj, setI18nObj] = useState(alert);
 
   useEffect(() => {
     setMode(settings?.darkMode || "system");
@@ -197,16 +208,37 @@ export default function Front() {
     setOpenNotice(!!notice);
   }, [notice]);
 
+  useEffect(() => {
+    setI18nObj(alert);
+  }, [alert]);
+
   const handleCloseSnackbar = (event: SyntheticEvent | Event) => {
     setOpenNotice(false);
+  };
+
+  // manually show alerts with child components
+  // e.g. Error on loader
+  const handleShowAlert = (i18nObj: NoticeType | undefined) => {
+    console.log(i18nObj);
+
+    if (i18nObj) {
+      setI18nObj(i18nObj);
+    }
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Outline authUser={authUser} cart={cart}>
-        <Box>
-          <Outlet />
-        </Box>
+        <>
+          {/* show errors with alert */}
+          <MyAlert i18nObj={i18nObj} />
+
+          <Box>
+            <ShowAlertProvider onShowAlert={handleShowAlert}>
+              <Outlet />
+            </ShowAlertProvider>
+          </Box>
+        </>
       </Outline>
 
       {/* show Snackbar */}
