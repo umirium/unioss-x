@@ -9,15 +9,11 @@ import {
   Link as MUILink,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import {
-  Link as RemixLink,
-  useLoaderData,
-  useTransition,
-} from "@remix-run/react";
+import { Link as RemixLink, useTransition } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { blue } from "@mui/material/colors";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { signinSchema } from "~/stores/validator";
 import { withYup } from "@remix-validated-form/with-yup";
@@ -45,14 +41,9 @@ import {
   getSession as getSettingsSession,
 } from "~/utils/sessions/settings.server";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
-import type {
-  NoticeType,
-  PasswordFieldHandler,
-  SettingsType,
-} from "~/types/outline";
+import type { PasswordFieldHandler, SettingsType } from "~/types/outline";
 import { useRef, useEffect } from "react";
 import MyPassword from "~/components/atoms/MyPassword";
-import MyAlert from "~/components/atoms/MyAlert";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 import type { SnakeToCamel } from "snake-camel-types";
@@ -75,27 +66,22 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect("/front");
   }
 
-  const alertSession = await getAlertSession(request.headers.get("Cookie"));
-  const alert: NoticeType = alertSession.get("alert");
-
-  const headers = new Headers();
-  headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-  return json({ alert }, { headers });
+  return null;
 };
 
 export const action = async ({ request }: ActionArgs) => {
   let user: SnakeToCamel<definitions["users"]> | null;
   const alertSession = await getAlertSession(request.headers.get("cookie"));
+  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   try {
     user = await authenticator.authenticate("form", request);
   } catch (error) {
-    // show alert of sign-in failure
-    alertSession.flash("alert", { key: "signinFailed" });
+    // show notice of sign-in failure
+    noticeSession.flash("notice", { key: "signinFailed", isAlert: true });
 
     const headers = new Headers();
-    headers.append("Set-Cookie", await commitAlertSession(alertSession));
+    headers.append("Set-Cookie", await commitNoticeSession(noticeSession));
 
     return redirect(request.url, { headers });
   }
@@ -116,15 +102,6 @@ export const action = async ({ request }: ActionArgs) => {
   // manually get the session and store the user data
   const authSession = await getAuthSession(request.headers.get("cookie"));
   authSession.set(authenticator.sessionKey, user);
-
-  // show snackbar of successful sign-in
-  const noticeSession = await getNoticeSession(request.headers.get("cookie"));
-  noticeSession.flash("notice", { key: "signin" });
-
-  // load user's site settings
-  const settingsSession = await getSettingsSession(
-    request.headers.get("Cookie")
-  );
 
   /**
    * merge session and database cart data
@@ -273,6 +250,10 @@ export const action = async ({ request }: ActionArgs) => {
     }
   }
 
+  // load user's site settings
+  const settingsSession = await getSettingsSession(
+    request.headers.get("Cookie")
+  );
   let settings: SettingsType = settingsSession.get("settings");
 
   if (settingsDB) {
@@ -290,6 +271,9 @@ export const action = async ({ request }: ActionArgs) => {
 
   settingsSession.set("settings", settings);
 
+  // show snackbar of successful sign-in
+  noticeSession.flash("notice", { key: "signin" });
+
   const headers = new Headers();
   headers.append("Set-Cookie", await commitAuthSession(authSession));
   headers.append("Set-Cookie", await commitCartSession(cartSession));
@@ -300,7 +284,6 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Signin() {
-  const { alert } = useLoaderData<typeof loader>();
   const transition = useTransition();
   const passwordFieldRef = useRef({} as PasswordFieldHandler);
   const { t } = useTranslation();
@@ -312,88 +295,83 @@ export default function Signin() {
   }, [transition.state]);
 
   return (
-    <>
-      {/* show errors with alert */}
-      <MyAlert i18nObj={alert} />
+    <ValidatedForm validator={validator} method="post" id="myForm">
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            {t("common:signin")}
+          </Typography>
 
-      <ValidatedForm validator={validator} method="post" id="myForm">
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              {t("common:signin")}
-            </Typography>
+          <Box sx={{ mt: 5 }}>
+            <MyTextField
+              label="email"
+              autoComplete="email"
+              defaultValue=""
+              onValidate="submit"
+              autoFocus
+              fullWidth
+              required
+            />
 
-            <Box sx={{ mt: 5 }}>
-              <MyTextField
-                label="email"
-                autoComplete="email"
-                defaultValue=""
-                onValidate="submit"
-                autoFocus
-                fullWidth
-                required
-              />
+            <MyPassword
+              ref={passwordFieldRef}
+              label="password"
+              defaultValue=""
+              onValidate="submit"
+              sx={{ mt: 2 }}
+              required
+            />
 
-              <MyPassword
-                ref={passwordFieldRef}
-                label="password"
-                defaultValue=""
-                onValidate="submit"
-                sx={{ mt: 2 }}
-                required
-              />
+            <MySubmitButton
+              label="signin"
+              type="submit"
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              fullWidth
+            />
 
-              <MySubmitButton
-                label="signin"
-                type="submit"
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                fullWidth
-              />
+            <Divider>
+              <Typography variant="subtitle2" sx={{ ml: 1, mr: 1 }}>
+                or
+              </Typography>
+            </Divider>
 
-              <Divider>
-                <Typography variant="subtitle2" sx={{ ml: 1, mr: 1 }}>
-                  or
-                </Typography>
-              </Divider>
+            <Button></Button>
 
-              <Button></Button>
+            <MyLinkButton
+              to={"/front/signup"}
+              variant="contained"
+              color="success"
+              sx={{ mt: 3, mb: 2 }}
+              fullWidth
+            >
+              {t("common:create_new_account")}
+            </MyLinkButton>
 
-              <MyLinkButton
-                to={"/front/signup"}
-                variant="contained"
-                color="success"
-                sx={{ mt: 3, mb: 2 }}
-                fullWidth
+            <Box sx={{ textAlign: "right" }}>
+              <MUILink
+                to="#"
+                component={RemixLink}
+                color={blue[500]}
+                underline="hover"
+                variant="subtitle2"
               >
-                {t("common:create_new_account")}
-              </MyLinkButton>
-
-              <Box sx={{ textAlign: "right" }}>
-                <MUILink
-                  to="#"
-                  component={RemixLink}
-                  color={blue[500]}
-                  underline="hover"
-                  variant="subtitle2"
-                >
-                  {t("common:forget_password")}
-                </MUILink>
-              </Box>
+                {t("common:forget_password")}
+              </MUILink>
             </Box>
           </Box>
-        </Container>
-      </ValidatedForm>
-    </>
+        </Box>
+      </Container>
+    </ValidatedForm>
   );
 }

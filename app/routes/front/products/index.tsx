@@ -13,6 +13,9 @@ import Grid from "@mui/material/Unstable_Grid2";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
+import { useEffect } from "react";
+import { useShowAlertContext } from "~/providers/alertProvider";
+import type { NoticeType } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 
@@ -31,11 +34,38 @@ export const loader = async ({ request }: LoaderArgs) => {
   const end = Number(page) * PER_PAGE - 1;
   const start = end - (PER_PAGE - 1);
 
-  const { data: products, count: dataLength } = await db
-    .from<definitions["products"]>("products")
-    .select("*", { count: "exact" })
-    .order("id")
-    .range(start, end);
+  let alert: NoticeType | undefined = undefined;
+
+  let products;
+  let dataLength;
+
+  try {
+    const { data, count, error } = await db
+      .from<definitions["products"]>("products")
+      .select("*", { count: "exact" })
+      .order("id")
+      .range(start, end);
+
+    if (error) {
+      console.log(error);
+      throw new Error("read");
+    }
+
+    products = data;
+    dataLength = count;
+  } catch (error: Error | unknown) {
+    // show alert of database errors
+    if (error instanceof Error) {
+      alert = {
+        key: `dbErrors_${Date.now()}`,
+        options: { error: `common:${error.message}` },
+      };
+    } else {
+      alert = {
+        key: `unknown_${Date.now()}`,
+      };
+    }
+  }
 
   const count = dataLength ? Math.ceil(dataLength / PER_PAGE) : 0;
 
@@ -43,11 +73,17 @@ export const loader = async ({ request }: LoaderArgs) => {
     products: products ? camelcaseKeys(products) : products,
     count,
     page,
+    alert,
   };
 };
 
 export default function Index() {
-  const { products, count, page } = useLoaderData<typeof loader>();
+  const { products, count, page, alert } = useLoaderData<typeof loader>();
+  const { showAlert } = useShowAlertContext();
+
+  useEffect(() => {
+    showAlert(alert);
+  }, [alert, showAlert]);
 
   return (
     <Box sx={{ mt: 8 }}>

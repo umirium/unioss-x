@@ -1,6 +1,7 @@
 {
   "signin": "ログインしました",
   "signout": "ログアウトしました",
+  "signinFailed": "ログインに失敗しました",
   "addedToCart": "カートに追加しました",
   "cartUpdate": "カートを更新しました"
 }
