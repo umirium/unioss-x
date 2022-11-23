@@ -60,7 +60,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
     if (error) {
       console.log(error);
-      throw new Error("read");
+      throw new Error("read", { cause: error });
     }
 
     product = data;
@@ -107,7 +107,7 @@ export const action = async ({ request }: ActionArgs) => {
         .eq("delete_flg", false);
 
       if (error) {
-        throw new Error("read");
+        throw new Error("read", { cause: error });
       }
 
       const same = camelcaseKeys(data).find(
@@ -126,7 +126,7 @@ export const action = async ({ request }: ActionArgs) => {
           .eq("delete_flg", false);
 
         if (error) {
-          throw new Error("update");
+          throw new Error("update", { cause: error });
         }
       } else {
         // same product does not exist in database
@@ -141,7 +141,7 @@ export const action = async ({ request }: ActionArgs) => {
         ]);
 
         if (error) {
-          throw new Error("create");
+          throw new Error("create", { cause: error });
         }
       }
     } catch (error: Error | unknown) {

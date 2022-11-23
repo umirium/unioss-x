@@ -119,7 +119,7 @@ export const action = async ({ request }: ActionArgs) => {
 
     if (error) {
       console.log(error);
-      throw new Error("read");
+      throw new Error("read", { cause: error });
     }
 
     cartDB = camelcaseKeys(data);
@@ -177,7 +177,7 @@ export const action = async ({ request }: ActionArgs) => {
 
       if (error) {
         console.log(error);
-        throw new Error("upsert");
+        throw new Error("upsert", { cause: error });
       }
     } catch (error: Error | unknown) {
       // show alert of database errors
@@ -235,7 +235,7 @@ export const action = async ({ request }: ActionArgs) => {
 
     if (error) {
       console.log(error);
-      throw new Error("read");
+      throw new Error("read", { cause: error });
     }
 
     settingsDB = camelcaseKeys(data);

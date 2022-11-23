@@ -158,7 +158,7 @@ export const action = async ({ request }: ActionArgs) => {
 
         if (error) {
           console.log(error);
-          throw new Error("update");
+          throw new Error("update", { cause: error });
         }
       } catch (error: Error | unknown) {
         // show alert of database errors

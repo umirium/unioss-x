@@ -74,7 +74,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     if (error) {
       console.log(error);
-      throw new Error("read");
+      throw new Error("read", { cause: error });
     }
 
     // add cart item quantity to product info
@@ -147,7 +147,7 @@ export const action = async ({ request }: ActionArgs) => {
 
       if (error) {
         console.log(error);
-        throw new Error("update");
+        throw new Error("update", { cause: error });
       }
     } catch (error: Error | unknown) {
       // show alert of database errors

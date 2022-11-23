@@ -48,7 +48,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     if (error) {
       console.log(error);
-      throw new Error("read");
+      throw new Error("read", { cause: error });
     }
 
     products = data;
