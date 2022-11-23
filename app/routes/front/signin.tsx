@@ -71,7 +71,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const action = async ({ request }: ActionArgs) => {
   let user: SnakeToCamel<definitions["users"]> | null;
-  const alertSession = await getAlertSession(request.headers.get("cookie"));
   const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   try {
@@ -88,6 +87,8 @@ export const action = async ({ request }: ActionArgs) => {
 
   if (!user) {
     // show alert of database error
+    const alertSession = await getAlertSession(request.headers.get("cookie"));
+
     alertSession.flash("alert", { key: "db" });
 
     const headers = new Headers();
@@ -124,6 +125,8 @@ export const action = async ({ request }: ActionArgs) => {
     cartDB = camelcaseKeys(data);
   } catch (error) {
     // show alert of database errors
+    const alertSession = await getAlertSession(request.headers.get("cookie"));
+
     if (error instanceof Error) {
       alertSession.flash("alert", {
         key: `dbErrors_${Date.now()}`,
@@ -238,6 +241,8 @@ export const action = async ({ request }: ActionArgs) => {
     settingsDB = camelcaseKeys(data);
   } catch (error) {
     // show alert of database errors
+    const alertSession = await getAlertSession(request.headers.get("cookie"));
+
     if (error instanceof Error) {
       alertSession.flash("alert", {
         key: `dbErrors_${Date.now()}`,
