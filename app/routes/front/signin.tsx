@@ -89,7 +89,7 @@ export const action = async ({ request }: ActionArgs) => {
     // show alert of database error
     const alertSession = await getAlertSession(request.headers.get("cookie"));
 
-    alertSession.flash("alert", { key: "db" });
+    alertSession.flash("alert", { key: "authProc" });
 
     const headers = new Headers();
     headers.append("Set-Cookie", await commitAlertSession(alertSession));

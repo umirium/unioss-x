@@ -1,6 +1,6 @@
 {
-  "db": "Database Error",
-  "dbErrors": "Database Error (code: {{errorCode, string}})",
-  "params": "Parameters error",
+  "authProc": "Authentication process Error",
+  "db": "Database Error (code: {{errorCode, string}})",
+  "params": "Parameters Error",
   "unknown": "Unknown Error"
 }

@@ -51,7 +51,7 @@ const query = async <T extends object>(
 
       if (error instanceof Error) {
         alertSession.flash("alert", {
-          key: `dbErrors_${Date.now()}`,
+          key: `db_${Date.now()}`,
           options: { errorCode: error.message },
         });
       } else {
@@ -75,7 +75,7 @@ const query = async <T extends object>(
     if (error instanceof Error) {
       return {
         err: {
-          key: `dbErrors_${Date.now()}`,
+          key: `db_${Date.now()}`,
           options: { error: `common:${error.message}` },
         },
         data: undefined,
