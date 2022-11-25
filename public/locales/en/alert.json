@@ -1,6 +1,6 @@
 {
   "db": "Database Error",
-  "dbErrors": "Database {{error, string}} Error",
+  "dbErrors": "Database Error (code: {{errorCode, string}})",
   "params": "Parameters error",
   "unknown": "Unknown Error"
 }

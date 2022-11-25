@@ -1,6 +1,6 @@
 {
   "db": "データベースエラーです",
-  "dbErrors": "データベース{{error, string}}エラーが発生しました",
+  "dbErrors": "データベースエラーが発生しました (code: {{errorCode, string}})",
   "params": "パラメータエラーです",
   "unknown": "不明なエラーです"
 }

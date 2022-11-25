@@ -20,10 +20,6 @@ import { db } from "~/utils/db.server";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import {
-  commitSession as commitAlertSession,
-  getSession as getAlertSession,
-} from "~/utils/sessions/alert.server";
-import {
   getSession as getCartSession,
   commitSession as commitCartSession,
 } from "~/utils/sessions/cart.server";
@@ -37,6 +33,7 @@ import snakecaseKeys from "snakecase-keys";
 import type { NoticeType } from "~/types/outline";
 import type { SnakeToCamel } from "snake-camel-types";
 import { useShowAlertContext } from "~/providers/alertProvider";
+import query from "~/utils/query.server";
 
 export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
   return {
@@ -47,38 +44,20 @@ export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
   const page = url.searchParams.get("page");
-  let alert: NoticeType | undefined = undefined;
 
-  let product;
-
-  try {
-    const { data, error } = await db
+  const result = await query(() =>
+    db
       .from<definitions["products"]>("products")
       .select("*")
       .eq("id", params.product_id)
-      .single();
+      .limit(1)
+  );
 
-    if (error) {
-      console.log(error);
-      throw new Error("read", { cause: error });
-    }
-
-    product = data;
-  } catch (error: Error | unknown) {
-    // show alert of database errors
-    if (error instanceof Error) {
-      alert = {
-        key: `dbErrors_${Date.now()}`,
-        options: { error: `common:${error.message}` },
-      };
-    } else {
-      alert = {
-        key: `unknown_${Date.now()}`,
-      };
-    }
-  }
-
-  return { product: product ? camelcaseKeys(product) : product, page, alert };
+  return {
+    product: result.data?.[0],
+    page,
+    alert: result.err as NoticeType,
+  };
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -96,73 +75,63 @@ export const action = async ({ request }: ActionArgs) => {
     /**
      * save cart data to database
      */
+    const cartDB = await query(
+      () =>
+        db
+          .from<definitions["carts"]>("carts")
+          .select("*")
+          .eq("user_id", authUser.id)
+          .eq("delete_flg", false),
+      request
+    );
 
-    // If same product is in database as putting cart, add quantity.
-    try {
-      // get cart data from database
-      const { data, error } = await db
-        .from<definitions["carts"]>("carts")
-        .select("*")
-        .eq("user_id", authUser.id)
-        .eq("delete_flg", false);
+    if (cartDB.err) {
+      return cartDB.err;
+    }
 
-      if (error) {
-        throw new Error("read", { cause: error });
-      }
+    const same = camelcaseKeys(cartDB.data).find(
+      (e) => e.productId === formData.productId
+    );
 
-      const same = camelcaseKeys(data).find(
-        (e) => e.productId === formData.productId
+    if (same) {
+      // If same product is in database as putting cart, add quantity.
+
+      const { err } = await query(
+        () =>
+          db
+            .from<definitions["carts"]>("carts")
+            .update(
+              snakecaseKeys({
+                quantity: same.quantity + formData.quantity,
+              })
+            )
+            .eq("id", same.id)
+            .eq("delete_flg", false),
+        request
       );
 
-      if (same) {
-        const { error } = await db
-          .from<definitions["carts"]>("carts")
-          .update(
+      if (err) {
+        return err;
+      }
+    } else {
+      // same product does not exist in database
+      // insert cart data to database
+
+      const { err } = await query(
+        () =>
+          db.from<definitions["carts"]>("carts").insert([
             snakecaseKeys({
-              quantity: same.quantity + formData.quantity,
-            })
-          )
-          .eq("id", same.id)
-          .eq("delete_flg", false);
+              userId: authUser.id,
+              deleteFlg: false,
+              ...formData,
+            }),
+          ]),
+        request
+      );
 
-        if (error) {
-          throw new Error("update", { cause: error });
-        }
-      } else {
-        // same product does not exist in database
-
-        // insert cart data to database
-        const { error } = await db.from<definitions["carts"]>("carts").insert([
-          snakecaseKeys({
-            userId: authUser.id,
-            deleteFlg: false,
-            ...formData,
-          }),
-        ]);
-
-        if (error) {
-          throw new Error("create", { cause: error });
-        }
+      if (err) {
+        return err;
       }
-    } catch (error: Error | unknown) {
-      // show alert of database errors
-      const alertSession = await getAlertSession(request.headers.get("cookie"));
-
-      if (error instanceof Error) {
-        alertSession.flash("alert", {
-          key: `dbErrors_${Date.now()}`,
-          options: { error: `common:${error.message}` },
-        });
-      } else {
-        alertSession.flash("alert", {
-          key: `unknown_${Date.now()}`,
-        });
-      }
-
-      const headers = new Headers();
-      headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-      return redirect(request.url, { headers });
     }
   }
 

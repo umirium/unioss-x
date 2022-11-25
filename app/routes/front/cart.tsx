@@ -41,6 +41,7 @@ import snakecaseKeys from "snakecase-keys";
 import type { NoticeType } from "~/types/outline";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 import { useShowAlertContext } from "~/providers/alertProvider";
+import query from "~/utils/query.server";
 
 export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
   return {
@@ -52,17 +53,14 @@ export const loader = async ({ request }: LoaderArgs) => {
   const cartSession = await getCartSession(request.headers.get("Cookie"));
   const cart: Array<SnakeToCamel<definitions["carts"]>> =
     cartSession.get("cart");
-  let alert: NoticeType | undefined = undefined;
 
   if (!cart) {
-    return { cart, alert };
+    return { cart: undefined, alert: undefined };
   }
 
-  let newCart;
-
-  try {
-    // get product info
-    const { data, error } = await db
+  // get product info
+  const { err, data } = await query(() =>
+    db
       .from<definitions["products"] & { quantity: number }>("products")
       .select("*", { count: "exact" })
       .in(
@@ -70,15 +68,11 @@ export const loader = async ({ request }: LoaderArgs) => {
         cart.map(({ productId }) => productId)
       )
       .eq("delete_flg", false)
-      .order("id");
+      .order("id")
+  );
 
-    if (error) {
-      console.log(error);
-      throw new Error("read", { cause: error });
-    }
-
-    // add cart item quantity to product info
-    newCart = camelcaseKeys(data).map((e) => {
+  return {
+    cart: data?.map((e) => {
       const product = e;
 
       const cartItem = camelcaseKeys(cart).find((e) => {
@@ -94,22 +88,9 @@ export const loader = async ({ request }: LoaderArgs) => {
       product.quantity = cartItem ? cartItem.quantity : 0;
 
       return product;
-    });
-  } catch (error: Error | unknown) {
-    // show alert of database errors
-    if (error instanceof Error) {
-      alert = {
-        key: `dbErrors_${Date.now()}`,
-        options: { error: `common:${error.message}` },
-      };
-    } else {
-      alert = {
-        key: `unknown_${Date.now()}`,
-      };
-    }
-  }
-
-  return { cart: newCart, alert };
+    }),
+    alert: err as NoticeType | undefined,
+  };
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -135,39 +116,23 @@ export const action = async ({ request }: ActionArgs) => {
 
   // update DB
   if (authUser) {
-    try {
-      const { error } = await db
-        .from<definitions["carts"]>("carts")
-        .update(
-          snakecaseKeys(proc === "update" ? { quantity } : { deleteFlg: true })
-        )
-        .eq("user_id", authUser.id)
-        .eq("product_id", productId)
-        .eq("delete_flg", false);
+    const { err } = await query(
+      () =>
+        db
+          .from<definitions["carts"]>("carts")
+          .update(
+            snakecaseKeys(
+              proc === "update" ? { quantity } : { deleteFlg: true }
+            )
+          )
+          .eq("user_id", authUser.id)
+          .eq("product_id", productId)
+          .eq("delete_flg", false),
+      request
+    );
 
-      if (error) {
-        console.log(error);
-        throw new Error("update", { cause: error });
-      }
-    } catch (error: Error | unknown) {
-      // show alert of database errors
-      const alertSession = await getAlertSession(request.headers.get("cookie"));
-
-      if (error instanceof Error) {
-        alertSession.flash("alert", {
-          key: `dbErrors_${Date.now()}`,
-          options: { error: `common:${error.message}` },
-        });
-      } else {
-        alertSession.flash("alert", {
-          key: `unknown_${Date.now()}`,
-        });
-      }
-
-      const headers = new Headers();
-      headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-      return redirect(request.url, { headers });
+    if (err) {
+      return err;
     }
   }
 

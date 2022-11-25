@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, TypedResponse } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -14,6 +14,7 @@ import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 import { commitSession, getSession } from "~/utils/sessions/signup.server";
 import { useStep } from "../signup";
+import query from "~/utils/query.server";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -53,30 +54,24 @@ export const action = async ({ request }: ActionArgs) => {
   if (form.error) return validationError(form.error);
 
   // check for duplicate email address
-  try {
-    const { count, error } = await db
-      .from<definitions["users"]>("users")
-      .select("*", { count: "exact" })
-      .eq("email", form.data.email)
-      .eq("delete_flg", false);
+  const { err, count } = await query(
+    () =>
+      db
+        .from<definitions["users"]>("users")
+        .select("*", { count: "exact" })
+        .eq("email", form.data.email)
+        .eq("delete_flg", false),
+    request
+  );
 
-    if (error) {
-      throw error;
-    }
+  if (err) {
+    return err as TypedResponse<never>;
+  }
 
-    if (count !== 0) {
-      return validationError({
-        fieldErrors: {
-          email: "alreadyUsed",
-        },
-      });
-    }
-  } catch (error) {
-    console.log(error);
-
+  if (count !== 0) {
     return validationError({
       fieldErrors: {
-        system: "dbRead",
+        email: "alreadyUsed",
       },
     });
   }
