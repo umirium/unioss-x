@@ -1,17 +1,9 @@
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Grid,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import type { LoaderArgs, ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
-  useActionData,
   useLoaderData,
   useNavigate,
   useTransition,
@@ -20,9 +12,7 @@ import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { validationError } from "remix-validated-form";
-import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
-import type { SnakeToCamel } from "snake-camel-types";
 import { personalDataFormSchema } from "~/stores/validator";
 import type { PersonalData } from "~/types/contactFormType";
 import { useStep } from "../signup";
@@ -42,6 +32,7 @@ import {
   MODE_SYSTEM,
 } from "~/utils/constants/index.server";
 import type { SettingsType } from "~/types/outline";
+import query from "~/utils/query.server";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -70,12 +61,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  let inserted: SnakeToCamel<definitions["users"]> | undefined;
+  // let inserted: SnakeToCamel<definitions["users"]> | undefined;
 
   const signupSession = await getSignupSession(request.headers.get("Cookie"));
 
   // validate input data in form
-  const data: PersonalData = {
+  const personalData: PersonalData = {
     email: signupSession.get("email"),
     emailRetype: signupSession.get("emailRetype"),
     password: signupSession.get("password"),
@@ -93,7 +84,7 @@ export const action = async ({ request }: ActionArgs) => {
   };
 
   // validation
-  const form = await validator.validate(data);
+  const form = await validator.validate(personalData);
   if (form.error) return validationError(form.error);
 
   // encrypt password
@@ -103,43 +94,25 @@ export const action = async ({ request }: ActionArgs) => {
     .update(signupSession.get("password"))
     .digest("base64");
 
+  // remove unnecessary PersonalData's property
+  delete personalData.emailRetype;
+  delete personalData.passwordRetype;
+
   // insert user data to database
-  try {
-    const { data, error } = await db
-      .from<definitions["users"]>("users")
-      .insert([
+  const user = await query(
+    () =>
+      db.from<definitions["users"]>("users").insert([
         snakecaseKeys({
-          email: signupSession.get("email"),
+          ...personalData,
           password: encryptedPassword,
-          lastName: signupSession.get("lastName"),
-          firstName: signupSession.get("firstName"),
-          lastNameKana: signupSession.get("lastNameKana"),
-          firstNameKana: signupSession.get("firstNameKana"),
-          postalCode: signupSession.get("postalCode"),
-          prefecture: signupSession.get("prefecture"),
-          city: signupSession.get("city"),
-          address1: signupSession.get("address1"),
-          address2: signupSession.get("address2"),
-          phoneNumber: signupSession.get("phoneNumber"),
           deleteFlg: false,
         }),
-      ]);
+      ]),
+    request
+  );
 
-    if (data) {
-      inserted = camelcaseKeys(data[0]);
-    }
-
-    if (error) {
-      throw error;
-    }
-  } catch (error) {
-    console.log(error);
-
-    return validationError({
-      fieldErrors: {
-        system: "dbWrite",
-      },
-    });
+  if (user.err) {
+    return user.err;
   }
 
   // create user's site settings data in database
@@ -148,12 +121,11 @@ export const action = async ({ request }: ActionArgs) => {
   );
   const settings: SettingsType = settingsSession.get("settings");
 
-  try {
-    const { error } = await db
-      .from<definitions["settings"]>("settings")
-      .insert([
+  const { err } = await query(
+    () =>
+      db.from<definitions["settings"]>("settings").insert([
         snakecaseKeys({
-          userId: inserted?.id,
+          userId: user.data[0].id,
           darkMode:
             settings.darkMode === "light"
               ? MODE_LIGHT
@@ -162,19 +134,12 @@ export const action = async ({ request }: ActionArgs) => {
               : MODE_SYSTEM,
           language: settings.language,
         }),
-      ]);
+      ]),
+    request
+  );
 
-    if (error) {
-      throw error;
-    }
-  } catch (error) {
-    console.log(error);
-
-    return validationError({
-      fieldErrors: {
-        system: "dbWrite",
-      },
-    });
+  if (err) {
+    return err;
   }
 
   // destroy signup session
@@ -188,7 +153,6 @@ export default function Confirm() {
   const [progress, setProgress] = useState(false);
   const { handleChangeStep } = useStep();
   const formData = useLoaderData<typeof loader>();
-  const validated = useActionData<typeof action>();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const transition = useTransition();
@@ -204,12 +168,6 @@ export default function Confirm() {
   useEffect(() => {
     handleChangeStep(1);
   });
-
-  useEffect(() => {
-    if (validated) {
-      setProgress(false);
-    }
-  }, [validated]);
 
   const handleSend = () => {
     setProgress(true);
@@ -233,14 +191,6 @@ export default function Confirm() {
             </Typography>
           </Box>
         )}
-
-        {transition.state !== "submitting" &&
-          validated &&
-          Object.entries(validated.fieldErrors).map(([key, value], index) => (
-            <Alert key={index} severity="error">
-              {t(`front:${key}`)}: {t(`validator:${value}`)}
-            </Alert>
-          ))}
 
         <Box sx={{ maxWidth: 800, m: "auto" }}>
           <Paper elevation={1} sx={{ pb: 2 }}>

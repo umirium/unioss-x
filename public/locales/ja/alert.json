@@ -1,6 +1,6 @@
 {
-  "db": "データベースエラーです",
-  "dbErrors": "データベース{{error, string}}エラーが発生しました",
+  "authProc": "認証処理でエラーが発生しました",
+  "db": "データベースエラーが発生しました (code: {{errorCode, string}})",
   "params": "パラメータエラーです",
   "unknown": "不明なエラーです"
 }

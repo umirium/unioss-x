@@ -47,9 +47,9 @@ import MyPassword from "~/components/atoms/MyPassword";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
 import type { SnakeToCamel } from "snake-camel-types";
-import camelcaseKeys from "camelcase-keys";
 import snakecaseKeys from "snakecase-keys";
 import { MODE_DARK, MODE_LIGHT } from "~/utils/constants/index.server";
+import query from "~/utils/query.server";
 
 const validator = withYup(signinSchema);
 
@@ -71,7 +71,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const action = async ({ request }: ActionArgs) => {
   let user: SnakeToCamel<definitions["users"]> | null;
-  const alertSession = await getAlertSession(request.headers.get("cookie"));
   const noticeSession = await getNoticeSession(request.headers.get("cookie"));
 
   try {
@@ -88,7 +87,9 @@ export const action = async ({ request }: ActionArgs) => {
 
   if (!user) {
     // show alert of database error
-    alertSession.flash("alert", { key: "db" });
+    const alertSession = await getAlertSession(request.headers.get("cookie"));
+
+    alertSession.flash("alert", { key: "authProc" });
 
     const headers = new Headers();
     headers.append("Set-Cookie", await commitAlertSession(alertSession));
@@ -106,39 +107,19 @@ export const action = async ({ request }: ActionArgs) => {
   /**
    * merge session and database cart data
    */
-  let cartDB: Array<SnakeToCamel<definitions["carts"]>> | undefined = undefined;
-
   // get cart data from database
-  try {
-    const { data, error } = await db
-      .from<definitions["carts"]>("carts")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("delete_flg", false);
+  const cartDB = await query(
+    () =>
+      db
+        .from<definitions["carts"]>("carts")
+        .select("*")
+        .eq("user_id", user?.id || "")
+        .eq("delete_flg", false),
+    request
+  );
 
-    if (error) {
-      console.log(error);
-      throw new Error("read");
-    }
-
-    cartDB = camelcaseKeys(data);
-  } catch (error) {
-    // show alert of database errors
-    if (error instanceof Error) {
-      alertSession.flash("alert", {
-        key: `dbErrors_${Date.now()}`,
-        options: { error: `common:${error.message}` },
-      });
-    } else {
-      alertSession.flash("alert", {
-        key: `unknown_${Date.now()}`,
-      });
-    }
-
-    const headers = new Headers();
-    headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-    return redirect(request.url, { headers });
+  if (cartDB.err) {
+    return cartDB.err;
   }
 
   // get cart data from cookie
@@ -149,7 +130,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   // update DB
   const upserter = cart?.map((item) => {
-    const extract = cartDB?.find((e) => e.productId === item.productId);
+    const extract = cartDB.data.find((e) => e.productId === item.productId);
 
     // update
     if (extract) {
@@ -166,42 +147,20 @@ export const action = async ({ request }: ActionArgs) => {
   });
 
   if (upserter) {
-    try {
-      const { error } = await db
-        .from("carts")
-        .upsert(snakecaseKeys(upserter))
-        .select();
+    const { err } = await query(
+      () => db.from("carts").upsert(snakecaseKeys(upserter)).select(),
+      request
+    );
 
-      if (error) {
-        console.log(error);
-        throw new Error("upsert");
-      }
-    } catch (error: Error | unknown) {
-      // show alert of database errors
-      const alertSession = await getAlertSession(request.headers.get("cookie"));
-
-      if (error instanceof Error) {
-        alertSession.flash("alert", {
-          key: `dbErrors_${Date.now()}`,
-          options: { error: `common:${error.message}` },
-        });
-      } else {
-        alertSession.flash("alert", {
-          key: `unknown_${Date.now()}`,
-        });
-      }
-
-      const headers = new Headers();
-      headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-      return redirect(request.url, { headers });
+    if (err) {
+      return err;
     }
   }
 
   // update cart
   const newCart = [...cart];
 
-  cartDB.forEach((item) => {
+  cartDB.data.forEach((item) => {
     const index = cart?.findIndex((e) => e.productId === item.productId);
 
     if (index !== -1) {
@@ -220,34 +179,19 @@ export const action = async ({ request }: ActionArgs) => {
   /**
    * load site settings data from database
    */
-  let settingsDB: SnakeToCamel<definitions["settings"]> | undefined = undefined;
+  const settingsDB = await query(
+    () =>
+      db
+        .from<definitions["settings"]>("settings")
+        .select("*")
+        .eq("user_id", user?.id || "")
+        .eq("delete_flg", false)
+        .limit(1),
+    request
+  );
 
-  try {
-    const { data, error } = await db
-      .from<definitions["settings"]>("settings")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("delete_flg", false)
-      .single();
-
-    if (error) {
-      console.log(error);
-      throw new Error("read");
-    }
-
-    settingsDB = camelcaseKeys(data);
-  } catch (error) {
-    // show alert of database errors
-    if (error instanceof Error) {
-      alertSession.flash("alert", {
-        key: `dbErrors_${Date.now()}`,
-        options: { error: `common:${error.message}` },
-      });
-    } else {
-      alertSession.flash("alert", {
-        key: `unknown_${Date.now()}`,
-      });
-    }
+  if (settingsDB.err) {
+    return settingsDB.err;
   }
 
   // load user's site settings
@@ -256,16 +200,18 @@ export const action = async ({ request }: ActionArgs) => {
   );
   let settings: SettingsType = settingsSession.get("settings");
 
-  if (settingsDB) {
+  if (settingsDB.data.length !== 0) {
+    const settingDB = settingsDB.data[0];
+
     settings.darkMode =
-      settingsDB.darkMode === MODE_LIGHT
+      settingDB.darkMode === MODE_LIGHT
         ? "light"
-        : settingsDB.darkMode === MODE_DARK
+        : settingDB.darkMode === MODE_DARK
         ? "dark"
         : "system";
     settings.language =
-      settingsDB.language === "en" || settingsDB.language === "ja"
-        ? settingsDB.language
+      settingDB.language === "en" || settingDB.language === "ja"
+        ? settingDB.language
         : settings.language;
   }
 

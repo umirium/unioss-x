@@ -41,6 +41,7 @@ import {
 } from "~/utils/constants/index.server";
 import MyAlert from "~/components/atoms/MyAlert";
 import { ShowAlertProvider } from "~/providers/alertProvider";
+import query from "~/utils/query.server";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return {
@@ -139,49 +140,28 @@ export const action = async ({ request }: ActionArgs) => {
 
     if (authUser) {
       // insert settings data to database
-      try {
-        const { error } = await db
-          .from<definitions["settings"]>("settings")
-          .update(
-            snakecaseKeys({
-              darkMode:
-                settings.darkMode === "light"
-                  ? MODE_LIGHT
-                  : settings.darkMode === "dark"
-                  ? MODE_DARK
-                  : MODE_SYSTEM,
-              language: settings.language,
-            })
-          )
-          .eq("user_id", authUser.id)
-          .eq("delete_flg", false);
+      const { err } = await query(
+        () =>
+          db
+            .from<definitions["settings"]>("settings")
+            .update(
+              snakecaseKeys({
+                darkMode:
+                  settings.darkMode === "light"
+                    ? MODE_LIGHT
+                    : settings.darkMode === "dark"
+                    ? MODE_DARK
+                    : MODE_SYSTEM,
+                language: settings.language,
+              })
+            )
+            .eq("user_id", authUser.id)
+            .eq("delete_flg", false),
+        request
+      );
 
-        if (error) {
-          console.log(error);
-          throw new Error("update");
-        }
-      } catch (error: Error | unknown) {
-        // show alert of database errors
-        const alertSession = await getAlertSession(
-          request.headers.get("cookie")
-        );
-
-        if (error instanceof Error) {
-          alertSession.flash("alert", {
-            key: `dbErrors_${Date.now()}`,
-            options: { error: `common:${error.message}` },
-          });
-        } else {
-          alertSession.flash("alert", {
-            key: `unknown_${Date.now()}`,
-          });
-        }
-
-        headers.append("Set-Cookie", await commitAlertSession(alertSession));
-
-        return redirect(formData.get("redirectTo") as string, {
-          headers,
-        });
+      if (err) {
+        return err;
       }
     }
 

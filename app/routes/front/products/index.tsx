@@ -12,12 +12,12 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import camelcaseKeys from "camelcase-keys";
 import { useEffect } from "react";
 import { useShowAlertContext } from "~/providers/alertProvider";
 import type { NoticeType } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
+import query from "~/utils/query.server";
 
 const PER_PAGE = 4;
 
@@ -34,46 +34,25 @@ export const loader = async ({ request }: LoaderArgs) => {
   const end = Number(page) * PER_PAGE - 1;
   const start = end - (PER_PAGE - 1);
 
-  let alert: NoticeType | undefined = undefined;
-
-  let products;
-  let dataLength;
-
-  try {
-    const { data, count, error } = await db
+  const {
+    err,
+    data,
+    count: length,
+  } = await query(() =>
+    db
       .from<definitions["products"]>("products")
       .select("*", { count: "exact" })
       .order("id")
-      .range(start, end);
+      .range(start, end)
+  );
 
-    if (error) {
-      console.log(error);
-      throw new Error("read");
-    }
-
-    products = data;
-    dataLength = count;
-  } catch (error: Error | unknown) {
-    // show alert of database errors
-    if (error instanceof Error) {
-      alert = {
-        key: `dbErrors_${Date.now()}`,
-        options: { error: `common:${error.message}` },
-      };
-    } else {
-      alert = {
-        key: `unknown_${Date.now()}`,
-      };
-    }
-  }
-
-  const count = dataLength ? Math.ceil(dataLength / PER_PAGE) : 0;
+  const count = length ? Math.ceil(length / PER_PAGE) : 0;
 
   return {
-    products: products ? camelcaseKeys(products) : products,
+    products: data,
     count,
     page,
-    alert,
+    alert: err as NoticeType | undefined,
   };
 };
 
