@@ -22,6 +22,7 @@ import type { SettingsHandler } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import type { SnakeToCamel } from "snake-camel-types";
 import AccountAvatar from "./outline/accountAvatar";
+import SearchBox from "./outline/searchBox";
 
 interface Props {
   children: ReactElement;
@@ -93,16 +94,29 @@ export default function Outline(props: Props) {
               <MenuIcon />
             </IconButton>
 
-            <Box sx={{ flexGrow: 1, display: "flex" }}>
-              <Typography
-                variant="h6"
-                sx={{ cursor: "pointer" }}
-                onClick={handleClickLogo}
-              >
-                {t("front:title")}
-              </Typography>
+            {/* title logo */}
+            <Typography
+              variant="h6"
+              sx={{ cursor: "pointer" }}
+              onClick={handleClickLogo}
+            >
+              {t("front:title")}
+            </Typography>
+
+            {/* search box */}
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "row-reverse",
+                ml: 2,
+                mr: 2,
+              }}
+            >
+              <SearchBox />
             </Box>
 
+            {/* cart */}
             <IconButton
               color="inherit"
               edge="start"
@@ -120,6 +134,7 @@ export default function Outline(props: Props) {
               </Badge>
             </IconButton>
 
+            {/* sign-in avatar */}
             <AccountAvatar
               authUser={authUser}
               ref={settingsButtonRef}
