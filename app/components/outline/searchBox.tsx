@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -88,15 +88,36 @@ function SearchBox() {
   const [outlinedTheme, setOutlinedTheme] = useState(defaultTheme);
   const [inputting, setInputting] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const searchIconRef = useRef<HTMLButtonElement>(null);
 
-  const handleClick = () => {
+  useEffect(() => {
+    window.addEventListener("keydown", keyDownHandler);
+  });
+
+  const onExpand = () => {
+    if (searchIconRef.current) {
+      searchIconRef.current.disabled = true;
+      searchIconRef.current.style.display = "none";
+    }
+
     setOutlinedTheme(expandTheme);
     ref.current?.focus();
   };
 
-  const handleBlur = () => {
-    if (!ref.current?.value) {
-      setOutlinedTheme(shrinkTheme);
+  const onShrink = () => {
+    setOutlinedTheme(shrinkTheme);
+
+    ref.current && (ref.current.value = "");
+
+    if (searchIconRef.current) {
+      searchIconRef.current.disabled = false;
+      searchIconRef.current.style.display = "inline-flex";
+    }
+  };
+
+  const keyDownHandler = (e: KeyboardEvent) => {
+    if ((e.ctrlKey && e.key === "k") || (e.metaKey && e.key === "k")) {
+      onExpand();
     }
   };
 
@@ -106,13 +127,10 @@ function SearchBox() {
     }
 
     if (key === "Enter" && ref.current?.value) {
-      setOutlinedTheme(shrinkTheme);
-      ref.current?.value && (ref.current.value = "");
-
-      console.log("searching...");
+      console.log(`[${ref.current?.value}] searching...`);
+      onShrink();
     } else if (key === "Escape") {
-      setOutlinedTheme(shrinkTheme);
-      ref.current?.value && (ref.current.value = "");
+      onShrink();
     }
   };
 
@@ -126,9 +144,12 @@ function SearchBox() {
               startAdornment: (
                 <InputAdornment position="start">
                   <IconButton
+                    ref={searchIconRef}
                     color="inherit"
                     edge="start"
-                    onClick={handleClick}
+                    onClick={() => {
+                      onExpand();
+                    }}
                   >
                     <SearchIcon />
                   </IconButton>
@@ -138,7 +159,11 @@ function SearchBox() {
             size="small"
             variant="outlined"
             placeholder="search"
-            onBlur={handleBlur}
+            onBlur={() => {
+              if (!ref.current?.value) {
+                onShrink();
+              }
+            }}
             onCompositionStart={() => {
               setInputting(true);
             }}
