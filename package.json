@@ -29,6 +29,7 @@
     "remix-auth-form": "^1.2.0",
     "remix-i18next": "^4.1.1",
     "remix-validated-form": "^4.5.6",
+    "sanitize-html": "^2.7.3",
     "snakecase-keys": "^5.4.4",
     "yup": "^0.32.11"
   },
@@ -40,6 +41,7 @@
     "@types/moji": "^0.5.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "@types/sanitize-html": "^2.6.2",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "material-ui-popup-state": "^4.1.0",
