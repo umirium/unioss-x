@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
+  Chip,
   createTheme,
   IconButton,
   InputAdornment,
   TextField,
   ThemeProvider,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const defaultTheme = createTheme({
   palette: {
@@ -87,18 +89,21 @@ const expandTheme = createTheme({
 function SearchBox() {
   const [outlinedTheme, setOutlinedTheme] = useState(defaultTheme);
   const [inputting, setInputting] = useState(false);
+  const { t } = useTranslation();
   const ref = useRef<HTMLInputElement>(null);
   const searchIconRef = useRef<HTMLButtonElement>(null);
+  const closeIconRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     window.addEventListener("keydown", keyDownHandler);
   });
 
   const onExpand = () => {
-    if (searchIconRef.current) {
-      searchIconRef.current.disabled = true;
-      searchIconRef.current.style.display = "none";
-    }
+    // hide search icon
+    searchIconRef.current && (searchIconRef.current.style.display = "none");
+    // show close icon
+    closeIconRef.current &&
+      (closeIconRef.current.style.display = "inline-flex");
 
     setOutlinedTheme(expandTheme);
     ref.current?.focus();
@@ -107,12 +112,14 @@ function SearchBox() {
   const onShrink = () => {
     setOutlinedTheme(shrinkTheme);
 
+    // clear value of search box
     ref.current && (ref.current.value = "");
 
-    if (searchIconRef.current) {
-      searchIconRef.current.disabled = false;
-      searchIconRef.current.style.display = "inline-flex";
-    }
+    // show search icon
+    searchIconRef.current &&
+      (searchIconRef.current.style.display = "inline-flex");
+    // hide close icon
+    closeIconRef.current && (closeIconRef.current.style.display = "none");
   };
 
   const keyDownHandler = (e: KeyboardEvent) => {
@@ -145,6 +152,7 @@ function SearchBox() {
                 <InputAdornment position="start">
                   <IconButton
                     ref={searchIconRef}
+                    title="press Ctrl + K (or Cmd + K)"
                     color="inherit"
                     edge="start"
                     onClick={() => {
@@ -155,10 +163,25 @@ function SearchBox() {
                   </IconButton>
                 </InputAdornment>
               ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Chip
+                    ref={closeIconRef}
+                    label="×"
+                    title="press esc"
+                    size="small"
+                    sx={{ cursor: "pointer", display: "none" }}
+                    clickable={true}
+                    onClick={() => {
+                      onShrink();
+                    }}
+                  />
+                </InputAdornment>
+              ),
             }}
             size="small"
             variant="outlined"
-            placeholder="search"
+            placeholder={t("common:search")}
             onBlur={() => {
               if (!ref.current?.value) {
                 onShrink();
