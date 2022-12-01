@@ -36,7 +36,7 @@ import { getBreadcrumbs } from "~/components/products/Breadcrumbs";
 
 export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
   return {
-    title: `${parentsData["routes/front"].siteTitle} | products | ${data.product?.productName}`,
+    title: `${parentsData["routes/front"].siteTitle} | products | ${data.product?.name}`,
   };
 };
 
@@ -195,20 +195,16 @@ export default function Product() {
     <>
       {product && (
         <>
-          {getBreadcrumbs({ q, page, productName: product?.productName })}
+          {getBreadcrumbs({ q, page, productName: product?.name })}
 
           <Grid container spacing={3} sx={{ mt: 5 }}>
             <Grid xs={12} sm={12} md={6}>
-              <img
-                src={product?.imageUrl}
-                alt={product?.productName}
-                width="100%"
-              />
+              <img src={product?.imageUrl} alt={product?.name} width="100%" />
             </Grid>
             <Grid xs={12} sm={12} md={6}>
               <Grid container spacing={3}>
                 <Grid xs={12} sm={8} md={12}>
-                  <Typography variant="h4">{product?.productName}</Typography>
+                  <Typography variant="h4">{product?.name}</Typography>
                   <Box sx={{ mt: 3 }}>{product?.description}</Box>
                   <Box sx={{ mt: 3 }}>
                     {t("common:price")}:{" "}

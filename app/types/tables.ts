@@ -17,7 +17,8 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.products.id"];
-          product_name?: parameters["rowFilter.products.product_name"];
+          name?: parameters["rowFilter.products.name"];
+          kana?: parameters["rowFilter.products.kana"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
@@ -76,7 +77,8 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.products.id"];
-          product_name?: parameters["rowFilter.products.product_name"];
+          name?: parameters["rowFilter.products.name"];
+          kana?: parameters["rowFilter.products.kana"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
@@ -99,7 +101,8 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.products.id"];
-          product_name?: parameters["rowFilter.products.product_name"];
+          name?: parameters["rowFilter.products.name"];
+          kana?: parameters["rowFilter.products.kana"];
           description?: parameters["rowFilter.products.description"];
           price?: parameters["rowFilter.products.price"];
           stock?: parameters["rowFilter.products.stock"];
@@ -476,7 +479,9 @@ export interface definitions {
      */
     id: number;
     /** Format: character varying */
-    product_name: string;
+    name: string;
+    /** Format: character varying */
+    kana: string;
     /** Format: text */
     description?: string;
     /** Format: integer */
@@ -691,7 +696,9 @@ export interface parameters {
   /** Format: bigint */
   "rowFilter.products.id": string;
   /** Format: character varying */
-  "rowFilter.products.product_name": string;
+  "rowFilter.products.name": string;
+  /** Format: character varying */
+  "rowFilter.products.kana": string;
   /** Format: text */
   "rowFilter.products.description": string;
   /** Format: integer */

@@ -239,12 +239,12 @@ export default function Cart() {
             <Box key={index} sx={{ display: "flex" }}>
               <Box>
                 <Link to={`/front/products/${item.id}`}>
-                  <img src={item.imageUrl} alt={item.productName} width={200} />
+                  <img src={item.imageUrl} alt={item.name} width={200} />
                 </Link>
               </Box>
 
               <Box sx={{ ml: 2 }}>
-                {t("front:productName")}: {item.productName}
+                {t("front:productName")}: {item.name}
                 <br />
                 {t("common:price")}:{" "}
                 {t("common:jpy", {

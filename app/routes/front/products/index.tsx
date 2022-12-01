@@ -41,7 +41,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     db
       .from<definitions["products"]>("products")
       .select("*", { count: "exact" })
-      .like("product_name", q ? `%${q}%` : "%")
+      .like("name", q ? `%${q}%` : "%")
       .order("id")
       .range(start, end)
   );
@@ -114,11 +114,11 @@ export default function Index() {
                           component="img"
                           height={140}
                           image={item.imageUrl}
-                          alt={item.productName}
+                          alt={item.name}
                         />
                         <CardContent>
                           <Typography gutterBottom variant="h5" component="div">
-                            {item.productName}
+                            {item.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             {item.description}
