@@ -113,7 +113,10 @@ export default function Outline(props: Props) {
                 mr: 2,
               }}
             >
-              <SearchBox />
+              <SearchBox
+                mobileMenuOpen={mobileMenuOpen}
+                onCloseMobileMenu={handleCloseMobileMenu}
+              />
             </Box>
 
             {/* cart */}

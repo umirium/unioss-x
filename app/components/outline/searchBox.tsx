@@ -87,7 +87,10 @@ const expandTheme = createTheme({
   },
 });
 
-function SearchBox() {
+function SearchBox(props: {
+  mobileMenuOpen: boolean;
+  onCloseMobileMenu: () => void;
+}) {
   const [outlinedTheme, setOutlinedTheme] = useState(defaultTheme);
   const [inputting, setInputting] = useState(false);
   const navigate = useNavigate();
@@ -101,6 +104,13 @@ function SearchBox() {
   });
 
   const onExpand = () => {
+    props.onCloseMobileMenu();
+
+    // Do not processing to search products when mobile menu is opening
+    if (props.mobileMenuOpen) {
+      return;
+    }
+
     // hide search icon
     searchIconRef.current && (searchIconRef.current.style.display = "none");
     // show close icon
@@ -112,6 +122,8 @@ function SearchBox() {
   };
 
   const onShrink = () => {
+    props.onCloseMobileMenu();
+
     setOutlinedTheme(shrinkTheme);
 
     // clear value of search box
