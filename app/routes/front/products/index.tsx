@@ -20,6 +20,7 @@ import { db } from "~/utils/db.server";
 import { getBreadcrumbs } from "~/components/products/Breadcrumbs";
 import query from "~/utils/query.server";
 import { getParams } from "~/utils/products";
+import moji from "moji";
 
 const PER_PAGE = 4;
 
@@ -37,11 +38,17 @@ export const loader = async ({ request }: LoaderArgs) => {
   const end = page * PER_PAGE - 1;
   const start = end - (PER_PAGE - 1);
 
+  // convert search word
+  const name = q ? `%${q}%` : "%";
+  const kana = q
+    ? `%${moji(q).convert("HK", "ZK").convert("KK", "HG").toString().trim()}%`
+    : "%";
+
   const { err, data, count } = await query(() =>
     db
       .from<definitions["products"]>("products")
       .select("*", { count: "exact" })
-      .like("name", q ? `%${q}%` : "%")
+      .or(`name.like.${name},kana.like.${kana}`)
       .order("id")
       .range(start, end)
   );
