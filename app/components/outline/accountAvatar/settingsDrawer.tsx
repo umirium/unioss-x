@@ -42,7 +42,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
 
       // give current url to action to stay on this page
       const formData = new FormData();
-      formData.set("redirectTo", location.pathname);
+      formData.set("redirectTo", `${location.pathname}${location.search}`);
       formData.set("darkMode", mode);
       submit(formData, { method: "post" });
     }
@@ -57,7 +57,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
 
       // give current url to action to stay on this page
       const formData = new FormData();
-      formData.set("redirectTo", location.pathname);
+      formData.set("redirectTo", `${location.pathname}${location.search}`);
       formData.set("language", language);
       submit(formData, { method: "post" });
     }
