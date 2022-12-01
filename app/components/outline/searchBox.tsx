@@ -10,6 +10,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@remix-run/react";
 
 const defaultTheme = createTheme({
   palette: {
@@ -89,6 +90,7 @@ const expandTheme = createTheme({
 function SearchBox() {
   const [outlinedTheme, setOutlinedTheme] = useState(defaultTheme);
   const [inputting, setInputting] = useState(false);
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const ref = useRef<HTMLInputElement>(null);
   const searchIconRef = useRef<HTMLButtonElement>(null);
@@ -134,7 +136,9 @@ function SearchBox() {
     }
 
     if (key === "Enter" && ref.current?.value) {
-      console.log(`[${ref.current?.value}] searching...`);
+      // do product search
+      navigate(`/front/products?q=${ref.current.value}`);
+
       onShrink();
     } else if (key === "Escape") {
       onShrink();
