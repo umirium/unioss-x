@@ -17,10 +17,10 @@ import { useShowAlertContext } from "~/providers/alertProvider";
 import type { NoticeType } from "~/types/outline";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
-import { getBreadcrumbs } from "~/components/products/Breadcrumbs";
 import query from "~/utils/query.server";
 import { getParams } from "~/utils/products";
 import moji from "moji";
+import MyBreadcrumbs from "~/components/products/MyBreadcrumbs";
 
 const PER_PAGE = 4;
 
@@ -76,7 +76,7 @@ export default function Index() {
 
   return (
     <>
-      {getBreadcrumbs({ q, page, count })}
+      {MyBreadcrumbs({ q, page, count })}
 
       <Box sx={{ mt: 8 }}>
         <Box sx={{ maxWidth: 800, m: "auto" }}>

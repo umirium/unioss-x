@@ -41,5 +41,7 @@
   "mypage": "マイページ",
   "yourCartIsEmpty": "カートに商品がありません",
   "goToProducts": "商品一覧へ",
-  "goToSignin": "ログインへ"
+  "goToSignin": "ログインへ",
+  "searchResultOnProducts": "「{{keyword, string}}」の検索結果（{{count, number}}件）",
+  "searchResultOnProduct": "「{{keyword, string}}」の検索結果"
 }

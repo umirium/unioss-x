@@ -32,7 +32,7 @@ import type { NoticeType } from "~/types/outline";
 import type { SnakeToCamel } from "snake-camel-types";
 import { useShowAlertContext } from "~/providers/alertProvider";
 import query from "~/utils/query.server";
-import { getBreadcrumbs } from "~/components/products/Breadcrumbs";
+import MyBreadcrumbs from "~/components/products/MyBreadcrumbs";
 
 export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
   return {
@@ -195,7 +195,7 @@ export default function Product() {
     <>
       {product && (
         <>
-          {getBreadcrumbs({ q, page, productName: product?.name })}
+          {MyBreadcrumbs({ q, page, productName: product?.name })}
 
           <Grid container spacing={3} sx={{ mt: 5 }}>
             <Grid xs={12} sm={12} md={6}>

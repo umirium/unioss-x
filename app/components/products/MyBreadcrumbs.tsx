@@ -1,5 +1,6 @@
 import { Breadcrumbs, Link as MUILink, Typography } from "@mui/material";
 import { Link as RemixLink } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 import { getParams } from "~/utils/products";
 
 interface Props {
@@ -9,7 +10,8 @@ interface Props {
   productName?: string;
 }
 
-export const getBreadcrumbs = (props: Props) => {
+export default function MyBreadcrumbs(props: Props) {
+  const { t } = useTranslation();
   let elm = undefined;
 
   if (!props.productName) {
@@ -28,10 +30,13 @@ export const getBreadcrumbs = (props: Props) => {
           component={RemixLink}
           to={`/front/products${props.page ? `?page=${props.page}` : ""}`}
         >
-          products
+          {t("front:products")}
         </MUILink>
         <Typography color="text.primary">
-          {props.count} search results for "{props.q}"
+          {t("front:searchResultOnProducts", {
+            count: props.count || undefined,
+            keyword: props.q,
+          })}
         </Typography>
       </Breadcrumbs>
     );
@@ -45,7 +50,7 @@ export const getBreadcrumbs = (props: Props) => {
           component={RemixLink}
           to={`/front/products${props.page ? `?page=${props.page}` : ""}`}
         >
-          products
+          {t("front:products")}
         </MUILink>
         {props.q && (
           <MUILink
@@ -54,11 +59,13 @@ export const getBreadcrumbs = (props: Props) => {
             component={RemixLink}
             to={`/front/products${getParams(props.page, props.q)}`}
           >
-            search results for "{props.q}"
+            {t("front:searchResultOnProduct", {
+              keyword: props.q,
+            })}
           </MUILink>
         )}
         <Typography color="text.primary">{props.productName}</Typography>
       </Breadcrumbs>
     );
   }
-};
+}
