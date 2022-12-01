@@ -76,7 +76,7 @@ const query = async <T extends object>(
       return {
         err: {
           key: `db_${Date.now()}`,
-          options: { error: `common:${error.message}` },
+          options: { errorCode: error.message },
         },
         data: undefined,
         count: null,

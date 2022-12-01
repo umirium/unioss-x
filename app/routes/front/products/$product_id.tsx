@@ -1,10 +1,8 @@
 import type { SelectChangeEvent } from "@mui/material";
 import {
   Box,
-  Breadcrumbs,
   FormControl,
   InputLabel,
-  Link as MUILink,
   MenuItem,
   Select,
   Typography,
@@ -13,7 +11,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form, Link as RemixLink, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import camelcaseKeys from "camelcase-keys";
 import type { definitions } from "~/types/tables";
 import { db } from "~/utils/db.server";
@@ -34,16 +32,18 @@ import type { NoticeType } from "~/types/outline";
 import type { SnakeToCamel } from "snake-camel-types";
 import { useShowAlertContext } from "~/providers/alertProvider";
 import query from "~/utils/query.server";
+import MyBreadcrumbs from "~/components/products/MyBreadcrumbs";
 
 export const meta: MetaFunction<typeof loader> = ({ data, parentsData }) => {
   return {
-    title: `${parentsData["routes/front"].siteTitle} | products | ${data.product?.productName}`,
+    title: `${parentsData["routes/front"].siteTitle} | products | ${data.product?.name}`,
   };
 };
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
-  const page = url.searchParams.get("page");
+  const q = url.searchParams.get("q") || undefined;
+  const page = Number(url.searchParams.get("page")) || 1;
 
   const result = await query(() =>
     db
@@ -56,6 +56,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return {
     product: result.data?.[0],
     page,
+    q,
     alert: result.err as NoticeType,
   };
 };
@@ -177,7 +178,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Product() {
-  const { product, page, alert } = useLoaderData<typeof loader>();
+  const { product, page, q, alert } = useLoaderData<typeof loader>();
   const [quantity, setQuantity] = useState("1");
   const { showAlert } = useShowAlertContext();
   const { t } = useTranslation();
@@ -194,30 +195,16 @@ export default function Product() {
     <>
       {product && (
         <>
-          <Breadcrumbs sx={{ mb: 5 }}>
-            <MUILink
-              underline="hover"
-              color="inherit"
-              component={RemixLink}
-              to={`/front/products${page ? `?page=${page}` : ""}`}
-            >
-              products
-            </MUILink>
-            <Typography color="text.primary">{product?.productName}</Typography>
-          </Breadcrumbs>
+          {MyBreadcrumbs({ q, page, productName: product?.name })}
 
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ mt: 5 }}>
             <Grid xs={12} sm={12} md={6}>
-              <img
-                src={product?.imageUrl}
-                alt={product?.productName}
-                width="100%"
-              />
+              <img src={product?.imageUrl} alt={product?.name} width="100%" />
             </Grid>
             <Grid xs={12} sm={12} md={6}>
               <Grid container spacing={3}>
                 <Grid xs={12} sm={8} md={12}>
-                  <Typography variant="h4">{product?.productName}</Typography>
+                  <Typography variant="h4">{product?.name}</Typography>
                   <Box sx={{ mt: 3 }}>{product?.description}</Box>
                   <Box sx={{ mt: 3 }}>
                     {t("common:price")}:{" "}
