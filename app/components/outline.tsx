@@ -48,7 +48,6 @@ export default function Outline(props: Props) {
   const settingsButtonRef = useRef({} as SettingsHandler);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const darkTheme = useTheme();
 
   const handleToggleMobileMenu = () => {
     settingsButtonRef?.current.closeSettingsDrawer();
@@ -126,7 +125,7 @@ export default function Outline(props: Props) {
               sx={{ mr: 2 }}
               onClick={handleClickCart}
             >
-              <Badge
+              {/* <Badge
                 badgeContent={cart.reduce((sum, e) => sum + e.quantity, 0)}
                 color={
                   darkTheme.palette.mode === "light" ? "secondary" : "primary"
@@ -134,7 +133,7 @@ export default function Outline(props: Props) {
                 showZero
               >
                 <ShoppingCartIcon />
-              </Badge>
+              </Badge> */}
             </IconButton>
 
             {/* sign-in avatar */}

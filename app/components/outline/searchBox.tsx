@@ -4,6 +4,8 @@ import {
   Box,
   Chip,
   createTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  experimental_extendTheme as extendTheme,
   IconButton,
   InputAdornment,
   TextField,
@@ -12,9 +14,37 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "@remix-run/react";
 
-const defaultTheme = createTheme({
-  palette: {
-    mode: "dark",
+const defaultTheme = extendTheme({
+  // palette: {
+  //   mode: "dark",
+  // },
+  // components: {
+  //   MuiOutlinedInput: {
+  //     defaultProps: {
+  //       sx: { width: 40, cursor: "default" },
+  //     },
+  //     styleOverrides: {
+  //       notchedOutline: {
+  //         border: "none",
+  //       },
+  //     },
+  //   },
+  // },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
   },
   components: {
     MuiOutlinedInput: {
@@ -30,9 +60,25 @@ const defaultTheme = createTheme({
   },
 });
 
-const shrinkTheme = createTheme({
-  palette: {
-    mode: "dark",
+const shrinkTheme = extendTheme({
+  // palette: {
+  //   mode: "dark",
+  // },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
   },
   components: {
     MuiOutlinedInput: {
@@ -61,9 +107,25 @@ const shrinkTheme = createTheme({
   },
 });
 
-const expandTheme = createTheme({
-  palette: {
-    mode: "dark",
+const expandTheme = extendTheme({
+  // palette: {
+  //   mode: "dark",
+  // },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: "#000",
+        },
+      },
+    },
   },
   components: {
     MuiOutlinedInput: {
@@ -160,7 +222,7 @@ function SearchBox(props: {
   return (
     <>
       <Box sx={{ maxWidth: 200 }}>
-        <ThemeProvider theme={outlinedTheme}>
+        <CssVarsProvider theme={outlinedTheme}>
           <TextField
             inputRef={ref}
             InputProps={{
@@ -211,7 +273,7 @@ function SearchBox(props: {
             }}
             onKeyDown={(e) => handleKeydown(e.key)}
           />
-        </ThemeProvider>
+        </CssVarsProvider>
       </Box>
     </>
   );

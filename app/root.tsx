@@ -13,13 +13,18 @@ import {
   commitSession as commitSettingsSession,
   getSession as getSettingsSession,
 } from "~/utils/sessions/settings.server";
-import { DarkThemeProvider } from "~/providers/darkThemeProvider";
 import styles from "~/styles/root.css";
 import { useChangeLanguage } from "remix-i18next";
 import { useTranslation } from "react-i18next";
 import i18next from "~/i18next.server";
 import i18n from "./i18n";
 import type { SettingsType } from "./types/outline";
+import { useEffect } from "react";
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  getInitColorSchemeScript,
+  useMediaQuery,
+} from "@mui/material";
 
 export const loader = async ({ request }: LoaderArgs) => {
   // load site settings cookie
@@ -28,6 +33,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   );
 
   let settings: SettingsType = settingsSession.get("settings");
+  console.log(settings);
 
   // If settings cookie does not exist, initialize it.
   if (!settings) {
@@ -64,8 +70,19 @@ export const links = () => {
 export default function App() {
   const { settings } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
+  // const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)", {
+  //   noSsr: true,
+  // });
 
   useChangeLanguage(settings.language);
+
+  // useEffect(() => {
+  // console.log(settings.darkMode);
+
+  // console.log(prefersDarkMode);
+  //   const aa = getInitColorSchemeScript();
+  //   console.log(aa);
+  // });
 
   return (
     <html lang={settings.language} dir={i18n.dir()}>
@@ -74,9 +91,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <DarkThemeProvider darkMode={settings.darkMode}>
+        {getInitColorSchemeScript()}
+        <CssVarsProvider>
           <Outlet />
-        </DarkThemeProvider>
+        </CssVarsProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

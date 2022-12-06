@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react";
 import { useLocation, useSubmit, useTransition } from "@remix-run/react";
-import type { DrawerProps } from "@mui/material";
+import { DrawerProps, useColorScheme } from "@mui/material";
 import {
   Box,
   Divider,
@@ -16,7 +16,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
-import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { useTranslation } from "react-i18next";
 
 interface SettingsDrawerProps extends DrawerProps {
@@ -24,7 +23,8 @@ interface SettingsDrawerProps extends DrawerProps {
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps) {
-  const { mode } = useDarkThemeContext();
+  // const { mode } = useDarkThemeContext();
+  const { mode, setMode } = useColorScheme();
   const submit = useSubmit();
   const location = useLocation();
   const transition = useTransition();
@@ -38,7 +38,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
   const handleChangeMode = (_event: MouseEvent<HTMLElement>, mode: string) => {
     if (mode === "light" || mode === "dark" || mode === "system") {
       // this process is done by Front's one instead
-      // setMode(mode);
+      setMode(mode);
 
       // give current url to action to stay on this page
       const formData = new FormData();

@@ -49,17 +49,18 @@ export default function MyNotice(
       TransitionComponent={cmpTransition}
       onClose={handleClose}
       message={
-        <Typography
-          color={
-            props.i18nObj?.isAlert
-              ? darkTheme.palette.mode === "light"
-                ? red[200]
-                : "error"
-              : "common"
-          }
-        >
-          {transNotice}
-        </Typography>
+        // <Typography
+        //   color={
+        //     props.i18nObj?.isAlert
+        //       ? darkTheme.palette.mode === "light"
+        //         ? red[200]
+        //         : "error"
+        //       : "common"
+        //   }
+        // >
+        //   {transNotice}
+        // </Typography>
+        <></>
       }
       autoHideDuration={5000}
       action={

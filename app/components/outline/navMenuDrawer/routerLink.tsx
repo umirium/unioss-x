@@ -45,13 +45,13 @@ export default function RouterLink(props: RouterLinkProps) {
 
   return (
     <ListItemButton component={MyNavLink}>
-      <ListItemIcon
+      {/* <ListItemIcon
         sx={{
           ".Mui-selected > &": { color: (theme) => theme.palette.primary.main },
         }}
       >
         {props.icon}
-      </ListItemIcon>
+      </ListItemIcon> */}
       <ListItemText primary={props.text} />
     </ListItemButton>
   );

@@ -9,6 +9,8 @@ import {
   ButtonBase,
   Divider,
   createTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  experimental_extendTheme as extendTheme,
   ThemeProvider,
   useTheme,
 } from "@mui/material";
@@ -33,11 +35,27 @@ interface Props {
   onClick: () => void;
 }
 
-const getDesignTokens = (mode: PaletteMode) => ({
-  palette: {
-    primary: {
-      main: mode === "light" ? grey[800] : grey[100],
+const getDesignTokens = () => ({
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: grey[800],
+        },
+      },
     },
+    dark: {
+      palette: {
+        primary: {
+          main: grey[100],
+        },
+      },
+    },
+    // palette: {
+    //   primary: {
+    //     main: mode === "light" ? grey[800] : grey[100],
+    //   },
+    // },
   },
 });
 
@@ -53,7 +71,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
   const { t } = useTranslation();
   const navigate = useNavigate();
   const darkTheme = useTheme();
-  const theme = createTheme(getDesignTokens(darkTheme.palette.mode));
+  const theme = extendTheme(getDesignTokens());
 
   // Allow other components can close Settings Drawer.
   useImperativeHandle(ref, () => ({
@@ -103,7 +121,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
 
   return (
     <>
-      <Avatar
+      {/* <Avatar
         component={ButtonBase}
         sx={
           authUser?.id
@@ -120,7 +138,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
         }}
       >
         {authUser && authUser.lastName?.substring(0, 1)}
-      </Avatar>
+      </Avatar> */}
 
       {/* for Avatar */}
       <Popover
@@ -146,7 +164,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
           {authUser?.id && (
             <>
               <Box>
-                <ThemeProvider theme={theme}>
+                <CssVarsProvider theme={theme}>
                   <Button
                     variant="contained"
                     startIcon={<PersonIcon />}
@@ -157,7 +175,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
                   >
                     {t("front:mypage")}
                   </Button>
-                </ThemeProvider>
+                </CssVarsProvider>
               </Box>
             </>
           )}
@@ -165,7 +183,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
           <Divider sx={{ mt: 2 }} />
 
           <Box>
-            <ThemeProvider theme={theme}>
+            <CssVarsProvider theme={theme}>
               <Button
                 variant="outlined"
                 startIcon={<SettingsIcon />}
@@ -177,7 +195,7 @@ export default forwardRef<SettingsHandler, Props>(function AccountAvatar(
               >
                 {t("common:settings")}
               </Button>
-            </ThemeProvider>
+            </CssVarsProvider>
           </Box>
 
           <Box sx={{ mt: 3 }}>

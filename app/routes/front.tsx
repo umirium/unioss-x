@@ -1,9 +1,11 @@
 import type { SyntheticEvent } from "react";
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
-import { ThemeProvider } from "@mui/material";
+import { Box, useColorScheme } from "@mui/material";
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  ThemeProvider,
+} from "@mui/material";
 import Outline from "~/components/outline";
-import { useDarkThemeContext } from "~/providers/darkThemeProvider";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
@@ -176,7 +178,9 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Front() {
   const { authUser, cart, alert, notice, settings } =
     useLoaderData<typeof loader>();
-  const { theme, setMode } = useDarkThemeContext();
+  // const { theme } = useDarkThemeContext();
+  const { mode, setMode } = useColorScheme();
+
   const [openNotice, setOpenNotice] = useState(false);
   const [i18nObj, setI18nObj] = useState(alert);
 
@@ -205,26 +209,28 @@ export default function Front() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Outline authUser={authUser} cart={cart}>
-        <>
-          {/* show errors with alert */}
-          <MyAlert i18nObj={i18nObj} />
+    <>
+      <CssVarsProvider>
+        <Outline authUser={authUser} cart={cart}>
+          <>
+            {/* show errors with alert */}
+            <MyAlert i18nObj={i18nObj} />
 
-          <Box>
-            <ShowAlertProvider onShowAlert={handleShowAlert}>
-              <Outlet />
-            </ShowAlertProvider>
-          </Box>
-        </>
-      </Outline>
+            <Box>
+              <ShowAlertProvider onShowAlert={handleShowAlert}>
+                <Outlet />
+              </ShowAlertProvider>
+            </Box>
+          </>
+        </Outline>
 
-      {/* show Snackbar */}
-      <MyNotice
-        open={openNotice}
-        onClose={handleCloseSnackbar}
-        i18nObj={notice}
-      />
-    </ThemeProvider>
+        {/* show Snackbar */}
+        <MyNotice
+          open={openNotice}
+          onClose={handleCloseSnackbar}
+          i18nObj={notice}
+        />
+      </CssVarsProvider>
+    </>
   );
 }
