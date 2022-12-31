@@ -1,9 +1,11 @@
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useOutletContext } from "react-router-dom";
+import { authenticator } from "~/utils/auth.server";
 
 type ContextType = { handleChangeStep: (index: number) => void };
 
@@ -14,6 +16,13 @@ export const meta: MetaFunction<typeof loader> = ({ parentsData }) => {
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
+  const authUser = await authenticator.isAuthenticated(request);
+
+  // If signed-in, redirect top.
+  if (authUser) {
+    return redirect("/front");
+  }
+
   return null;
 };
 
