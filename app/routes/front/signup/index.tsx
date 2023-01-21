@@ -1,13 +1,12 @@
-import { Alert } from "@mui/material";
+import { Alert, Box, FormControl } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import type { ActionArgs, LoaderArgs, TypedResponse } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { validationError } from "remix-validated-form";
-import PersonalDataForm from "~/components/personalDataForm";
+import { ValidatedForm, validationError } from "remix-validated-form";
 import { personalDataFormSchema } from "~/stores/validator";
 import type { PersonalData } from "~/types/contactFormType";
 import type { definitions } from "~/types/tables";
@@ -15,6 +14,10 @@ import { db } from "~/utils/db.server";
 import { commitSession, getSession } from "~/utils/sessions/signup.server";
 import { useStep } from "../signup";
 import query from "~/utils/query.server";
+import { MySelect } from "~/components/atoms/MySelect";
+import { MySubmitButton } from "~/components/atoms/MySubmitButton";
+import { MyTextField } from "~/components/atoms/MyTextField";
+import prefectures from "~/stores/prefectures";
 
 const validator = withYup(personalDataFormSchema);
 
@@ -38,10 +41,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     phoneNumber: session.get("phoneNumber"),
   };
 
-  const headers = new Headers();
-  headers.append("Set-Cookie", await commitSession(session));
-
-  return json(data, { headers });
+  return data;
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -126,11 +126,153 @@ export default function Index() {
           return "";
         })}
 
-      <PersonalDataForm
-        isRegist={true}
-        formData={formData}
-        validator={validator}
-      />
+      <ValidatedForm validator={validator} method="post">
+        <Box sx={{ maxWidth: 800, m: "auto" }}>
+          <Grid container spacing={3}>
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="email"
+                  defaultValue={formData.email}
+                  required
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="emailRetype"
+                  defaultValue={formData.emailRetype}
+                  required
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="password"
+                  type="password"
+                  defaultValue={formData.password}
+                  required
+                />
+              </FormControl>
+            </Grid>
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="passwordRetype"
+                  type="password"
+                  defaultValue={formData.passwordRetype}
+                  required
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} sx={{ mt: 5 }}>
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="lastName"
+                  defaultValue={formData.lastName}
+                  required
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="firstName"
+                  defaultValue={formData.firstName}
+                  required
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="lastNameKana"
+                  defaultValue={formData.lastNameKana}
+                  required
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="firstNameKana"
+                  defaultValue={formData.firstNameKana}
+                  required
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="postalCode"
+                  defaultValue={formData.postalCode}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid xs={12} sm={6} md={6}>
+              <MySelect
+                label="prefecture"
+                defaultValue={formData.prefecture}
+                menuItems={prefectures}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField label="city" defaultValue={formData.city} />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={12} md={12}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="address1"
+                  defaultValue={formData.address1}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={12} md={12}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="address2"
+                  defaultValue={formData.address2}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid xs={12} sm={6} md={6}>
+              <FormControl fullWidth>
+                <MyTextField
+                  label="phoneNumber"
+                  defaultValue={formData.phoneNumber}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ mt: 5, textAlign: "center" }}>
+            <MySubmitButton label="next" />
+          </Box>
+        </Box>
+      </ValidatedForm>
     </>
   );
 }
