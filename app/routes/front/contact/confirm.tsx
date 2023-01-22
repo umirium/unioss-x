@@ -7,14 +7,18 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import type { LoaderArgs, ActionArgs } from "@remix-run/node";
+import type { LoaderArgs, ActionArgs, Session } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useActionData, useLoaderData, useNavigate } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { withYup } from "@remix-validated-form/with-yup";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ValidatedForm, validationError } from "remix-validated-form";
-import { MyInput } from "~/components/atoms/MyInput";
+import { validationError } from "remix-validated-form";
 import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import {
   contactInquirySchema,
@@ -24,7 +28,7 @@ import type {
   ContactInquiryType,
   ContactPersonalInfoType,
 } from "~/types/contactFormType";
-import { contactCookie } from "~/utils/cookies.server";
+import { destroySession, getSession } from "~/utils/sessions/contact.server";
 import { useStep } from "../contact";
 import { MyLinkButton } from "~/components/atoms/MyLinkButton";
 import prefectures from "~/stores/prefectures";
@@ -34,24 +38,50 @@ const validator = withYup(
   contactPersonalSchema.omit(["emailRetype"]).concat(contactInquirySchema)
 );
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie: ContactPersonalInfoType & ContactInquiryType =
-    (await contactCookie.parse(cookieHeader)) || {};
+const getContactData = async (session: Session) => {
+  return {
+    email: session.get("email"),
+    emailRetype: session.get("emailRetype"),
+    lastName: session.get("lastName"),
+    firstName: session.get("firstName"),
+    lastNameKana: session.get("lastNameKana"),
+    firstNameKana: session.get("firstNameKana"),
+    postalCode: session.get("postalCode"),
+    prefecture: session.get("prefecture"),
+    city: session.get("city"),
+    address1: session.get("address1"),
+    address2: session.get("address2"),
+    phoneNumber: session.get("phoneNumber"),
+    category: session.get("category"),
+    productName: session.get("productName"),
+    orderCode: session.get("orderCode"),
+    inquiry: session.get("inquiry"),
+  };
+};
 
-  return cookie;
+export const loader = async ({ request }: LoaderArgs) => {
+  const data: ContactPersonalInfoType & ContactInquiryType =
+    await getContactData(await getSession(request.headers.get("Cookie")));
+
+  return data;
 };
 
 export const action = async ({ request }: ActionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  const data: ContactPersonalInfoType & ContactInquiryType =
+    await getContactData(session);
+
   // validation
-  const form = await validator.validate(await request.formData());
+  const form = await validator.validate(data);
   if (form.error) return validationError(form.error);
 
   // transmission process...
   await new Promise((resolve) => setTimeout(resolve, Math.random() * 10000));
 
+  // destroy contact session
   const headers = new Headers();
-  headers.append("Set-Cookie", await contactCookie.serialize({}));
+  headers.append("Set-Cookie", await destroySession(session));
 
   return redirect("/front/contact/complete", { headers });
 };
@@ -81,7 +111,7 @@ export default function Confirm() {
   };
 
   return (
-    <ValidatedForm validator={validator} method="post">
+    <Form replace method="post">
       {validated &&
         Object.entries(validated.fieldErrors).map(([key, value], index) => (
           <Alert key={index} severity="error">
@@ -129,12 +159,6 @@ export default function Confirm() {
 
               return (
                 <Grid container key={key} spacing={3} sx={{ mt: 1, mb: 1 }}>
-                  <MyInput
-                    type="hidden"
-                    label={key}
-                    defaultValue={value}
-                    onValidate="submit"
-                  />
                   <Grid xs={6} sm={6} md={6} sx={{ textAlign: "center" }} item>
                     {t(`front:${key}`)}
                   </Grid>
@@ -165,6 +189,6 @@ export default function Confirm() {
           />
         </Box>
       </Box>
-    </ValidatedForm>
+    </Form>
   );
 }
