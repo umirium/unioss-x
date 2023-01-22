@@ -1,6 +1,6 @@
 import type { SchemaOf } from "yup";
 import { object, string, ref } from "yup";
-import type { PersonalData } from "~/types/contactFormType";
+import type { ContactInquiryType, PersonalData } from "~/types/contactFormType";
 
 // for sign-up
 export const personalDataFormSchema: SchemaOf<PersonalData> = object({
@@ -41,7 +41,7 @@ export const contactPersonalSchema = personalDataFormSchema.omit([
   "passwordRetype",
 ]);
 
-export const contactInquirySchema = object({
+export const contactInquirySchema: SchemaOf<ContactInquiryType> = object({
   category: string().max(2, "max2").required("required"),
   productName: string().max(128, "max128"),
   orderCode: string().max(128, "max128"),
