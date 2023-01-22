@@ -12,16 +12,23 @@ import { MySubmitButton } from "~/components/atoms/MySubmitButton";
 import { MyTextField } from "~/components/atoms/MyTextField";
 import { categories } from "~/stores/contact";
 import { contactInquirySchema } from "~/stores/validator";
-import { contactCookie } from "~/utils/cookies.server";
+import type { ContactInquiryType } from "~/types/contactFormType";
+import { commitSession, getSession } from "~/utils/sessions/contact.server";
 import { useStep } from "../contact";
 
 const validator = withYup(contactInquirySchema);
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await contactCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request.headers.get("Cookie"));
 
-  return cookie;
+  const data: ContactInquiryType = {
+    category: session.get("category"),
+    productName: session.get("productName"),
+    orderCode: session.get("orderCode"),
+    inquiry: session.get("inquiry"),
+  };
+
+  return data;
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -32,15 +39,15 @@ export const action = async ({ request }: ActionArgs) => {
   const form = await validator.validate(await request.formData());
   if (form.error) return validationError(form.error);
 
-  // session (cookie)
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await contactCookie.parse(cookieHeader)) || {};
+  const session = await getSession(request.headers.get("Cookie"));
+
+  session.set("category", form.data.category);
+  session.set("productName", form.data.productName);
+  session.set("orderCode", form.data.orderCode);
+  session.set("inquiry", form.data.inquiry);
 
   const headers = new Headers();
-  headers.append(
-    "Set-Cookie",
-    await contactCookie.serialize({ ...cookie, ...form.data })
-  );
+  headers.append("Set-Cookie", await commitSession(session));
 
   return redirect("/front/contact/confirm", { headers });
 };

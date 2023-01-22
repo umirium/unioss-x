@@ -18,7 +18,7 @@ export default function Complete() {
       <h1>{t("front:registered")}</h1>
 
       <Box sx={{ textAlign: "center" }}>
-        <MyLinkButton to="../../" color="primary">
+        <MyLinkButton to="../../signin" color="primary">
           {t("front:goToSignin")}
         </MyLinkButton>
       </Box>
