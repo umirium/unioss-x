@@ -15,11 +15,11 @@ import {
 } from "~/utils/sessions/settings.server";
 import { DarkThemeProvider } from "~/providers/darkThemeProvider";
 import styles from "~/styles/root.css";
-import { useChangeLanguage } from "remix-i18next";
 import { useTranslation } from "react-i18next";
 import i18next from "~/i18next.server";
 import i18n from "./i18n";
 import type { SettingsType } from "./types/outline";
+import { useEffect } from "react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   // load site settings cookie
@@ -65,7 +65,9 @@ export default function App() {
   const { settings } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
 
-  useChangeLanguage(settings.language);
+  useEffect(() => {
+    i18n.changeLanguage(settings.language);
+  }, [settings.language, i18n]);
 
   return (
     <html lang={settings.language} dir={i18n.dir()}>
